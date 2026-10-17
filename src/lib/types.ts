@@ -15,6 +15,7 @@ export type CatalogCard = {
   setId: string;
   setName: string;
   setCode?: string | null;
+  series?: string;
   region?: "intl" | "jp";
   number: string;
   rarity: string;

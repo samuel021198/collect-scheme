@@ -37,6 +37,7 @@ function toCard(raw: StoredCard): CatalogCard {
     setId: raw.setId,
     setName: raw.setName,
     setCode: raw.setCode,
+    series: raw.series,
     region: raw.region === "jp" ? "jp" : "intl",
     number: raw.number,
     rarity: raw.rarity,

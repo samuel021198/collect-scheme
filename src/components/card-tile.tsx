@@ -1,7 +1,9 @@
 import Image from "next/image";
 import { getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
+import { RarityMark } from "@/components/rarity-stamp";
 import { cardSubtitle, cardTitle } from "@/lib/catalog";
+import { cardFinishes } from "@/lib/finishes";
 import { textLabel, TYPE_DOT } from "@/lib/labels";
 import type { CatalogCard } from "@/lib/types";
 import { Badge } from "@/components/ui/badge";
@@ -20,6 +22,7 @@ export async function CardTile({
   const title = cardTitle(card.names, locale);
   const subtitle = cardSubtitle(card.names, locale);
   const kinds = card.types.length > 0 ? card.types : card.supertype === "Trainer" ? ["Trainer"] : [];
+  const finish = cardFinishes(card)[0] ?? null;
 
   return (
     <Link
@@ -36,6 +39,7 @@ export async function CardTile({
           sizes="(max-width: 640px) 45vw, 220px"
           className="object-contain"
         />
+        <RarityMark finish={finish} locale={locale} />
       </div>
       <div className="flex flex-1 flex-col px-1 pt-2.5 pb-1">
         <p className="text-sm leading-snug font-medium">{title}</p>
