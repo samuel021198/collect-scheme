@@ -15,6 +15,7 @@ from pathlib import Path
 
 ROOT = Path("/tmp/cards-database")
 OUT = Path("/workspace/data/tcg/variants.json")
+TRAITS = Path("/workspace/data/tcg/traits.json")
 CARDS = Path("/workspace/data/tcg/cards.json")
 
 
@@ -44,6 +45,13 @@ def quoted_list(raw: str | None) -> list[str]:
     if not raw:
         return []
     return re.findall(r"""['"]([^'"]+)['"]""", raw)
+
+
+def parse_types(text: str) -> list[str]:
+    match = re.search(r"\btypes\s*:\s*\[", text)
+    if not match:
+        return []
+    return quoted_list(read_block(text, match.end() - 1))
 
 
 def split_objects(array_src: str) -> list[str]:
@@ -201,10 +209,18 @@ def load_tcgdex() -> dict[tuple[str, str, str], list[dict]]:
                     if "category:" not in text and "category :" not in text:
                         continue
                     variants = parse_variants(text, region)
-                    if not variants:
+                    types = parse_types(text)
+                    category = grab(r"""\bcategory\s*:\s*['"]([^'"]+)['"]""", text) or ""
+                    if not variants and not types and not category:
                         continue
                     names_on_card = [fold(value) for value in name_block(text).values() if value]
-                    record = {"v": variants, "n": names_on_card, "set": names.get("en") or names.get("ja") or folder}
+                    record = {
+                        "v": variants or [],
+                        "n": names_on_card,
+                        "set": names.get("en") or names.get("ja") or folder,
+                        "types": types,
+                        "category": category,
+                    }
                     key_num = num_key(card_path.stem)
                     for code in codes:
                         bucket = index.setdefault((region, code, key_num), [])
@@ -212,16 +228,17 @@ def load_tcgdex() -> dict[tuple[str, str, str], list[dict]]:
     return index
 
 
-def choose(records: list[dict], card_name: str) -> list[dict] | None:
+def choose(records: list[dict], card_name: str) -> dict | None:
     if len(records) == 1:
-        return records[0]["v"]
+        return records[0]
     wanted = fold(card_name)
     named = [record for record in records if wanted and wanted in record["n"]]
     if len(named) == 1:
-        return named[0]["v"]
-    unique = {json.dumps(record["v"], ensure_ascii=False, sort_keys=True) for record in (named or records)}
+        return named[0]
+    pool = named or records
+    unique = {json.dumps(record["v"], ensure_ascii=False, sort_keys=True) for record in pool}
     if len(unique) == 1:
-        return (named or records)[0]["v"]
+        return pool[0]
     return None
 
 
@@ -229,6 +246,7 @@ def main() -> None:
     index = load_tcgdex()
     cards = json.loads(CARDS.read_text(encoding="utf-8"))
     out: dict[str, list] = {}
+    traits: dict[str, dict] = {}
     matched = 0
     for card in cards:
         code = (card.get("setCode") or "").upper()
@@ -238,24 +256,29 @@ def main() -> None:
         records = index.get((region, code, num_key(str(card.get("number") or ""))))
         if not records:
             continue
-        variants = choose(records, card.get("name") or "")
-        if not variants:
+        record = choose(records, card.get("name") or "")
+        if not record:
             continue
-        previous = out.get(card["id"])
-        if previous:
-            seen = {json.dumps(item, sort_keys=True) for item in previous}
-            for item in variants:
-                key = json.dumps(item, sort_keys=True)
-                if key not in seen:
-                    previous.append(item)
-                    seen.add(key)
-        else:
-            out[card["id"]] = variants
+        variants = record["v"]
+        if variants:
+            previous = out.get(card["id"])
+            if previous:
+                seen = {json.dumps(item, sort_keys=True) for item in previous}
+                for item in variants:
+                    key = json.dumps(item, sort_keys=True)
+                    if key not in seen:
+                        previous.append(item)
+                        seen.add(key)
+            else:
+                out[card["id"]] = variants
+        if record["types"] or record["category"]:
+            traits.setdefault(card["id"], {"types": record["types"], "category": record["category"]})
         matched += 1
     OUT.write_text(json.dumps(out, ensure_ascii=False, separators=(",", ":")), encoding="utf-8")
-    print(f"cards {len(cards)} matched {matched} stored {len(out)} bytes {OUT.stat().st_size}")
-    for sample in ("42370", "42375", "42377", "35585", "211", "41499"):
-        print(sample, json.dumps(out.get(sample), ensure_ascii=False))
+    TRAITS.write_text(json.dumps(traits, ensure_ascii=False, separators=(",", ":")), encoding="utf-8")
+    print(f"cards {len(cards)} matched {matched} variants {len(out)} traits {len(traits)} bytes {TRAITS.stat().st_size}")
+    for sample in ("42370", "42375", "38425", "211"):
+        print(sample, traits.get(sample))
 
 
 if __name__ == "__main__":

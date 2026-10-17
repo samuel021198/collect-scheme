@@ -21,8 +21,11 @@ type StoredCard = {
 
 type Cache<T> = { mtime: number; value: T };
 
+type Trait = { types?: string[]; category?: string };
+
 let cardCache: Cache<CatalogCard[]> | null = null;
 let printCache: Cache<Record<string, CardPrint[]>> | null = null;
+let traitCache: Cache<Record<string, Trait>> | null = null;
 
 function cardsFile() {
   return join(process.cwd(), "data/tcg/cards.json");
@@ -38,14 +41,31 @@ function loadPrints() {
   return value;
 }
 
-function toCard(raw: StoredCard, prints: CardPrint[] | undefined): CatalogCard {
+function loadTraits() {
+  const file = join(process.cwd(), "data/tcg/traits.json");
+  if (!existsSync(file)) return {};
+  const mtime = statSync(file).mtimeMs;
+  if (traitCache?.mtime === mtime) return traitCache.value;
+  const value = JSON.parse(readFileSync(file, "utf8")) as Record<string, Trait>;
+  traitCache = { mtime, value };
+  return value;
+}
+
+function supertypeOf(category: string | undefined) {
+  if (category === "Trainer") return "Trainer";
+  if (category === "Energy") return "Energy";
+  if (category === "Pokemon" || category === "Pokémon") return "Pokémon";
+  return "";
+}
+
+function toCard(raw: StoredCard, prints: CardPrint[] | undefined, trait: Trait | undefined): CatalogCard {
   return {
     id: raw.id,
     names: raw.zh ? { en: raw.name, zh: raw.zh } : { en: raw.name },
-    supertype: "",
+    supertype: supertypeOf(trait?.category),
     subtypes: [],
     hp: null,
-    types: [],
+    types: trait?.types ?? [],
     setId: raw.setId,
     setName: raw.setName,
     setCode: raw.setCode,
@@ -62,10 +82,18 @@ function toCard(raw: StoredCard, prints: CardPrint[] | undefined): CatalogCard {
 export function loadCards() {
   const file = cardsFile();
   if (!existsSync(file)) return [];
-  const mtime = statSync(file).mtimeMs;
+  const traitFile = join(process.cwd(), "data/tcg/traits.json");
+  const printFile = join(process.cwd(), "data/tcg/variants.json");
+  const mtime =
+    statSync(file).mtimeMs +
+    (existsSync(traitFile) ? statSync(traitFile).mtimeMs : 0) +
+    (existsSync(printFile) ? statSync(printFile).mtimeMs : 0);
   if (cardCache?.mtime === mtime) return cardCache.value;
   const prints = loadPrints();
-  const cards = (JSON.parse(readFileSync(file, "utf8")) as StoredCard[]).map((raw) => toCard(raw, prints[raw.id]));
+  const traits = loadTraits();
+  const cards = (JSON.parse(readFileSync(file, "utf8")) as StoredCard[]).map((raw) =>
+    toCard(raw, prints[raw.id], traits[raw.id]),
+  );
   cardCache = { mtime, value: cards };
   return cards;
 }

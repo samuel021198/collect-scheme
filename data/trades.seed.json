@@ -3,11 +3,11 @@
     "id": "seed-charizard-base",
     "side": "sell",
     "card": {
-      "id": "base1-4",
+      "id": "211",
       "names": { "en": "Charizard", "zh": "噴火龍" },
-      "imageSmall": "https://images.pokemontcg.io/base1/4.png",
-      "setName": "Base",
-      "number": "4",
+      "imageSmall": "https://static.tcgcollector.com/content/images/0c/48/79/0c48792192325dbc65a3e02e9552669de02deab5ba500a559429cb1041de7e1e.jpg",
+      "setName": "Base Set",
+      "number": "4/102",
       "rarity": "Rare Holo"
     },
     "description": "出初代噴火龍閃卡。卡面沒有折，卡背有一點白邊。只考慮旺角或深水埗面交，不寄順豐。",
@@ -27,11 +27,11 @@
     "id": "seed-pika-sparks",
     "side": "buy",
     "card": {
-      "id": "sv8-238",
-      "names": { "en": "Pikachu ex", "zh": "皮卡丘ex" },
-      "imageSmall": "https://images.pokemontcg.io/sv8/238.png",
+      "id": "46576",
+      "names": { "en": "Pikachu ex", "zh": "皮卡丘 ex" },
+      "imageSmall": "https://static.tcgcollector.com/content/images/8f/47/04/8f47044c0219c18cdd77c7fd3714583654a22530459be87321cb7600a178290f.webp",
       "setName": "Surging Sparks",
-      "number": "238",
+      "number": "238/191",
       "rarity": "Special Illustration Rare"
     },
     "description": "Looking for a clean Surging Sparks Pikachu ex special illustration. Light whitening on the back is fine. No creases. I can meet in Causeway Bay.",

@@ -9,7 +9,10 @@ import { resolveLocale } from "@/i18n/locale";
 import { cardSubtitle, cardTitle } from "@/lib/catalog";
 import { getCard } from "@/lib/content";
 import { cardFinishes, finishLabel } from "@/lib/finishes";
-import { textLabel, TYPE_DOT } from "@/lib/labels";
+import { textLabel } from "@/lib/labels";
+import { listPosts } from "@/lib/trades";
+
+export const dynamic = "force-dynamic";
 
 export async function generateMetadata({
   params,
@@ -45,13 +48,18 @@ export default async function CardPage({
 
   const title = cardTitle(card.names, locale);
   const subtitle = cardSubtitle(card.names, locale);
-  const kinds = card.types.length > 0 ? card.types : [];
+  const attribute = card.types.length
+    ? card.types.map((kind) => textLabel("type", kind, locale)).join(" · ")
+    : card.supertype
+      ? textLabel("supertype", card.supertype, locale)
+      : "";
+  const sellers = listPosts().filter((post) => post.side === "sell" && post.card.id === card.id);
 
   const facts = [
     [t("set"), card.setName],
     [t("number"), `#${card.number}`],
     [t("rarity"), textLabel("rarity", card.rarity, locale)],
-    [t("supertype"), textLabel("supertype", card.supertype, locale)],
+    attribute ? [t("type"), attribute] : null,
     card.hp ? [t("hp"), card.hp] : null,
     card.subtypes.length
       ? [t("subtype"), card.subtypes.map((item) => textLabel("subtype", item, locale)).join(" · ")]
@@ -90,46 +98,32 @@ export default async function CardPage({
             </Badge>
           ) : null}
         </div>
-        {kinds.length > 0 ? (
+        {finishes.length > 1 ? (
           <div className="flex flex-wrap gap-2">
-            {kinds.map((kind) => (
-              <Badge key={kind} variant="secondary">
-                <span className={`size-1.5 rounded-full ${TYPE_DOT[kind] ?? "bg-stone-300"}`} />
-                {textLabel("type", kind, locale)}
-              </Badge>
+            {finishes.map((item) => (
+              <Link
+                key={item.id}
+                href={item.id === finishes[0]?.id ? `/encyclopedia/${card.id}` : `/encyclopedia/${card.id}?finish=${item.id}`}
+                aria-current={finish?.id === item.id ? "page" : undefined}
+                className={`rounded-full border px-3 py-1.5 text-sm ${finish?.id === item.id ? "border-primary bg-primary text-primary-foreground" : "border-border text-muted-foreground"}`}
+              >
+                {finishLabel(item, locale)}
+              </Link>
             ))}
           </div>
+        ) : finishes.length === 0 ? (
+          <p className="text-sm text-muted-foreground">{t("noRarity")}</p>
         ) : null}
-        <section className="grid gap-2">
-          <h2 className="text-sm font-medium">{t("looks")}</h2>
-          <p className="text-sm leading-6 text-muted-foreground">{t("finishNote")}</p>
-          {finishes.length > 1 ? (
-            <div className="flex flex-wrap gap-2">
-              {finishes.map((item) => (
-                <Link
-                  key={item.id}
-                  href={item.id === finishes[0]?.id ? `/encyclopedia/${card.id}` : `/encyclopedia/${card.id}?finish=${item.id}`}
-                  aria-current={finish?.id === item.id ? "page" : undefined}
-                  className={`rounded-full border px-3 py-1.5 text-sm ${finish?.id === item.id ? "border-primary bg-primary text-primary-foreground" : "border-border text-muted-foreground"}`}
-                >
-                  {finishLabel(item, locale)}
-                </Link>
-              ))}
-            </div>
-          ) : finishes.length === 0 ? (
-            <p className="text-sm text-muted-foreground">{t("noRarity")}</p>
-          ) : null}
-          {card.region === "jp" ? (
-            <a
-              href={`https://www.pokemon-card.com/card-search/index.php?keyword=${encodeURIComponent(card.names.en)}&se_ta=&regulation_sidebar_form=all&pg=&illust=&sm_and_keyword=true`}
-              className="text-sm text-primary"
-              rel="noreferrer"
-              target="_blank"
-            >
-              {t("official")}
-            </a>
-          ) : null}
-        </section>
+        {card.region === "jp" ? (
+          <a
+            href={`https://www.pokemon-card.com/card-search/index.php?keyword=${encodeURIComponent(card.names.en)}&se_ta=&regulation_sidebar_form=all&pg=&illust=&sm_and_keyword=true`}
+            className="text-sm text-primary"
+            rel="noreferrer"
+            target="_blank"
+          >
+            {t("official")}
+          </a>
+        ) : null}
         <dl className="grid grid-cols-2 gap-3">
           {facts.map(([label, value]) => (
             <div key={label} className="rounded-xl border border-border bg-card px-3 py-2">
@@ -146,6 +140,26 @@ export default async function CardPage({
             </div>
           ))}
         </dl>
+        <section className="grid gap-2">
+          <h2 className="text-sm font-medium">{t("sellers")}</h2>
+          {sellers.length === 0 ? (
+            <p className="rounded-xl border border-dashed border-border px-3 py-4 text-sm text-muted-foreground">{t("noSellers")}</p>
+          ) : (
+            <div className="grid gap-2">
+              {sellers.map((post) => (
+                <Link
+                  key={post.id}
+                  href={`/trade/${post.id}`}
+                  className="rounded-xl border border-border bg-card px-3 py-2 hover:border-primary/50"
+                >
+                  <p className="text-sm font-medium">{post.author}</p>
+                  <p className="mt-1 line-clamp-2 text-sm text-muted-foreground">{post.description}</p>
+                  <p className="mt-1 text-xs text-muted-foreground">{post.contact}</p>
+                </Link>
+              ))}
+            </div>
+          )}
+        </section>
         <Link
           href={`/trade/new?card=${card.id}`}
           className="inline-flex h-10 w-fit items-center rounded-lg bg-primary px-4 text-sm font-medium text-primary-foreground"
