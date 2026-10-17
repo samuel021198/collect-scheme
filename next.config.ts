@@ -12,6 +12,11 @@ const nextConfig: NextConfig = {
         hostname: "images.pokemontcg.io",
         pathname: "/**",
       },
+      {
+        protocol: "https",
+        hostname: "static.tcgcollector.com",
+        pathname: "/**",
+      },
     ],
   },
   turbopack: {

@@ -3,7 +3,7 @@ import { getTranslations } from "next-intl/server";
 import { TradeForm } from "@/components/trade-form";
 import { Link } from "@/i18n/navigation";
 import { resolveLocale } from "@/i18n/locale";
-import { getCard, loadCards } from "@/lib/content";
+import { getCard } from "@/lib/content";
 
 export const dynamic = "force-dynamic";
 
@@ -42,7 +42,7 @@ export default async function NewTradePage({
         <h1 className="font-display text-4xl">{t("formTitle")}</h1>
         <p className="rounded-2xl border border-primary/30 bg-primary/10 px-4 py-3 text-sm leading-6">{t("disclaimer")}</p>
       </div>
-      <TradeForm cards={loadCards()} locale={locale} initialCard={initialCard} />
+      <TradeForm locale={locale} initialCard={initialCard} />
     </div>
   );
 }

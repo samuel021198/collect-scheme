@@ -37,6 +37,7 @@ export function searchCards<T extends CatalogCard>(cards: T[], query: string) {
       card.names.zh ?? "",
       card.setName,
       card.setId,
+      card.setCode ?? "",
       card.number,
       card.rarity,
       card.supertype,

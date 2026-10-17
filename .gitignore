@@ -37,6 +37,9 @@ yarn-error.log*
 # demo trade posts created while the app is running
 /data/trades.local.json
 
+# per-set scrape cache; the merged catalog is data/tcg/*.json
+/data/tcg/by-set/
+
 # vercel
 .vercel
 

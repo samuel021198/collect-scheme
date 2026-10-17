@@ -1,10 +1,10 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useRef, useState } from "react";
 import Image from "next/image";
 import { useTranslations } from "next-intl";
 import { useRouter } from "@/i18n/navigation";
-import { cardTitle, searchCards, validatePost } from "@/lib/catalog";
+import { cardTitle, validatePost } from "@/lib/catalog";
 import { textLabel } from "@/lib/labels";
 import type { CatalogCard, ErrorCode } from "@/lib/types";
 import { buttonVariants } from "@/components/ui/button";
@@ -27,11 +27,9 @@ const ERRORS = new Set<ErrorCode>([
 ]);
 
 export function TradeForm({
-  cards,
   locale,
   initialCard,
 }: {
-  cards: CatalogCard[];
   locale: string;
   initialCard: CatalogCard | null;
 }) {
@@ -44,20 +42,32 @@ export function TradeForm({
   const [side, setSide] = useState<"buy" | "sell">("sell");
   const [cardId, setCardId] = useState(initialCard?.id ?? "");
   const [query, setQuery] = useState("");
+  const [results, setResults] = useState<CatalogCard[]>(initialCard ? [initialCard] : []);
+  const requestId = useRef(0);
   const [description, setDescription] = useState("");
   const [contact, setContact] = useState("");
   const [error, setError] = useState<ErrorCode | null>(null);
   const [pending, setPending] = useState(false);
 
-  const pool = useMemo(() => {
-    if (initialCard && !cards.some((card) => card.id === initialCard.id)) {
-      return [initialCard, ...cards];
-    }
-    return cards;
-  }, [cards, initialCard]);
+  const selected = results.find((card) => card.id === cardId) ?? (initialCard?.id === cardId ? initialCard : null);
 
-  const visible = searchCards(pool, query).slice(0, 12);
-  const selected = pool.find((card) => card.id === cardId) ?? null;
+  async function onQuery(value: string) {
+    setQuery(value);
+    const q = value.trim();
+    const id = ++requestId.current;
+    if (q.length < 1) {
+      setResults(initialCard ? [initialCard] : []);
+      return;
+    }
+    try {
+      const response = await fetch(`/api/cards?q=${encodeURIComponent(q)}`);
+      const payload = (await response.json()) as { cards?: CatalogCard[] };
+      if (id !== requestId.current) return;
+      setResults(payload.cards ?? []);
+    } catch {
+      if (id === requestId.current) setResults([]);
+    }
+  }
 
   async function onSubmit(event: React.FormEvent) {
     event.preventDefault();
@@ -142,13 +152,13 @@ export function TradeForm({
           id="card-filter"
           value={query}
           placeholder={t("cardSearch")}
-          onChange={(event) => setQuery(event.target.value)}
+          onChange={(event) => void onQuery(event.target.value)}
         />
         <div className="max-h-64 overflow-y-auto rounded-xl border border-border">
-          {visible.length === 0 ? (
-            <p className="p-3 text-sm text-muted-foreground">{t("cardEmpty")}</p>
+          {results.length === 0 ? (
+            <p className="p-3 text-sm text-muted-foreground">{query.trim() ? t("cardEmpty") : t("cardMissing")}</p>
           ) : (
-            visible.map((card) => (
+            results.map((card) => (
               <button
                 key={card.id}
                 type="button"
@@ -159,7 +169,8 @@ export function TradeForm({
                 <span>
                   <span className="block text-sm">{cardTitle(card.names, locale)}</span>
                   <span className="block text-xs text-muted-foreground">
-                    {card.setName} · #{card.number} · {textLabel("rarity", card.rarity, locale)}
+                    {[card.setCode, card.setName, card.number ? `#${card.number}` : ""].filter(Boolean).join(" · ")} ·{" "}
+                    {textLabel("rarity", card.rarity, locale)}
                   </span>
                 </span>
               </button>

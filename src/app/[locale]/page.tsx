@@ -8,13 +8,15 @@ import { resolveLocale } from "@/i18n/locale";
 import { loadCards, loadShops } from "@/lib/content";
 import { loadSets } from "@/lib/sets";
 
-const FEATURED = ["base1-4", "swsh7-215", "sv3pt5-199", "sv8-238", "me55-154", "sv8pt5-167", "sv4pt5-232", "neo1-9"];
+const FEATURED = ["Charizard", "Pikachu", "Umbreon", "Mew", "Lugia", "Gengar", "Eevee", "Iono"];
 
 export default async function HomePage({ params }: { params: Promise<{ locale: string }> }) {
   const locale = await resolveLocale(params);
   const t = await getTranslations("home");
   const cards = loadCards();
-  const featured = FEATURED.map((id) => cards.find((card) => card.id === id)).filter((card) => card != null);
+  const featured = FEATURED.map((name) =>
+    cards.find((card) => card.names.en === name || card.names.en.startsWith(`${name} `)),
+  ).filter((card) => card != null);
 
   return (
     <div className="grid gap-14">
@@ -39,19 +41,21 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
         </p>
       </section>
 
-      <section className="grid gap-4">
-        <div className="flex items-end justify-between gap-3">
-          <h2 className="font-display text-2xl">{t("featured")}</h2>
-          <Link href="/encyclopedia" className="text-sm text-primary">
-            {t("seeAll")}
-          </Link>
-        </div>
-        <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
-          {featured.map((card, index) => (
-            <CardTile key={card.id} card={card} locale={locale} priority={index < 4} />
-          ))}
-        </div>
-      </section>
+      {featured.length > 0 ? (
+        <section className="grid gap-4">
+          <div className="flex items-end justify-between gap-3">
+            <h2 className="font-display text-2xl">{t("featured")}</h2>
+            <Link href="/encyclopedia" className="text-sm text-primary">
+              {t("seeAll")}
+            </Link>
+          </div>
+          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
+            {featured.map((card, index) => (
+              <CardTile key={card.id} card={card} locale={locale} priority={index < 4} />
+            ))}
+          </div>
+        </section>
+      ) : null}
 
       <section className="grid gap-4">
         <h2 className="font-display text-2xl">{t("pathsTitle")}</h2>

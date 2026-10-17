@@ -1,4 +1,4 @@
-import { readFileSync } from "node:fs";
+import { readFileSync, statSync } from "node:fs";
 import { join } from "node:path";
 
 export type TcgSet = {
@@ -8,7 +8,8 @@ export type TcgSet = {
   printedTotal: number;
   total: number;
   code: string | null;
-  releaseDate: string;
+  region?: string;
+  releaseDate: string | null;
   symbol: string;
   logo: string;
 };
@@ -50,16 +51,39 @@ const SERIES_ZH: Record<string, string> = {
   Neo: "新世代",
   Gym: "道館",
   Base: "初代",
+  Original: "初代",
+  "e-Card": "e 卡",
+  "Call of Legends": "傳說交鋒",
+  "Legendary Collection": "傳說收藏",
+  PCG: "PCG",
+  ADV: "ADV",
+  LEGEND: "LEGEND",
+  VS: "VS",
+  Web: "Web",
+  "Movie Commemorations": "電影紀念",
+  "Vending Machine": "販賣機",
   Other: "其他",
+  "Trainer & Deck Kits": "訓練家與牌組",
+  "Play! Pokémon": "Play! Pokémon",
+  "World Championships Decks": "世錦賽牌組",
+  "McDonald's": "麥當勞",
+  "Unnumbered Energies": "無編號能量",
+  Topps: "Topps",
 };
 
-let cache: TcgSet[] | null = null;
+let cache: { mtime: number; sets: TcgSet[] } | null = null;
 
 export function loadSets() {
-  if (!cache) {
-    cache = JSON.parse(readFileSync(join(process.cwd(), "data/sets.json"), "utf8")) as TcgSet[];
+  const file = join(process.cwd(), "data/tcg/sets.json");
+  try {
+    const mtime = statSync(file).mtimeMs;
+    if (cache?.mtime === mtime) return cache.sets;
+    const sets = JSON.parse(readFileSync(file, "utf8")) as TcgSet[];
+    cache = { mtime, sets };
+    return sets;
+  } catch {
+    return [];
   }
-  return cache;
 }
 
 export function getSet(id: string) {
@@ -96,17 +120,18 @@ export function groupSets(sets: TcgSet[], query: string) {
     buckets.set(set.series, list);
   }
   for (const list of buckets.values()) {
-    list.sort((a, b) => b.releaseDate.localeCompare(a.releaseDate) || a.name.localeCompare(b.name));
+    list.sort((a, b) => (b.releaseDate ?? "").localeCompare(a.releaseDate ?? "") || a.name.localeCompare(b.name));
   }
 
   const known = SERIES_ORDER.filter((series) => buckets.has(series));
   const rest = [...buckets.keys()].filter((series) => !SERIES_ORDER.includes(series));
-  rest.sort((a, b) => (buckets.get(b)![0]?.releaseDate ?? "").localeCompare(buckets.get(a)![0]?.releaseDate ?? ""));
+  rest.sort((a, b) => (buckets.get(b)?.[0]?.releaseDate ?? "").localeCompare(buckets.get(a)?.[0]?.releaseDate ?? ""));
 
   return [...known, ...rest].map((series) => ({ series, sets: buckets.get(series)! }));
 }
 
-export function formatRelease(date: string, locale: string) {
+export function formatRelease(date: string | null, locale: string) {
+  if (!date) return "";
   const parsed = new Date(`${date}T00:00:00Z`);
   if (Number.isNaN(parsed.getTime())) return date;
   return new Intl.DateTimeFormat(locale === "zh" ? "zh-HK" : "en-US", {

@@ -1,15 +1,15 @@
 import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 import { CardTile } from "@/components/card-tile";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
+import { buttonVariants } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Link } from "@/i18n/navigation";
 import { resolveLocale } from "@/i18n/locale";
-import { FILTERS, filterCards } from "@/lib/catalog";
-import { hasApiKey, searchCatalog } from "@/lib/content";
-import { textLabel } from "@/lib/labels";
+import { queryCards } from "@/lib/content";
+import { cn } from "cn";
+
+const PAGE_SIZE = 48;
 
 export async function generateMetadata({
   params,
@@ -30,13 +30,25 @@ export default async function EncyclopediaPage({
   searchParams,
 }: {
   params: Promise<{ locale: string }>;
-  searchParams: Promise<{ q?: string | string[]; type?: string | string[] }>;
+  searchParams: Promise<{ q?: string | string[]; page?: string | string[] }>;
 }) {
   const locale = await resolveLocale(params);
-  const query = searchParams.then((value) => ({ q: one(value.q), type: one(value.type) }));
-  const [{ q, type }, t] = await Promise.all([query, getTranslations("encyclopedia")]);
-  const result = await searchCatalog(q);
-  const cards = filterCards(result.cards, type);
+  const raw = await searchParams;
+  const q = one(raw.q).trim();
+  const page = Math.max(1, Number(one(raw.page)) || 1);
+  const t = await getTranslations("encyclopedia");
+  const matched = q ? queryCards(q) : [];
+  const start = (page - 1) * PAGE_SIZE;
+  const cards = matched.slice(start, start + PAGE_SIZE);
+  const pages = Math.max(1, Math.ceil(matched.length / PAGE_SIZE));
+
+  function href(nextPage: number) {
+    const params = new URLSearchParams();
+    if (q) params.set("q", q);
+    if (nextPage > 1) params.set("page", String(nextPage));
+    const query = params.toString();
+    return query ? `/encyclopedia?${query}` : "/encyclopedia";
+  }
 
   return (
     <div className="grid gap-6">
@@ -50,42 +62,52 @@ export default async function EncyclopediaPage({
           {t("searchLabel")}
         </Label>
         <Input id="q" name="q" defaultValue={q} placeholder={t("searchPlaceholder")} className="h-11 sm:flex-1" />
-        {type ? <input type="hidden" name="type" value={type} /> : null}
-        <Button type="submit" className="h-11 px-5">
+        <button type="submit" className={cn(buttonVariants(), "h-11 px-5")}>
           {t("search")}
-        </Button>
+        </button>
       </form>
 
-      <div className="flex gap-2 overflow-x-auto pb-1">
-        <Link href={q ? `/encyclopedia?q=${encodeURIComponent(q)}` : "/encyclopedia"}>
-          <Badge variant={type ? "outline" : "default"}>{t("all")}</Badge>
-        </Link>
-        {FILTERS.map((filter) => {
-          const params = new URLSearchParams();
-          if (q) params.set("q", q);
-          params.set("type", filter);
-          return (
-            <Link key={filter} href={`/encyclopedia?${params.toString()}`}>
-              <Badge variant={type === filter ? "default" : "outline"}>{textLabel("type", filter, locale)}</Badge>
-            </Link>
-          );
-        })}
-      </div>
-
-      <p className="text-sm text-muted-foreground">
-        {t("count", { count: cards.length })} · {t(result.mode)} {hasApiKey() ? t("keyOn") : t("keyOff")}
-      </p>
-
-      {cards.length === 0 ? (
+      {!q ? (
+        <p className="rounded-2xl border border-dashed border-border px-4 py-10 text-center text-sm text-muted-foreground">
+          {t("prompt")}{" "}
+          <Link href="/sets" className="text-primary">
+            {t("browseSets")}
+          </Link>
+        </p>
+      ) : cards.length === 0 ? (
         <p className="rounded-2xl border border-dashed border-border px-4 py-10 text-center text-sm text-muted-foreground">
           {t("empty")}
         </p>
       ) : (
-        <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
-          {cards.map((card) => (
-            <CardTile key={card.id} card={card} locale={locale} />
-          ))}
-        </div>
+        <>
+          <p className="text-sm text-muted-foreground">{t("count", { count: matched.length })}</p>
+          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
+            {cards.map((card, index) => (
+              <CardTile key={card.id} card={card} locale={locale} priority={index < 4} />
+            ))}
+          </div>
+          {pages > 1 ? (
+            <div className="flex items-center justify-between gap-3 text-sm">
+              {page > 1 ? (
+                <Link href={href(page - 1)} className="text-primary">
+                  {t("prev")}
+                </Link>
+              ) : (
+                <span />
+              )}
+              <span className="text-muted-foreground">
+                {page} / {pages}
+              </span>
+              {page < pages ? (
+                <Link href={href(page + 1)} className="text-primary">
+                  {t("next")}
+                </Link>
+              ) : (
+                <span />
+              )}
+            </div>
+          ) : null}
+        </>
       )}
     </div>
   );

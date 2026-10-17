@@ -52,13 +52,17 @@
   },
   "encyclopedia": {
     "title": "Encyclopedia",
-    "intro": "The shelf is a curated set with images. An API key adds live English search across the full catalog.",
+    "intro": "Search a card name or a set code. Charizard lists every Charizard. SV2A lists that whole set. The catalog follows TCG Collector's international and Japanese indexes, with scans, numbers, and codes. Prices are not shown.",
     "searchLabel": "Search cards",
-    "searchPlaceholder": "Charizard, 噴火龍, 151, 215",
+    "searchPlaceholder": "Charizard, 噴火龍, SV2A",
     "search": "Search",
+    "prompt": "Type a card name or a set code.",
+    "browseSets": "Or browse by set",
+    "prev": "Previous",
+    "next": "Next",
     "all": "All",
     "count": "{count} cards",
-    "empty": "Nothing matched. Try an English name, a set, or another type.",
+    "empty": "Nothing matched. Try a card name or a set code.",
     "missingZh": "Chinese name not in the overlay yet",
     "browse": "Showing the curated shelf.",
     "seed": "This search used the curated shelf only.",
@@ -79,7 +83,7 @@
   },
   "sets": {
     "title": "International sets",
-    "intro": "Expansions grouped by era, the same way a set index is laid out. Names, codes, dates, card counts, and logos come from the Pokémon TCG API. Market prices are not listed here.",
+    "intro": "International and Japanese expansions, grouped by era. Names, codes, dates, card counts, and logos follow TCG Collector. Prices are not listed.",
     "searchLabel": "Search sets",
     "searchPlaceholder": "151, MEW, Scarlet",
     "search": "Search",
@@ -91,8 +95,10 @@
     "printed": "Printed total",
     "total": "Cards in the catalog",
     "onShelf": "From this set on the shelf",
-    "shelfEmpty": "None of the curated cards are from this set yet. The index above still names the expansion.",
-    "searchSet": "Search this set in the encyclopedia"
+    "shelfEmpty": "This set has no cards yet.",
+    "searchSet": "Search this code in the encyclopedia",
+    "prev": "Previous",
+    "next": "Next"
   },
   "shops": {
     "title": "Hong Kong card shops",

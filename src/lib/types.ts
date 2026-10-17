@@ -14,6 +14,7 @@ export type CatalogCard = {
   types: string[];
   setId: string;
   setName: string;
+  setCode?: string | null;
   number: string;
   rarity: string;
   imageSmall: string;

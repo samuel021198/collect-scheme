@@ -20,12 +20,12 @@ npm run lint
 
 複製 `.env.example` 成 `.env.local`。
 
-`POKEMONTCG_API_KEY` 可以留空。沒有金鑰時，圖鑑搜尋精選目錄（約 30 張，卡圖來自 `images.pokemontcg.io`）。到 [dev.pokemontcg.io](https://dev.pokemontcg.io) 申請免費金鑰後，英文卡名會一併查 [Pokémon TCG API](https://docs.pokemontcg.io/)（`https://api.pokemontcg.io/v2/cards`）。中文名只比對 `data/names/zh.json`，金鑰不會把整本圖鑑翻成中文。
+圖鑑同系列目錄在 `data/tcg/`。卡名、編號、系列代號同卡圖跟 TCG Collector 的國際版同日文系列，不列市價。寶可夢中文名用 `data/names/species-zh.json` 對到英文物種名，所以搜尋「噴火龍」會對上 Charizard。`POKEMONTCG_API_KEY` 不再用來搜圖鑑。
 
 ## 現在有什麼
 
-- **圖鑑**：卡圖、英文名、有收錄的中文名、系列、編號、稀有度、屬性。
-- **系列**：176 套國際版，按世代排列，含標誌、代號、發行日和張數。資料來自 Pokémon TCG API，不列市價。
+- **圖鑑**：搜尋卡名或系列代號。例如「噴火龍」列出每一張噴火龍，「SV2A」列出該套全部卡。
+- **系列**：國際版同日文系列，按世代排列，含標誌、代號、發行日和張數。不列市價。
 - **店舖（香港）**：MOONROAD 信和 246、Bengal TCG、PikaBox、Card Holo。地址整理自各店公開頁面，出門前請再確認。
 - **交換**：用瀏覽器裡的暱稱刊登收購或出讓，標一張卡，並在貼文下留言。沒有帳號密碼。貼文寫進 `data/trades.local.json`（已 gitignore）。刪掉那個檔案就回到兩則示範貼文。
 - **拍賣**：只有「即將推出」頁，不能出價。
@@ -35,7 +35,7 @@ npm run lint
 ## 之後再做
 
 - 語言：在 `src/i18n/routing.ts` 加上 `ja`、`zh-Hans`，並新增 `messages/ja.json`、`messages/zh-Hans.json`，以及 `data/names/ja.json`。`src/i18n/request.ts` 的 catalogs 要一併補上。
-- 中文名：繼續往 `data/names/zh.json` 加卡牌 id。沒有對到的卡，中文介面會顯示英文名。
+- 中文名：寶可夢物種名在 `data/names/species-zh.json`（英文名對繁中）。訓練家卡如果對不上，會繼續顯示英文名。
 - 資料庫：現在的貼文是單機 JSON。要換 Supabase 或 Postgres 時，把 `src/lib/trades.ts` 換成資料表 `trade_posts`、`trade_replies`，暱稱改成 Supabase Auth。店舖可以放進 `shops`。卡名對照可以放 `card_names(card_id, locale, name)`。Prisma 可以指到同一套 Postgres，這個 MVP 刻意沒有裝它，避免本機還要編 native engine。
 - 更多城市、真實拍賣、價格、個人卡冊。
 
@@ -61,12 +61,12 @@ npm run lint
 
 Copy `.env.example` to `.env.local`.
 
-`POKEMONTCG_API_KEY` may be empty. With no key, search stays on the curated shelf (about 30 cards, images from `images.pokemontcg.io`). A free key from [dev.pokemontcg.io](https://dev.pokemontcg.io) also queries the [Pokémon TCG API](https://docs.pokemontcg.io/) for English names. Chinese names come only from `data/names/zh.json`.
+The encyclopedia and set index live in `data/tcg/`. Names, numbers, set codes, and scans follow TCG Collector's international and Japanese indexes. Prices are not included. Chinese Pokémon names come from `data/names/species-zh.json`, so searching 噴火龍 matches Charizard. `POKEMONTCG_API_KEY` is no longer used for search.
 
 ### What works now
 
-- **Encyclopedia**: image, English name, Chinese name when we have one, set, number, rarity, type.
-- **Sets**: 176 international expansions grouped by era, with logo, code, release date, and card count. The list comes from the Pokémon TCG API. Prices are not included.
+- **Encyclopedia**: search a card name or a set code. Charizard lists every Charizard. SV2A lists that whole set.
+- **Sets**: international and Japanese expansions grouped by era, with logo, code, release date, and card count. Prices are not included.
 - **Shops (HK)**: MOONROAD Sino Centre 246, Bengal TCG, PikaBox, Card Holo. Addresses are copied from the shops' public pages. Confirm hours before you visit.
 - **Trade**: pick a nickname stored in the browser, post a buy or sell tagged to a card, and reply on the thread. There is no password. New posts go to `data/trades.local.json` (gitignored). Delete that file to return to the two demo posts.
 - **Auction**: a coming-soon page only. Bidding is disabled.
@@ -76,6 +76,6 @@ The trade board says deals are peer-to-peer. Collect Scheme does not take paymen
 ### Later
 
 - Locales: add `ja` and `zh-Hans` to `src/i18n/routing.ts`, then add `messages/<locale>.json`, `data/names/<locale>.json`, and an entry in `src/i18n/request.ts`.
-- Chinese names: keep appending card ids to `data/names/zh.json`. Missing ids fall back to English.
+- Chinese names: Pokémon species live in `data/names/species-zh.json` (English name to Traditional Chinese). Trainer cards that do not match stay in English.
 - Database: posts are a single-process JSON file. For Supabase or Postgres, replace `src/lib/trades.ts` with `trade_posts` and `trade_replies`, and replace the nickname with Supabase Auth. Shops can move to a `shops` table. Names can move to `card_names(card_id, locale, name)`. Prisma can point at that same Postgres. This MVP skips Prisma so `npm run dev` does not need a native engine.
 - More cities, a real auction, prices, and personal binders.

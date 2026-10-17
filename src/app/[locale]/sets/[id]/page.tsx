@@ -5,7 +5,7 @@ import { getTranslations } from "next-intl/server";
 import { CardTile } from "@/components/card-tile";
 import { Link } from "@/i18n/navigation";
 import { resolveLocale } from "@/i18n/locale";
-import { loadCards } from "@/lib/content";
+import { cardsInSet } from "@/lib/content";
 import { formatRelease, getSet, seriesLabel } from "@/lib/sets";
 
 export async function generateMetadata({
@@ -18,13 +18,25 @@ export async function generateMetadata({
   return { title: set ? set.name : locale === "zh" ? "系列" : "Sets" };
 }
 
-export default async function SetPage({ params }: { params: Promise<{ locale: string; id: string }> }) {
+const PAGE_SIZE = 48;
+
+export default async function SetPage({
+  params,
+  searchParams,
+}: {
+  params: Promise<{ locale: string; id: string }>;
+  searchParams: Promise<{ page?: string | string[] }>;
+}) {
   const { id } = await params;
   const locale = await resolveLocale(params);
   const set = getSet(id);
   if (!set) notFound();
   const t = await getTranslations("sets");
-  const cards = loadCards().filter((card) => card.setId === set.id);
+  const pageValue = (await searchParams).page;
+  const page = Math.max(1, Number(Array.isArray(pageValue) ? pageValue[0] : pageValue) || 1);
+  const matched = cardsInSet(set.id);
+  const cards = matched.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
+  const pages = Math.max(1, Math.ceil(matched.length / PAGE_SIZE));
 
   return (
     <article className="grid gap-8">
@@ -32,20 +44,24 @@ export default async function SetPage({ params }: { params: Promise<{ locale: st
         <Link href="/sets" className="text-sm text-primary">
           {t("back")}
         </Link>
-        <div className="flex h-20 items-center">
-          <Image
-            src={set.logo}
-            alt=""
-            width={280}
-            height={96}
-            unoptimized
-            priority
-            style={{ width: "auto", height: "auto" }}
-            className="max-h-20 max-w-full object-contain"
-          />
-        </div>
+        {set.logo ? (
+          <div className="flex h-20 items-center">
+            <Image
+              src={set.logo}
+              alt=""
+              width={280}
+              height={96}
+              unoptimized
+              priority
+              style={{ width: "auto", height: "auto" }}
+              className="max-h-20 max-w-full object-contain"
+            />
+          </div>
+        ) : null}
         <div className="flex items-start gap-3">
-          <Image src={set.symbol} alt="" width={28} height={28} unoptimized className="mt-1 size-7" />
+          {set.symbol ? (
+            <Image src={set.symbol} alt="" width={28} height={28} unoptimized className="mt-1 size-7" />
+          ) : null}
           <div className="grid gap-1">
             <h1 className="font-display text-4xl">{set.name}</h1>
             <p className="text-sm text-muted-foreground">
@@ -69,20 +85,46 @@ export default async function SetPage({ params }: { params: Promise<{ locale: st
 
       <section className="grid gap-3">
         <h2 className="font-display text-2xl">{t("onShelf")}</h2>
-        {cards.length === 0 ? (
+        {matched.length === 0 ? (
           <p className="rounded-2xl border border-dashed border-border px-4 py-8 text-sm leading-6 text-muted-foreground">
             {t("shelfEmpty")}
           </p>
         ) : (
-          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
-            {cards.map((card) => (
-              <CardTile key={card.id} card={card} locale={locale} />
-            ))}
-          </div>
+          <>
+            <p className="text-sm text-muted-foreground">{t("cards", { count: matched.length })}</p>
+            <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
+              {cards.map((card) => (
+                <CardTile key={card.id} card={card} locale={locale} />
+              ))}
+            </div>
+            {pages > 1 ? (
+              <div className="flex items-center justify-between gap-3 text-sm">
+                {page > 1 ? (
+                  <Link href={page === 2 ? `/sets/${set.id}` : `/sets/${set.id}?page=${page - 1}`} className="text-primary">
+                    {t("prev")}
+                  </Link>
+                ) : (
+                  <span />
+                )}
+                <span className="text-muted-foreground">
+                  {page} / {pages}
+                </span>
+                {page < pages ? (
+                  <Link href={`/sets/${set.id}?page=${page + 1}`} className="text-primary">
+                    {t("next")}
+                  </Link>
+                ) : (
+                  <span />
+                )}
+              </div>
+            ) : null}
+          </>
         )}
-        <Link href={`/encyclopedia?q=${encodeURIComponent(set.name)}`} className="text-sm text-primary">
-          {t("searchSet")}
-        </Link>
+        {set.code ? (
+          <Link href={`/encyclopedia?q=${encodeURIComponent(set.code)}`} className="text-sm text-primary">
+            {t("searchSet")}
+          </Link>
+        ) : null}
       </section>
     </article>
   );

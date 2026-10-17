@@ -30,7 +30,9 @@ export function CardTile({ card, locale, priority = false }: { card: CatalogCard
         <p className="text-sm leading-snug font-medium">{title}</p>
         {subtitle ? <p className="text-xs text-muted-foreground">{subtitle}</p> : null}
         <p className="mt-1 text-xs text-muted-foreground">
-          {card.setName} · #{card.number}
+          {[card.setCode, card.setName, card.number ? `#${card.number}` : ""]
+            .filter(Boolean)
+            .join(" · ")}
         </p>
         <div className="mt-2 flex flex-wrap gap-1">
           <Badge variant="outline">{textLabel("rarity", card.rarity, locale)}</Badge>
