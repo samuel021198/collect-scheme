@@ -3,15 +3,17 @@ import { Link } from "@/i18n/navigation";
 import { CardTile } from "@/components/card-tile";
 import { SearchBar } from "@/components/search-bar";
 import { resolveLocale } from "@/i18n/locale";
-import { popularCards } from "@/lib/catalog";
 import { loadCards, loadShops } from "@/lib/content";
+import { recentCards } from "@/lib/searches";
 import { loadSets } from "@/lib/sets";
+
+export const dynamic = "force-dynamic";
 
 export default async function HomePage({ params }: { params: Promise<{ locale: string }> }) {
   const locale = await resolveLocale(params);
   const t = await getTranslations("home");
   const cards = loadCards();
-  const featured = popularCards(cards, "en");
+  const featured = recentCards(cards);
 
   return (
     <div className="grid gap-14">

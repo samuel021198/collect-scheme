@@ -35,8 +35,9 @@ yarn-error.log*
 .env*
 !.env.example
 
-# demo trade posts created while the app is running
+# demo trade posts and search counts created while the app is running
 /data/trades.local.json
+/data/searches.local.json
 
 # per-set scrape cache; the merged catalog is data/tcg/*.json
 /data/tcg/by-set/

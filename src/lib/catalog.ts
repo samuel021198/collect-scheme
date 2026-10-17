@@ -150,39 +150,6 @@ function cardRank(card: CatalogCard, query: string): number | null {
   return null;
 }
 
-export const POPULAR_NAMES = ["Charizard", "Pikachu", "Umbreon", "Mew", "Lugia", "Gengar", "Eevee", "Iono"] as const;
-
-const RARITY_FRONT = [
-  /special illustration/i,
-  /illustration rare/i,
-  /special art/i,
-  /art rare/i,
-  /hyper rare/i,
-  /rare holo/i,
-  /double rare/i,
-  /super rare/i,
-];
-
-function rarityScore(rarity: string) {
-  const index = RARITY_FRONT.findIndex((pattern) => pattern.test(rarity));
-  return index === -1 ? RARITY_FRONT.length : index;
-}
-
-export function popularCards<T extends CatalogCard>(cards: T[], lang: PrintLang) {
-  const pool = cards.filter((card) => matchesPrint(card.region, lang));
-  const picks: T[] = [];
-  for (const name of POPULAR_NAMES) {
-    const key = fold(name);
-    const exact = pool.filter((card) => fold(card.names.en) === key);
-    const named =
-      exact.length > 0 ? exact : pool.filter((card) => fold(card.names.en).startsWith(`${key} `));
-    if (named.length === 0) continue;
-    const best = named.reduce((lead, card) => (rarityScore(card.rarity) < rarityScore(lead.rarity) ? card : lead));
-    if (!picks.some((card) => card.id === best.id)) picks.push(best);
-  }
-  return picks;
-}
-
 export function searchNamedCards<T extends CatalogCard>(cards: T[], query: string, lang: PrintLang = "en") {
   const q = fold(query.trim());
   if (q.length < 2 || /^[a-z]{1,2}$/.test(q)) return [];

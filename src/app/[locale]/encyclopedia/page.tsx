@@ -4,8 +4,9 @@ import { CardTile } from "@/components/card-tile";
 import { SearchBar } from "@/components/search-bar";
 import { Link } from "@/i18n/navigation";
 import { resolveLocale } from "@/i18n/locale";
-import { parsePrintLang, popularCards } from "@/lib/catalog";
-import { loadCards, queryCards } from "@/lib/content";
+import { parsePrintLang } from "@/lib/catalog";
+import { queryCards } from "@/lib/content";
+import { recentCards } from "@/lib/searches";
 import { setsBrowseHref } from "@/lib/sets";
 
 const PAGE_SIZE = 48;
@@ -46,7 +47,7 @@ export default async function EncyclopediaPage({
   const start = (page - 1) * PAGE_SIZE;
   const cards = matched.slice(start, start + PAGE_SIZE);
   const pages = Math.max(1, Math.ceil(matched.length / PAGE_SIZE));
-  const shelf = q ? [] : popularCards(loadCards(), lang);
+  const shelf = q ? [] : recentCards();
 
   function href(nextPage: number) {
     const query = new URLSearchParams();
@@ -69,7 +70,7 @@ export default async function EncyclopediaPage({
         <section className="grid gap-4">
           <div className="grid gap-1">
             <h2 className="font-display text-2xl">{t("popular")}</h2>
-            <p className="text-sm text-muted-foreground">{search(lang)}</p>
+            <p className="text-sm text-muted-foreground">{t("popularNote")}</p>
           </div>
           {shelf.length === 0 ? (
             <p className="rounded-2xl border border-dashed border-border px-4 py-10 text-center text-sm text-muted-foreground">

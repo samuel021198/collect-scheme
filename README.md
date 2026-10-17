@@ -24,7 +24,7 @@ npm run lint
 
 ## 現在有什麼
 
-- **卡牌搜尋**：只找一張卡。未搜尋時先顯示熱門卡。可以打卡名，或者「噴火龍 006/165」、「SV2a 006」呢類指定編號。英文卡同日文卡分開。每張卡嘅版本跟該卡實際印過嘅清單（普通、反向閃、宇宙閃、印章），冇印過就唔會加。標記蓋喺現有卡圖上；日文卡另外連去官方卡表，不轉載那邊的圖。
+- **卡牌搜尋**：只找一張卡。打字時會即時列出相關卡牌同系列。未搜尋時顯示近兩個星期大家搜得最多嘅卡，中英文一齊計。可以打卡名，或者「噴火龍 006/165」、「SV2a 006」呢類指定編號。完整結果仍然可以分英文卡同日文卡。每張卡嘅版本跟該卡實際印過嘅清單（普通、反向閃、宇宙閃、印章），冇印過就唔會加。標記蓋喺現有卡圖上；日文卡另外連去官方卡表，不轉載那邊的圖。
 - **系列搜尋**：只找系列。代號「SV2A」對上日文 151。英文卡同日文卡分開瀏覽。不列市價。
 - **店舖（香港）**：MOONROAD 信和 246、Bengal TCG、PikaBox、Card Holo。地址整理自各店公開頁面，出門前請再確認。
 - **交換**：用瀏覽器裡的暱稱刊登收購或出讓，標一張卡，並在貼文下留言。沒有帳號密碼。貼文寫進 `data/trades.local.json`（已 gitignore）。刪掉那個檔案就回到兩則示範貼文。
@@ -65,7 +65,7 @@ The encyclopedia and set index live in `data/tcg/`. Names, numbers, set codes, a
 
 ### What works now
 
-- **Card search**: finds one card. Popular cards stay at the front until you search. A name, or a name plus a number such as `Charizard 006/165` or `SV2a 006`, narrows to that card. English and Japanese prints are separate. Printings follow the list recorded for that exact card (non-holo, reverse holo, cosmos, stamp). A printing that was not made is not added. The mark is stamped on the scan we already have. Japanese cards also link to the official search; those photos are not copied.
+- **Card search**: finds one card. Related cards and sets appear while you type. Before a search, the shelf shows the cards people looked up most in the last two weeks, English and Japanese together. A name, or a name plus a number such as `Charizard 006/165` or `SV2a 006`, narrows to that card. The full result list can still be limited to one print. Printings follow the list recorded for that exact card (non-holo, reverse holo, cosmos, stamp). A printing that was not made is not added. The mark is stamped on the scan we already have. Japanese cards also link to the official search; those photos are not copied.
 - **Set search**: finds an expansion. The code SV2A matches Japanese 151. English and Japanese sets are browsed separately. Prices are not included.
 - **Shops (HK)**: MOONROAD Sino Centre 246, Bengal TCG, PikaBox, Card Holo. Addresses are copied from the shops' public pages. Confirm hours before you visit.
 - **Trade**: pick a nickname stored in the browser, post a buy or sell tagged to a card, and reply on the thread. There is no password. New posts go to `data/trades.local.json` (gitignored). Delete that file to return to the two demo posts.

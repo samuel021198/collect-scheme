@@ -2,7 +2,6 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import {
   filterCards,
-  popularCards,
   searchNamedCards,
   shouldQueryLive,
   validatePost,
@@ -140,18 +139,6 @@ test("search matches Chinese and English names in one print", () => {
   );
   assert.equal(cardTitle(cards[0].names, "zh"), "噴火龍");
   assert.equal(cardTitle(cards[0].names, "en"), "Charizard");
-});
-
-test("popular cards lead the shelf for the selected print", () => {
-  assert.equal(popularCards(cards, "en")[0]?.id, "base1-4");
-  assert.equal(
-    popularCards(cards, "en").some((card) => card.id === "jp-6" || card.id === "mewtwo"),
-    false,
-  );
-  assert.deepEqual(
-    popularCards(cards, "ja").map((card) => card.id),
-    ["jp-6"],
-  );
 });
 
 test("type filter keeps trainers on their own chip", () => {
