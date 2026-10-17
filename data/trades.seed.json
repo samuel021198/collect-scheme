@@ -1,0 +1,43 @@
+[
+  {
+    "id": "seed-charizard-base",
+    "side": "sell",
+    "card": {
+      "id": "base1-4",
+      "names": { "en": "Charizard", "zh": "噴火龍" },
+      "imageSmall": "https://images.pokemontcg.io/base1/4.png",
+      "setName": "Base",
+      "number": "4",
+      "rarity": "Rare Holo"
+    },
+    "description": "出初代噴火龍閃卡。卡面沒有折，卡背有一點白邊。只考慮旺角或深水埗面交，不寄順豐。",
+    "contact": "IG @nightmarket.cards",
+    "author": "夜市阿強",
+    "createdAt": "2026-10-12T04:30:00.000Z",
+    "replies": [
+      {
+        "id": "seed-reply-1",
+        "author": "卡冊阿May",
+        "body": "卡背白邊大概多長？週末可以在信和中心附近看卡。",
+        "createdAt": "2026-10-13T09:15:00.000Z"
+      }
+    ]
+  },
+  {
+    "id": "seed-pika-sparks",
+    "side": "buy",
+    "card": {
+      "id": "sv8-238",
+      "names": { "en": "Pikachu ex", "zh": "皮卡丘ex" },
+      "imageSmall": "https://images.pokemontcg.io/sv8/238.png",
+      "setName": "Surging Sparks",
+      "number": "238",
+      "rarity": "Special Illustration Rare"
+    },
+    "description": "Looking for a clean Surging Sparks Pikachu ex special illustration. Light whitening on the back is fine. No creases. I can meet in Causeway Bay.",
+    "contact": "Discord binder.sam",
+    "author": "BinderSam",
+    "createdAt": "2026-10-15T11:05:00.000Z",
+    "replies": []
+  }
+]

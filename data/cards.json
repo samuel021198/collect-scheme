@@ -1,0 +1,555 @@
+[
+  {
+    "id": "base1-4",
+    "nameEn": "Charizard",
+    "supertype": "Pokémon",
+    "subtypes": [
+      "Stage 2"
+    ],
+    "hp": "120",
+    "types": [
+      "Fire"
+    ],
+    "setId": "base1",
+    "setName": "Base",
+    "number": "4",
+    "rarity": "Rare Holo",
+    "imageSmall": "https://images.pokemontcg.io/base1/4.png",
+    "imageLarge": "https://images.pokemontcg.io/base1/4_hires.png"
+  },
+  {
+    "id": "base1-2",
+    "nameEn": "Blastoise",
+    "supertype": "Pokémon",
+    "subtypes": [
+      "Stage 2"
+    ],
+    "hp": "100",
+    "types": [
+      "Water"
+    ],
+    "setId": "base1",
+    "setName": "Base",
+    "number": "2",
+    "rarity": "Rare Holo",
+    "imageSmall": "https://images.pokemontcg.io/base1/2.png",
+    "imageLarge": "https://images.pokemontcg.io/base1/2_hires.png"
+  },
+  {
+    "id": "base1-15",
+    "nameEn": "Venusaur",
+    "supertype": "Pokémon",
+    "subtypes": [
+      "Stage 2"
+    ],
+    "hp": "100",
+    "types": [
+      "Grass"
+    ],
+    "setId": "base1",
+    "setName": "Base",
+    "number": "15",
+    "rarity": "Rare Holo",
+    "imageSmall": "https://images.pokemontcg.io/base1/15.png",
+    "imageLarge": "https://images.pokemontcg.io/base1/15_hires.png"
+  },
+  {
+    "id": "base1-58",
+    "nameEn": "Pikachu",
+    "supertype": "Pokémon",
+    "subtypes": [
+      "Basic"
+    ],
+    "hp": "40",
+    "types": [
+      "Lightning"
+    ],
+    "setId": "base1",
+    "setName": "Base",
+    "number": "58",
+    "rarity": "Common",
+    "imageSmall": "https://images.pokemontcg.io/base1/58.png",
+    "imageLarge": "https://images.pokemontcg.io/base1/58_hires.png"
+  },
+  {
+    "id": "base1-10",
+    "nameEn": "Mewtwo",
+    "supertype": "Pokémon",
+    "subtypes": [
+      "Basic"
+    ],
+    "hp": "60",
+    "types": [
+      "Psychic"
+    ],
+    "setId": "base1",
+    "setName": "Base",
+    "number": "10",
+    "rarity": "Rare Holo",
+    "imageSmall": "https://images.pokemontcg.io/base1/10.png",
+    "imageLarge": "https://images.pokemontcg.io/base1/10_hires.png"
+  },
+  {
+    "id": "base1-6",
+    "nameEn": "Gyarados",
+    "supertype": "Pokémon",
+    "subtypes": [
+      "Stage 1"
+    ],
+    "hp": "100",
+    "types": [
+      "Water"
+    ],
+    "setId": "base1",
+    "setName": "Base",
+    "number": "6",
+    "rarity": "Rare Holo",
+    "imageSmall": "https://images.pokemontcg.io/base1/6.png",
+    "imageLarge": "https://images.pokemontcg.io/base1/6_hires.png"
+  },
+  {
+    "id": "base1-8",
+    "nameEn": "Machamp",
+    "supertype": "Pokémon",
+    "subtypes": [
+      "Stage 2"
+    ],
+    "hp": "100",
+    "types": [
+      "Fighting"
+    ],
+    "setId": "base1",
+    "setName": "Base",
+    "number": "8",
+    "rarity": "Rare Holo",
+    "imageSmall": "https://images.pokemontcg.io/base1/8.png",
+    "imageLarge": "https://images.pokemontcg.io/base1/8_hires.png"
+  },
+  {
+    "id": "base1-14",
+    "nameEn": "Raichu",
+    "supertype": "Pokémon",
+    "subtypes": [
+      "Stage 1"
+    ],
+    "hp": "80",
+    "types": [
+      "Lightning"
+    ],
+    "setId": "base1",
+    "setName": "Base",
+    "number": "14",
+    "rarity": "Rare Holo",
+    "imageSmall": "https://images.pokemontcg.io/base1/14.png",
+    "imageLarge": "https://images.pokemontcg.io/base1/14_hires.png"
+  },
+  {
+    "id": "base1-1",
+    "nameEn": "Alakazam",
+    "supertype": "Pokémon",
+    "subtypes": [
+      "Stage 2"
+    ],
+    "hp": "80",
+    "types": [
+      "Psychic"
+    ],
+    "setId": "base1",
+    "setName": "Base",
+    "number": "1",
+    "rarity": "Rare Holo",
+    "imageSmall": "https://images.pokemontcg.io/base1/1.png",
+    "imageLarge": "https://images.pokemontcg.io/base1/1_hires.png"
+  },
+  {
+    "id": "base1-16",
+    "nameEn": "Zapdos",
+    "supertype": "Pokémon",
+    "subtypes": [
+      "Basic"
+    ],
+    "hp": "90",
+    "types": [
+      "Lightning"
+    ],
+    "setId": "base1",
+    "setName": "Base",
+    "number": "16",
+    "rarity": "Rare Holo",
+    "imageSmall": "https://images.pokemontcg.io/base1/16.png",
+    "imageLarge": "https://images.pokemontcg.io/base1/16_hires.png"
+  },
+  {
+    "id": "base1-12",
+    "nameEn": "Ninetales",
+    "supertype": "Pokémon",
+    "subtypes": [
+      "Stage 1"
+    ],
+    "hp": "80",
+    "types": [
+      "Fire"
+    ],
+    "setId": "base1",
+    "setName": "Base",
+    "number": "12",
+    "rarity": "Rare Holo",
+    "imageSmall": "https://images.pokemontcg.io/base1/12.png",
+    "imageLarge": "https://images.pokemontcg.io/base1/12_hires.png"
+  },
+  {
+    "id": "neo1-9",
+    "nameEn": "Lugia",
+    "supertype": "Pokémon",
+    "subtypes": [
+      "Basic"
+    ],
+    "hp": "90",
+    "types": [
+      "Colorless"
+    ],
+    "setId": "neo1",
+    "setName": "Neo Genesis",
+    "number": "9",
+    "rarity": "Rare Holo",
+    "imageSmall": "https://images.pokemontcg.io/neo1/9.png",
+    "imageLarge": "https://images.pokemontcg.io/neo1/9_hires.png"
+  },
+  {
+    "id": "cel25-25",
+    "nameEn": "Mew",
+    "supertype": "Pokémon",
+    "subtypes": [
+      "Basic"
+    ],
+    "hp": "60",
+    "types": [
+      "Psychic"
+    ],
+    "setId": "cel25",
+    "setName": "Celebrations",
+    "number": "25",
+    "rarity": "Rare Holo",
+    "imageSmall": "https://images.pokemontcg.io/cel25/25.png",
+    "imageLarge": "https://images.pokemontcg.io/cel25/25_hires.png"
+  },
+  {
+    "id": "swsh7-215",
+    "nameEn": "Umbreon VMAX",
+    "supertype": "Pokémon",
+    "subtypes": [
+      "VMAX",
+      "Single Strike"
+    ],
+    "hp": "310",
+    "types": [
+      "Darkness"
+    ],
+    "setId": "swsh7",
+    "setName": "Evolving Skies",
+    "number": "215",
+    "rarity": "Rare Rainbow",
+    "imageSmall": "https://images.pokemontcg.io/swsh7/215.png",
+    "imageLarge": "https://images.pokemontcg.io/swsh7/215_hires.png"
+  },
+  {
+    "id": "swsh12pt5-102",
+    "nameEn": "Rayquaza VMAX",
+    "supertype": "Pokémon",
+    "subtypes": [
+      "VMAX",
+      "Rapid Strike"
+    ],
+    "hp": "320",
+    "types": [
+      "Dragon"
+    ],
+    "setId": "swsh12pt5",
+    "setName": "Crown Zenith",
+    "number": "102",
+    "rarity": "Rare Holo VMAX",
+    "imageSmall": "https://images.pokemontcg.io/swsh12pt5/102.png",
+    "imageLarge": "https://images.pokemontcg.io/swsh12pt5/102_hires.png"
+  },
+  {
+    "id": "swsh12-131",
+    "nameEn": "Dragonite",
+    "supertype": "Pokémon",
+    "subtypes": [
+      "Stage 2"
+    ],
+    "hp": "160",
+    "types": [
+      "Dragon"
+    ],
+    "setId": "swsh12",
+    "setName": "Silver Tempest",
+    "number": "131",
+    "rarity": "Rare Holo",
+    "imageSmall": "https://images.pokemontcg.io/swsh12/131.png",
+    "imageLarge": "https://images.pokemontcg.io/swsh12/131_hires.png"
+  },
+  {
+    "id": "swsh11-143",
+    "nameEn": "Snorlax",
+    "supertype": "Pokémon",
+    "subtypes": [
+      "Basic"
+    ],
+    "hp": "150",
+    "types": [
+      "Colorless"
+    ],
+    "setId": "swsh11",
+    "setName": "Lost Origin",
+    "number": "143",
+    "rarity": "Rare Holo",
+    "imageSmall": "https://images.pokemontcg.io/swsh11/143.png",
+    "imageLarge": "https://images.pokemontcg.io/swsh11/143_hires.png"
+  },
+  {
+    "id": "sm3-140",
+    "nameEn": "Gardevoir-GX",
+    "supertype": "Pokémon",
+    "subtypes": [
+      "Stage 2",
+      "GX"
+    ],
+    "hp": "230",
+    "types": [
+      "Fairy"
+    ],
+    "setId": "sm3",
+    "setName": "Burning Shadows",
+    "number": "140",
+    "rarity": "Rare Ultra",
+    "imageSmall": "https://images.pokemontcg.io/sm3/140.png",
+    "imageLarge": "https://images.pokemontcg.io/sm3/140_hires.png"
+  },
+  {
+    "id": "sv3pt5-199",
+    "nameEn": "Charizard ex",
+    "supertype": "Pokémon",
+    "subtypes": [
+      "Stage 2",
+      "ex"
+    ],
+    "hp": "330",
+    "types": [
+      "Fire"
+    ],
+    "setId": "sv3pt5",
+    "setName": "151",
+    "number": "199",
+    "rarity": "Special Illustration Rare",
+    "imageSmall": "https://images.pokemontcg.io/sv3pt5/199.png",
+    "imageLarge": "https://images.pokemontcg.io/sv3pt5/199_hires.png"
+  },
+  {
+    "id": "sv3pt5-173",
+    "nameEn": "Pikachu",
+    "supertype": "Pokémon",
+    "subtypes": [
+      "Basic"
+    ],
+    "hp": "60",
+    "types": [
+      "Lightning"
+    ],
+    "setId": "sv3pt5",
+    "setName": "151",
+    "number": "173",
+    "rarity": "Illustration Rare",
+    "imageSmall": "https://images.pokemontcg.io/sv3pt5/173.png",
+    "imageLarge": "https://images.pokemontcg.io/sv3pt5/173_hires.png"
+  },
+  {
+    "id": "sv3pt5-200",
+    "nameEn": "Blastoise ex",
+    "supertype": "Pokémon",
+    "subtypes": [
+      "Stage 2",
+      "ex"
+    ],
+    "hp": "330",
+    "types": [
+      "Water"
+    ],
+    "setId": "sv3pt5",
+    "setName": "151",
+    "number": "200",
+    "rarity": "Special Illustration Rare",
+    "imageSmall": "https://images.pokemontcg.io/sv3pt5/200.png",
+    "imageLarge": "https://images.pokemontcg.io/sv3pt5/200_hires.png"
+  },
+  {
+    "id": "sv3pt5-201",
+    "nameEn": "Alakazam ex",
+    "supertype": "Pokémon",
+    "subtypes": [
+      "Stage 2",
+      "ex"
+    ],
+    "hp": "310",
+    "types": [
+      "Psychic"
+    ],
+    "setId": "sv3pt5",
+    "setName": "151",
+    "number": "201",
+    "rarity": "Special Illustration Rare",
+    "imageSmall": "https://images.pokemontcg.io/sv3pt5/201.png",
+    "imageLarge": "https://images.pokemontcg.io/sv3pt5/201_hires.png"
+  },
+  {
+    "id": "sv3pt5-202",
+    "nameEn": "Zapdos ex",
+    "supertype": "Pokémon",
+    "subtypes": [
+      "Basic",
+      "ex"
+    ],
+    "hp": "200",
+    "types": [
+      "Lightning"
+    ],
+    "setId": "sv3pt5",
+    "setName": "151",
+    "number": "202",
+    "rarity": "Special Illustration Rare",
+    "imageSmall": "https://images.pokemontcg.io/sv3pt5/202.png",
+    "imageLarge": "https://images.pokemontcg.io/sv3pt5/202_hires.png"
+  },
+  {
+    "id": "sv3-223",
+    "nameEn": "Charizard ex",
+    "supertype": "Pokémon",
+    "subtypes": [
+      "Stage 2",
+      "ex",
+      "Tera"
+    ],
+    "hp": "330",
+    "types": [
+      "Darkness"
+    ],
+    "setId": "sv3",
+    "setName": "Obsidian Flames",
+    "number": "223",
+    "rarity": "Special Illustration Rare",
+    "imageSmall": "https://images.pokemontcg.io/sv3/223.png",
+    "imageLarge": "https://images.pokemontcg.io/sv3/223_hires.png"
+  },
+  {
+    "id": "sv4pt5-232",
+    "nameEn": "Mew ex",
+    "supertype": "Pokémon",
+    "subtypes": [
+      "Basic",
+      "ex"
+    ],
+    "hp": "180",
+    "types": [
+      "Psychic"
+    ],
+    "setId": "sv4pt5",
+    "setName": "Paldean Fates",
+    "number": "232",
+    "rarity": "Special Illustration Rare",
+    "imageSmall": "https://images.pokemontcg.io/sv4pt5/232.png",
+    "imageLarge": "https://images.pokemontcg.io/sv4pt5/232_hires.png"
+  },
+  {
+    "id": "sv4pt5-237",
+    "nameEn": "Iono",
+    "supertype": "Trainer",
+    "subtypes": [
+      "Supporter"
+    ],
+    "hp": null,
+    "types": [],
+    "setId": "sv4pt5",
+    "setName": "Paldean Fates",
+    "number": "237",
+    "rarity": "Special Illustration Rare",
+    "imageSmall": "https://images.pokemontcg.io/sv4pt5/237.png",
+    "imageLarge": "https://images.pokemontcg.io/sv4pt5/237_hires.png"
+  },
+  {
+    "id": "sv6-188",
+    "nameEn": "Eevee",
+    "supertype": "Pokémon",
+    "subtypes": [
+      "Basic"
+    ],
+    "hp": "50",
+    "types": [
+      "Colorless"
+    ],
+    "setId": "sv6",
+    "setName": "Twilight Masquerade",
+    "number": "188",
+    "rarity": "Illustration Rare",
+    "imageSmall": "https://images.pokemontcg.io/sv6/188.png",
+    "imageLarge": "https://images.pokemontcg.io/sv6/188_hires.png"
+  },
+  {
+    "id": "sv8-238",
+    "nameEn": "Pikachu ex",
+    "supertype": "Pokémon",
+    "subtypes": [
+      "Basic",
+      "Tera",
+      "ex"
+    ],
+    "hp": "200",
+    "types": [
+      "Lightning"
+    ],
+    "setId": "sv8",
+    "setName": "Surging Sparks",
+    "number": "238",
+    "rarity": "Special Illustration Rare",
+    "imageSmall": "https://images.pokemontcg.io/sv8/238.png",
+    "imageLarge": "https://images.pokemontcg.io/sv8/238_hires.png"
+  },
+  {
+    "id": "sv8pt5-167",
+    "nameEn": "Eevee ex",
+    "supertype": "Pokémon",
+    "subtypes": [
+      "Basic",
+      "Tera",
+      "ex"
+    ],
+    "hp": "200",
+    "types": [
+      "Colorless"
+    ],
+    "setId": "sv8pt5",
+    "setName": "Prismatic Evolutions",
+    "number": "167",
+    "rarity": "Special Illustration Rare",
+    "imageSmall": "https://images.pokemontcg.io/sv8pt5/167.png",
+    "imageLarge": "https://images.pokemontcg.io/sv8pt5/167_hires.png"
+  },
+  {
+    "id": "me55-154",
+    "nameEn": "Gengar ex",
+    "supertype": "Pokémon",
+    "subtypes": [
+      "Stage 2",
+      "ex"
+    ],
+    "hp": "280",
+    "types": [
+      "Darkness"
+    ],
+    "setId": "me55",
+    "setName": "30th Celebration",
+    "number": "154",
+    "rarity": "Special Illustration Rare",
+    "imageSmall": "https://images.scrydex.com/pokemon/me55-154/small",
+    "imageLarge": "https://images.scrydex.com/pokemon/me55-154/large"
+  }
+]

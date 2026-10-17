@@ -1,0 +1,78 @@
+[
+  {
+    "id": "moonroad-sino-246",
+    "name": "MOONROAD 信和中心 246",
+    "district": { "en": "Mong Kok", "zh": "旺角" },
+    "address": {
+      "en": "Shop 246, 2/F, Sino Centre, 582–592 Nathan Road, Mong Kok",
+      "zh": "旺角彌敦道 582–592 號信和中心 2 樓 246 號舖"
+    },
+    "hours": {
+      "en": "No fixed hours published for this branch. Confirm on WhatsApp or by phone +852 6915 7469 before you go. Do not copy the Kwun Tong hours onto this shop.",
+      "zh": "這間分店官方未公布固定時間。出發前請用 WhatsApp 或致電 +852 6915 7469 確認，不要套用觀塘店的鐘數。"
+    },
+    "blurb": {
+      "en": "MOONROAD's Mong Kok branch inside Sino Centre. Pokémon singles and sealed product, plus other TCGs. Shop M45 in the same building is a different door.",
+      "zh": "MOONROAD 旺角分店，在信和中心。有寶可夢單卡和原盒，也賣其他 TCG。同座 M 樓 45 號是另一道門。"
+    },
+    "mapsUrl": "https://www.google.com/maps/search/?api=1&query=Shop%20246%202%2FF%20Sino%20Centre%20582-592%20Nathan%20Road%20Mong%20Kok",
+    "website": "https://www.moonroadhk.com/pages/stores-hk"
+  },
+  {
+    "id": "bengal-tcg",
+    "name": "Bengal TCG",
+    "district": { "en": "Mong Kok", "zh": "旺角" },
+    "address": {
+      "en": "Room 21, 7/F, Hollywood Plaza, 610 Nathan Road, Mong Kok",
+      "zh": "旺角彌敦道 610 號荷李活商業中心 7 樓 21 室"
+    },
+    "hours": {
+      "en": "The public site does not list fixed hours. Check bengaltcg.com before you visit.",
+      "zh": "官網沒有列出固定營業時間。出門前請先看 bengaltcg.com。"
+    },
+    "blurb": {
+      "en": "Mong Kok shop for Pokémon, One Piece, and Disney cards. Singles, sealed boxes, and graded cards, with consignment.",
+      "zh": "旺角卡店，賣寶可夢、海賊王和迪士尼。有單卡、原盒和鑑定卡，也可以寄賣。"
+    },
+    "mapsUrl": "https://www.google.com/maps/search/?api=1&query=Hollywood%20Plaza%20610%20Nathan%20Road%20Mong%20Kok",
+    "website": "https://www.bengaltcg.com/"
+  },
+  {
+    "id": "pikabox",
+    "name": "PikaBox",
+    "district": { "en": "Sham Shui Po", "zh": "深水埗" },
+    "address": {
+      "en": "Shop 6162, Apple Mall, 6/F, Dragon Centre, Sham Shui Po",
+      "zh": "深水埗西九龍中心 6 樓蘋果商場 6162 號"
+    },
+    "hours": {
+      "en": "Saturday and Sunday 1pm–8pm. Closed Monday to Friday, according to the shop site. Confirm before you go.",
+      "zh": "據官網：星期六、日下午 1 時至 8 時，星期一至五休息。出發前仍建議再確認。"
+    },
+    "blurb": {
+      "en": "Pokémon specialist in Dragon Centre. The same shop page also lists a 24-hour vending machine at this address.",
+      "zh": "西九龍中心的寶可夢專門店。官網同時寫這地址有 24 小時自助售賣機。"
+    },
+    "mapsUrl": "https://www.google.com/maps/search/?api=1&query=Dragon%20Centre%20Apple%20Mall%206162%20Sham%20Shui%20Po",
+    "website": "https://www.pikabox.com.hk/contact"
+  },
+  {
+    "id": "card-holo",
+    "name": "Card Holo",
+    "district": { "en": "Causeway Bay", "zh": "銅鑼灣" },
+    "address": {
+      "en": "19/F, THE HEDON, 11 Matheson Street, Causeway Bay",
+      "zh": "銅鑼灣勿地臣街 11 號 THE HEDON 19 樓"
+    },
+    "hours": {
+      "en": "Daily 12:00–23:00, according to the shop site. About a 2-minute walk from Causeway Bay station exit A. Phone / WhatsApp +852 9723 9021.",
+      "zh": "據官網每日 12:00–23:00。銅鑼灣站 A 出口步行約兩分鐘。電話／WhatsApp +852 9723 9021。出門前仍建議再確認。"
+    },
+    "blurb": {
+      "en": "Causeway Bay shop for English and Japanese Pokémon, plus One Piece and Dragon Ball. Singles, sealed product, and grading submission.",
+      "zh": "銅鑼灣卡店，英文和日文寶可夢都有，也賣海賊王和龍珠。單卡、原盒，以及評級代寄。"
+    },
+    "mapsUrl": "https://www.google.com/maps/search/?api=1&query=THE%20HEDON%2011%20Matheson%20Street%20Causeway%20Bay",
+    "website": "https://cardholo.com/zh/"
+  }
+]
