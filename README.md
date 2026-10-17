@@ -1,6 +1,6 @@
 # Collect Scheme
 
-給收藏家的寶可夢卡牌圖鑑。這個 MVP 有四件事：卡牌圖鑑、香港卡店、同好交換板，以及一個尚未開放的拍賣頁。
+給收藏家的寶可夢卡牌圖鑑。這個 MVP 有卡牌圖鑑、國際系列目錄、香港卡店、同好交換板，以及一個尚未開放的拍賣頁。
 
 ## 怎樣跑
 
@@ -25,6 +25,7 @@ npm run lint
 ## 現在有什麼
 
 - **圖鑑**：卡圖、英文名、有收錄的中文名、系列、編號、稀有度、屬性。
+- **系列**：176 套國際版，按世代排列，含標誌、代號、發行日和張數。資料來自 Pokémon TCG API，不列市價。
 - **店舖（香港）**：MOONROAD 信和 246、Bengal TCG、PikaBox、Card Holo。地址整理自各店公開頁面，出門前請再確認。
 - **交換**：用瀏覽器裡的暱稱刊登收購或出讓，標一張卡，並在貼文下留言。沒有帳號密碼。貼文寫進 `data/trades.local.json`（已 gitignore）。刪掉那個檔案就回到兩則示範貼文。
 - **拍賣**：只有「即將推出」頁，不能出價。
@@ -40,7 +41,7 @@ npm run lint
 
 ## English
 
-Collect Scheme is a collector's encyclopedia for the Pokémon TCG. This MVP ships four things: a card catalog, Hong Kong shops, a peer-to-peer trade board, and an auction page that is not open.
+Collect Scheme is a collector's encyclopedia for the Pokémon TCG. This MVP ships a card catalog, an international set index, Hong Kong shops, a peer-to-peer trade board, and an auction page that is not open.
 
 ### Run
 
@@ -65,6 +66,7 @@ Copy `.env.example` to `.env.local`.
 ### What works now
 
 - **Encyclopedia**: image, English name, Chinese name when we have one, set, number, rarity, type.
+- **Sets**: 176 international expansions grouped by era, with logo, code, release date, and card count. The list comes from the Pokémon TCG API. Prices are not included.
 - **Shops (HK)**: MOONROAD Sino Centre 246, Bengal TCG, PikaBox, Card Holo. Addresses are copied from the shops' public pages. Confirm hours before you visit.
 - **Trade**: pick a nickname stored in the browser, post a buy or sell tagged to a card, and reply on the thread. There is no password. New posts go to `data/trades.local.json` (gitignored). Delete that file to return to the two demo posts.
 - **Auction**: a coming-soon page only. Bidding is disabled.

@@ -2,6 +2,7 @@
   "meta": {
     "homeDescription": "A collector's encyclopedia for the Pokémon Trading Card Game, with Hong Kong card shops and a peer-to-peer trade board.",
     "encyclopedia": "Encyclopedia",
+    "sets": "Sets",
     "shops": "Shops",
     "trade": "Trade",
     "auction": "Auction",
@@ -9,6 +10,7 @@
   },
   "nav": {
     "encyclopedia": "Encyclopedia",
+    "sets": "Sets",
     "shops": "Shops (HK)",
     "trade": "Trade",
     "auction": "Auction (coming soon)",
@@ -32,10 +34,13 @@
     "searchPlaceholder": "Name, set, or number",
     "search": "Search",
     "statCards": "{count} curated cards",
+    "statSets": "{count} international sets",
     "statShops": "{count} Hong Kong shops",
     "featured": "On the desk",
     "seeAll": "Browse the encyclopedia",
     "pathsTitle": "Where to go next",
+    "setsTitle": "Sets",
+    "setsBody": "International expansions by era, with logos, codes, and release dates.",
     "encyclopediaTitle": "Encyclopedia",
     "encyclopediaBody": "From Base Set holos to the latest special illustrations.",
     "shopsTitle": "Shops (HK)",
@@ -71,6 +76,23 @@
     "hp": "HP",
     "supertype": "Kind",
     "subtype": "Subtype"
+  },
+  "sets": {
+    "title": "International sets",
+    "intro": "Expansions grouped by era, the same way a set index is laid out. Names, codes, dates, card counts, and logos come from the Pokémon TCG API. Market prices are not listed here.",
+    "searchLabel": "Search sets",
+    "searchPlaceholder": "151, MEW, Scarlet",
+    "search": "Search",
+    "count": "{count} sets",
+    "empty": "No set matches that. Try the English name or the set code.",
+    "eras": "Eras",
+    "cards": "{count} cards",
+    "back": "All sets",
+    "printed": "Printed total",
+    "total": "Cards in the catalog",
+    "onShelf": "From this set on the shelf",
+    "shelfEmpty": "None of the curated cards are from this set yet. The index above still names the expansion.",
+    "searchSet": "Search this set in the encyclopedia"
   },
   "shops": {
     "title": "Hong Kong card shops",

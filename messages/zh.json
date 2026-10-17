@@ -2,6 +2,7 @@
   "meta": {
     "homeDescription": "給收藏家的寶可夢卡牌圖鑑，附香港卡店與同好交換板。",
     "encyclopedia": "圖鑑",
+    "sets": "系列",
     "shops": "店舖",
     "trade": "交換",
     "auction": "拍賣",
@@ -9,6 +10,7 @@
   },
   "nav": {
     "encyclopedia": "圖鑑",
+    "sets": "系列",
     "shops": "店舖（香港）",
     "trade": "交換",
     "auction": "拍賣（即將推出）",
@@ -32,10 +34,13 @@
     "searchPlaceholder": "卡名、系列或編號",
     "search": "搜尋",
     "statCards": "精選 {count} 張",
+    "statSets": "國際系列 {count} 套",
     "statShops": "香港 {count} 間店",
     "featured": "桌上這幾張",
     "seeAll": "進入圖鑑",
     "pathsTitle": "接著可以去",
+    "setsTitle": "系列",
+    "setsBody": "國際版按世代排列，有標誌、代號和發行日。",
     "encyclopediaTitle": "圖鑑",
     "encyclopediaBody": "從初代閃卡到最近的特別插畫。",
     "shopsTitle": "店舖（香港）",
@@ -71,6 +76,23 @@
     "hp": "HP",
     "supertype": "種類",
     "subtype": "分類"
+  },
+  "sets": {
+    "title": "國際系列",
+    "intro": "按世代排列的國際版系列，排法跟系列目錄一樣。名稱、代號、日期、張數和標誌來自 Pokémon TCG API。這裡不列市價。",
+    "searchLabel": "搜尋系列",
+    "searchPlaceholder": "151、MEW、朱紫",
+    "search": "搜尋",
+    "count": "{count} 套",
+    "empty": "沒有符合的系列。試試英文名或代號。",
+    "eras": "世代",
+    "cards": "{count} 張",
+    "back": "全部系列",
+    "printed": "印刷張數",
+    "total": "目錄張數",
+    "onShelf": "架上屬於這套的卡",
+    "shelfEmpty": "精選架上還沒有這套的卡。上面的系列資料仍然在。",
+    "searchSet": "在圖鑑搜尋這套"
   },
   "shops": {
     "title": "香港卡店",

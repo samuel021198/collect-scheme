@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { resolveLocale } from "@/i18n/locale";
 import { loadCards, loadShops } from "@/lib/content";
+import { loadSets } from "@/lib/sets";
 
 const FEATURED = ["base1-4", "swsh7-215", "sv3pt5-199", "sv8-238", "me55-154", "sv8pt5-167", "sv4pt5-232", "neo1-9"];
 
@@ -33,7 +34,8 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
           </Button>
         </form>
         <p className="text-sm text-muted-foreground">
-          {t("statCards", { count: cards.length })} · {t("statShops", { count: loadShops().length })}
+          {t("statCards", { count: cards.length })} · {t("statSets", { count: loadSets().length })} ·{" "}
+          {t("statShops", { count: loadShops().length })}
         </p>
       </section>
 
@@ -53,7 +55,11 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
 
       <section className="grid gap-4">
         <h2 className="font-display text-2xl">{t("pathsTitle")}</h2>
-        <div className="grid gap-3 md:grid-cols-3">
+        <div className="grid gap-3 md:grid-cols-2">
+          <Link href="/sets" className="rounded-2xl border border-border bg-card p-5 hover:border-primary/50">
+            <h3 className="font-display text-xl">{t("setsTitle")}</h3>
+            <p className="mt-2 text-sm leading-6 text-muted-foreground">{t("setsBody")}</p>
+          </Link>
           <Link href="/encyclopedia" className="rounded-2xl border border-border bg-card p-5 hover:border-primary/50">
             <h3 className="font-display text-xl">{t("encyclopediaTitle")}</h3>
             <p className="mt-2 text-sm leading-6 text-muted-foreground">{t("encyclopediaBody")}</p>

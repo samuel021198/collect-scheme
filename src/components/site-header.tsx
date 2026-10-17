@@ -21,6 +21,7 @@ export async function SiteHeader() {
   const t = await getTranslations("nav");
   const items = [
     { href: "/encyclopedia", label: t("encyclopedia") },
+    { href: "/sets", label: t("sets") },
     { href: "/shops", label: t("shops") },
     { href: "/trade", label: t("trade") },
     { href: "/auction", label: t("auction"), quiet: true },

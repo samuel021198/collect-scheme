@@ -82,7 +82,15 @@ export default async function CardPage({ params }: { params: Promise<{ locale: s
           {facts.map(([label, value]) => (
             <div key={label} className="rounded-xl border border-border bg-card px-3 py-2">
               <dt className="text-xs text-muted-foreground">{label}</dt>
-              <dd className="mt-1 text-sm">{value}</dd>
+              <dd className="mt-1 text-sm">
+                {label === t("set") ? (
+                  <Link href={`/sets/${card.setId}`} className="text-primary">
+                    {value}
+                  </Link>
+                ) : (
+                  value
+                )}
+              </dd>
             </div>
           ))}
         </dl>
