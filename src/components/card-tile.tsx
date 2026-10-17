@@ -1,11 +1,22 @@
 import Image from "next/image";
+import { getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import { cardSubtitle, cardTitle } from "@/lib/catalog";
 import { textLabel, TYPE_DOT } from "@/lib/labels";
 import type { CatalogCard } from "@/lib/types";
 import { Badge } from "@/components/ui/badge";
 
-export function CardTile({ card, locale, priority = false }: { card: CatalogCard; locale: string; priority?: boolean }) {
+export async function CardTile({
+  card,
+  locale,
+  priority = false,
+}: {
+  card: CatalogCard;
+  locale: string;
+  priority?: boolean;
+}) {
+  const print = await getTranslations("search");
+  const language = card.region === "jp" ? print("ja") : print("en");
   const title = cardTitle(card.names, locale);
   const subtitle = cardSubtitle(card.names, locale);
   const kinds = card.types.length > 0 ? card.types : card.supertype === "Trainer" ? ["Trainer"] : [];
@@ -35,7 +46,8 @@ export function CardTile({ card, locale, priority = false }: { card: CatalogCard
             .join(" · ")}
         </p>
         <div className="mt-2 flex flex-wrap gap-1">
-          <Badge variant="outline">{textLabel("rarity", card.rarity, locale)}</Badge>
+          <Badge variant="outline">{language}</Badge>
+          {card.rarity ? <Badge variant="outline">{textLabel("rarity", card.rarity, locale)}</Badge> : null}
           {kinds.slice(0, 2).map((kind) => (
             <Badge key={kind} variant="secondary">
               <span className={`size-1.5 rounded-full ${TYPE_DOT[kind] ?? "bg-stone-300"}`} />

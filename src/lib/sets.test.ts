@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { groupSets, seriesAnchor, seriesLabel, type TcgSet } from "./sets.ts";
+import { groupSets, matchSets, seriesAnchor, seriesLabel, type TcgSet } from "./sets.ts";
 
 const sets: TcgSet[] = [
   {
@@ -36,6 +36,30 @@ const sets: TcgSet[] = [
     symbol: "",
     logo: "",
   },
+  {
+    id: "11575",
+    name: "Pokémon Card 151",
+    series: "Scarlet & Violet",
+    printedTotal: 165,
+    total: 210,
+    code: "SV2a",
+    region: "jp",
+    releaseDate: "2023-06-16",
+    symbol: "",
+    logo: "",
+  },
+  {
+    id: "mewtwo-deck",
+    name: "Battle Academy (Mewtwo)",
+    series: "Base",
+    printedTotal: 1,
+    total: 1,
+    code: null,
+    region: "intl",
+    releaseDate: "2020-01-01",
+    symbol: "",
+    logo: "",
+  },
 ];
 
 test("sets group newest era first and newest set first", () => {
@@ -48,10 +72,27 @@ test("sets group newest era first and newest set first", () => {
 });
 
 test("set search matches the code and the Chinese era name", () => {
-  const groups = groupSets(sets, "mew");
-  assert.equal(groups.length, 1);
-  assert.equal(groups[0]?.sets[0]?.name, "151");
+  const names = groupSets(sets, "mew").flatMap((group) => group.sets.map((set) => set.name));
+  assert.ok(names.includes("151"));
   assert.equal(groupSets(sets, "朱")[0]?.series, "Scarlet & Violet");
+});
+
+test("set search ranks the code inside one language", () => {
+  assert.equal(matchSets(sets, "SV2A", "ja")[0]?.id, "11575");
+  assert.equal(matchSets(sets, "SV2A", "en").length, 0);
+  assert.deepEqual(
+    matchSets(sets, "MEW", "en").map((set) => set.id),
+    ["sv3pt5"],
+  );
+  assert.equal(matchSets(sets, "", "en").length, 0);
+  assert.deepEqual(
+    matchSets(sets, "朱紫", "en").map((set) => set.id),
+    ["sv3pt5", "sv1"],
+  );
+  assert.deepEqual(
+    matchSets(sets, "朱紫", "ja").map((set) => set.id),
+    ["11575"],
+  );
 });
 
 test("series labels and anchors stay stable", () => {

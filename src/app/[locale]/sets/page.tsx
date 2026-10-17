@@ -1,12 +1,13 @@
 import type { Metadata } from "next";
-import Image from "next/image";
 import { getTranslations } from "next-intl/server";
+import { SetTile } from "@/components/set-tile";
 import { buttonVariants } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Link } from "@/i18n/navigation";
 import { resolveLocale } from "@/i18n/locale";
-import { formatRelease, groupSets, loadSets, seriesAnchor, seriesLabel } from "@/lib/sets";
+import { matchesPrint, parsePrintLang } from "@/lib/catalog";
+import { groupSets, loadSets, seriesAnchor, seriesLabel, setsBrowseHref } from "@/lib/sets";
 import { cn } from "cn";
 
 export async function generateMetadata({
@@ -28,12 +29,18 @@ export default async function SetsPage({
   searchParams,
 }: {
   params: Promise<{ locale: string }>;
-  searchParams: Promise<{ q?: string | string[] }>;
+  searchParams: Promise<{ q?: string | string[]; lang?: string | string[] }>;
 }) {
   const locale = await resolveLocale(params);
-  const q = one((await searchParams).q);
+  const raw = await searchParams;
+  const q = one(raw.q);
+  const lang = parsePrintLang(one(raw.lang));
   const t = await getTranslations("sets");
-  const groups = groupSets(loadSets(), q);
+  const search = await getTranslations("search");
+  const groups = groupSets(
+    loadSets().filter((set) => matchesPrint(set.region, lang)),
+    q,
+  );
   const shown = groups.reduce((sum, group) => sum + group.sets.length, 0);
 
   return (
@@ -43,10 +50,29 @@ export default async function SetsPage({
         <p className="text-sm leading-6 text-muted-foreground">{t("intro")}</p>
       </div>
 
+      <div className="flex flex-wrap gap-2" aria-label={search("lang")}>
+        {(["en", "ja"] as const).map((value) => (
+          <Link
+            key={value}
+            href={setsBrowseHref(value, q)}
+            aria-current={lang === value ? "page" : undefined}
+            className={cn(
+              "rounded-full border px-3 py-1.5 text-sm",
+              lang === value
+                ? "border-primary bg-primary text-primary-foreground"
+                : "border-border text-muted-foreground",
+            )}
+          >
+            {search(value)}
+          </Link>
+        ))}
+      </div>
+
       <form action={`/${locale}/sets`} className="flex flex-col gap-2 sm:max-w-xl sm:flex-row">
         <Label htmlFor="set-q" className="sr-only">
           {t("searchLabel")}
         </Label>
+        {lang === "ja" ? <input type="hidden" name="lang" value="ja" /> : null}
         <Input id="set-q" name="q" defaultValue={q} placeholder={t("searchPlaceholder")} className="h-11 sm:flex-1" />
         <button type="submit" className={cn(buttonVariants(), "h-11 px-5")}>
           {t("search")}
@@ -79,31 +105,12 @@ export default async function SetsPage({
               <h2 className="font-display text-2xl">{seriesLabel(group.series, locale)}</h2>
               <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
                 {group.sets.map((set) => (
-                  <Link
+                  <SetTile
                     key={set.id}
-                    href={`/sets/${set.id}`}
-                    className="grid gap-3 rounded-2xl border border-border bg-card p-4 hover:border-primary/50"
-                  >
-                    <div className="flex h-16 items-center">
-                      <Image
-                        src={set.logo}
-                        alt=""
-                        width={220}
-                        height={80}
-                        unoptimized
-                        style={{ width: "auto", height: "auto" }}
-                        className="max-h-16 max-w-full object-contain"
-                      />
-                    </div>
-                    <div className="grid gap-1">
-                      <h3 className="text-base leading-6">{set.name}</h3>
-                      <p className="text-xs text-muted-foreground">
-                        {[set.code, formatRelease(set.releaseDate, locale), t("cards", { count: set.printedTotal })]
-                          .filter(Boolean)
-                          .join(" · ")}
-                      </p>
-                    </div>
-                  </Link>
+                    set={set}
+                    locale={locale}
+                    countLabel={t("cards", { count: set.printedTotal })}
+                  />
                 ))}
               </div>
             </section>

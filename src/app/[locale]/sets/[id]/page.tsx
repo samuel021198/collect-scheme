@@ -3,10 +3,12 @@ import Image from "next/image";
 import { notFound } from "next/navigation";
 import { getTranslations } from "next-intl/server";
 import { CardTile } from "@/components/card-tile";
+import { Badge } from "@/components/ui/badge";
 import { Link } from "@/i18n/navigation";
 import { resolveLocale } from "@/i18n/locale";
 import { cardsInSet } from "@/lib/content";
-import { formatRelease, getSet, seriesLabel } from "@/lib/sets";
+import { formatRelease, getSet, seriesLabel, setsBrowseHref } from "@/lib/sets";
+import type { PrintLang } from "@/lib/catalog";
 
 export async function generateMetadata({
   params,
@@ -32,6 +34,8 @@ export default async function SetPage({
   const set = getSet(id);
   if (!set) notFound();
   const t = await getTranslations("sets");
+  const search = await getTranslations("search");
+  const lang: PrintLang = set.region === "jp" ? "ja" : "en";
   const pageValue = (await searchParams).page;
   const page = Math.max(1, Number(Array.isArray(pageValue) ? pageValue[0] : pageValue) || 1);
   const matched = cardsInSet(set.id);
@@ -41,7 +45,7 @@ export default async function SetPage({
   return (
     <article className="grid gap-8">
       <div className="grid gap-4">
-        <Link href="/sets" className="text-sm text-primary">
+        <Link href={setsBrowseHref(lang)} className="text-sm text-primary">
           {t("back")}
         </Link>
         {set.logo ? (
@@ -64,6 +68,9 @@ export default async function SetPage({
           ) : null}
           <div className="grid gap-1">
             <h1 className="font-display text-4xl">{set.name}</h1>
+            <Badge variant="outline" className="mt-1 w-fit">
+              {search(lang)}
+            </Badge>
             <p className="text-sm text-muted-foreground">
               {seriesLabel(set.series, locale)}
               {set.code ? ` · ${set.code}` : ""} · {formatRelease(set.releaseDate, locale)}
@@ -121,7 +128,10 @@ export default async function SetPage({
           </>
         )}
         {set.code ? (
-          <Link href={`/encyclopedia?q=${encodeURIComponent(set.code)}`} className="text-sm text-primary">
+          <Link
+            href={`/encyclopedia?q=${encodeURIComponent(set.code)}&lang=${lang}&kind=set`}
+            className="text-sm text-primary"
+          >
             {t("searchSet")}
           </Link>
         ) : null}

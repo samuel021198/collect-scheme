@@ -1,7 +1,7 @@
 import { existsSync, readFileSync, statSync } from "node:fs";
 import { join } from "node:path";
 import rawShops from "../../data/shops.json";
-import { searchCards } from "./catalog";
+import { searchNamedCards, type PrintLang } from "./catalog";
 import type { CatalogCard, Shop } from "./types";
 
 type StoredCard = {
@@ -37,6 +37,7 @@ function toCard(raw: StoredCard): CatalogCard {
     setId: raw.setId,
     setName: raw.setName,
     setCode: raw.setCode,
+    region: raw.region === "jp" ? "jp" : "intl",
     number: raw.number,
     rarity: raw.rarity,
     imageSmall: raw.image,
@@ -58,10 +59,8 @@ export function loadShops() {
   return rawShops as Shop[];
 }
 
-export function queryCards(query: string) {
-  const q = query.trim();
-  if (!q) return [];
-  return searchCards(loadCards(), q);
+export function queryCards(query: string, lang: PrintLang = "en") {
+  return searchNamedCards(loadCards(), query, lang);
 }
 
 export function cardsInSet(setId: string) {

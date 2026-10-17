@@ -1,22 +1,27 @@
 import { getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import { CardTile } from "@/components/card-tile";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import { SearchBar } from "@/components/search-bar";
 import { resolveLocale } from "@/i18n/locale";
 import { loadCards, loadShops } from "@/lib/content";
 import { loadSets } from "@/lib/sets";
+import type { CatalogCard } from "@/lib/types";
 
 const FEATURED = ["Charizard", "Pikachu", "Umbreon", "Mew", "Lugia", "Gengar", "Eevee", "Iono"];
+
+function pickFeatured(cards: CatalogCard[], name: string) {
+  const intl = (card: CatalogCard) => (card.region ?? "intl") === "intl";
+  return (
+    cards.find((card) => intl(card) && card.names.en === name) ??
+    cards.find((card) => intl(card) && card.names.en.startsWith(`${name} `))
+  );
+}
 
 export default async function HomePage({ params }: { params: Promise<{ locale: string }> }) {
   const locale = await resolveLocale(params);
   const t = await getTranslations("home");
   const cards = loadCards();
-  const featured = FEATURED.map((name) =>
-    cards.find((card) => card.names.en === name || card.names.en.startsWith(`${name} `)),
-  ).filter((card) => card != null);
+  const featured = FEATURED.map((name) => pickFeatured(cards, name)).filter((card) => card != null);
 
   return (
     <div className="grid gap-14">
@@ -26,15 +31,7 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
           <h1 className="font-display text-4xl leading-tight text-balance md:text-6xl">{t("title")}</h1>
           <p className="max-w-2xl text-base leading-7 text-muted-foreground md:text-lg">{t("lede")}</p>
         </div>
-        <form action={`/${locale}/encyclopedia`} className="flex max-w-xl flex-col gap-2 sm:flex-row">
-          <Label htmlFor="home-q" className="sr-only">
-            {t("searchLabel")}
-          </Label>
-          <Input id="home-q" name="q" placeholder={t("searchPlaceholder")} className="h-11 sm:flex-1" />
-          <Button type="submit" className="h-11 px-5">
-            {t("search")}
-          </Button>
-        </form>
+        <SearchBar locale={locale} idPrefix="home" />
         <p className="text-sm text-muted-foreground">
           {t("statCards", { count: cards.length })} · {t("statSets", { count: loadSets().length })} ·{" "}
           {t("statShops", { count: loadShops().length })}

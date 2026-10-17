@@ -1,6 +1,21 @@
 import { readFileSync, statSync } from "node:fs";
 import { join } from "node:path";
 
+type PrintLang = "en" | "ja";
+
+function fold(value: string) {
+  return value.normalize("NFD").replace(/\p{M}/gu, "").toLowerCase();
+}
+
+function squeeze(value: string) {
+  return fold(value).replace(/[&＆\s]+/g, "");
+}
+
+function matchesPrint(region: string | undefined, lang: PrintLang) {
+  const print = region === "jp" ? "jp" : "intl";
+  return lang === "ja" ? print === "jp" : print === "intl";
+}
+
 export type TcgSet = {
   id: string;
   name: string;
@@ -101,6 +116,68 @@ export function seriesAnchor(series: string) {
     .replace(/&/g, "and")
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/^-|-$/g, "");
+}
+
+function fieldHit(field: string, query: string) {
+  const folded = fold(field);
+  const compact = squeeze(field);
+  const compactQuery = squeeze(query);
+  if (folded === query || compact === compactQuery) return "exact" as const;
+  if (/[\u3400-\u9fff]/.test(query)) {
+    if (folded.includes(query) || compact.includes(compactQuery)) return "includes" as const;
+    return null;
+  }
+  const allowPrefix = query.length >= 4;
+  let from = 0;
+  while (from < folded.length) {
+    const index = folded.indexOf(query, from);
+    if (index < 0) break;
+    const before = index === 0 ? "" : (folded[index - 1] ?? "");
+    const after = folded[index + query.length] ?? "";
+    const word = (char: string) => /[a-z0-9]/i.test(char);
+    const beforeOk = index === 0 || !word(before);
+    const afterOk = after === "" || !word(after);
+    if (beforeOk && (afterOk || allowPrefix)) return "includes" as const;
+    from = index + Math.max(query.length, 1);
+  }
+  return null;
+}
+
+function rankSet(set: TcgSet, query: string) {
+  const code = fold(set.code ?? "");
+  if (code && code === query) return 0;
+  const hits = [set.name, set.series, seriesLabel(set.series, "zh")].map((field) => fieldHit(field, query));
+  if (hits.includes("exact")) return 1;
+  if (code && code.startsWith(query)) return 2;
+  if (hits.includes("includes")) return 3;
+  return null;
+}
+
+export function matchSets(sets: TcgSet[], query: string, lang: PrintLang) {
+  const q = fold(query.trim());
+  if (q.length < 2) return [];
+  const hits: { set: TcgSet; rank: number }[] = [];
+  for (const set of sets) {
+    if (!matchesPrint(set.region, lang)) continue;
+    const rank = rankSet(set, q);
+    if (rank != null) hits.push({ set, rank });
+  }
+  hits.sort(
+    (a, b) =>
+      a.rank - b.rank ||
+      (b.set.releaseDate ?? "").localeCompare(a.set.releaseDate ?? "") ||
+      a.set.name.localeCompare(b.set.name),
+  );
+  return hits.map((hit) => hit.set);
+}
+
+export function setsBrowseHref(lang: PrintLang, query = "") {
+  const params = new URLSearchParams();
+  if (lang === "ja") params.set("lang", "ja");
+  const q = query.trim();
+  if (q) params.set("q", q);
+  const search = params.toString();
+  return search ? `/sets?${search}` : "/sets";
 }
 
 export function groupSets(sets: TcgSet[], query: string) {

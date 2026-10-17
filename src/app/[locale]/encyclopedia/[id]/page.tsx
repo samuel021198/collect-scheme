@@ -24,6 +24,7 @@ export default async function CardPage({ params }: { params: Promise<{ locale: s
   const { id } = await params;
   const locale = await resolveLocale(params);
   const t = await getTranslations("encyclopedia");
+  const search = await getTranslations("search");
   const card = await getCard(id);
   if (!card) notFound();
 
@@ -61,6 +62,9 @@ export default async function CardPage({ params }: { params: Promise<{ locale: s
             {t("back")}
           </Link>
           <h1 className="font-display text-4xl">{title}</h1>
+          <Badge variant="outline" className="w-fit">
+            {card.region === "jp" ? search("ja") : search("en")}
+          </Badge>
           {subtitle ? <p className="text-muted-foreground">{subtitle}</p> : null}
           {locale === "zh" && !card.names.zh ? (
             <Badge variant="outline" className="w-fit">

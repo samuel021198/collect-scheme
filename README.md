@@ -1,6 +1,6 @@
 # Collect Scheme
 
-給收藏家的寶可夢卡牌圖鑑。這個 MVP 有卡牌圖鑑、國際系列目錄、香港卡店、同好交換板，以及一個尚未開放的拍賣頁。
+給收藏家的寶可夢卡牌圖鑑。這個 MVP 有卡牌圖鑑、系列目錄、香港卡店、同好交換板，以及一個尚未開放的拍賣頁。
 
 ## 怎樣跑
 
@@ -24,8 +24,8 @@ npm run lint
 
 ## 現在有什麼
 
-- **圖鑑**：搜尋卡名或系列代號。例如「噴火龍」列出每一張噴火龍，「SV2A」列出該套全部卡。
-- **系列**：國際版同日文系列，按世代排列，含標誌、代號、發行日和張數。不列市價。
+- **圖鑑**：先揀英文卡或日文卡，再揀搜寶可夢定係搜系列。搜「噴火龍」只列出該語言的噴火龍；搜系列代號「SV2A」會對上日文 151。
+- **系列**：英文卡同日文卡分開瀏覽，按世代排列，含標誌、代號、發行日和張數。不列市價。
 - **店舖（香港）**：MOONROAD 信和 246、Bengal TCG、PikaBox、Card Holo。地址整理自各店公開頁面，出門前請再確認。
 - **交換**：用瀏覽器裡的暱稱刊登收購或出讓，標一張卡，並在貼文下留言。沒有帳號密碼。貼文寫進 `data/trades.local.json`（已 gitignore）。刪掉那個檔案就回到兩則示範貼文。
 - **拍賣**：只有「即將推出」頁，不能出價。
@@ -41,7 +41,7 @@ npm run lint
 
 ## English
 
-Collect Scheme is a collector's encyclopedia for the Pokémon TCG. This MVP ships a card catalog, an international set index, Hong Kong shops, a peer-to-peer trade board, and an auction page that is not open.
+Collect Scheme is a collector's encyclopedia for the Pokémon TCG. This MVP ships a card catalog, a set index, Hong Kong shops, a peer-to-peer trade board, and an auction page that is not open.
 
 ### Run
 
@@ -65,8 +65,8 @@ The encyclopedia and set index live in `data/tcg/`. Names, numbers, set codes, a
 
 ### What works now
 
-- **Encyclopedia**: search a card name or a set code. Charizard lists every Charizard. SV2A lists that whole set.
-- **Sets**: international and Japanese expansions grouped by era, with logo, code, release date, and card count. Prices are not included.
+- **Encyclopedia**: choose English or Japanese, then search a Pokémon or a set. Charizard lists that Pokémon in the language you picked. The set code SV2A matches Japanese 151.
+- **Sets**: English and Japanese expansions are browsed separately, grouped by era, with logo, code, release date, and card count. Prices are not included.
 - **Shops (HK)**: MOONROAD Sino Centre 246, Bengal TCG, PikaBox, Card Holo. Addresses are copied from the shops' public pages. Confirm hours before you visit.
 - **Trade**: pick a nickname stored in the browser, post a buy or sell tagged to a card, and reply on the thread. There is no password. New posts go to `data/trades.local.json` (gitignored). Delete that file to return to the two demo posts.
 - **Auction**: a coming-soon page only. Bidding is disabled.
