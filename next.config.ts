@@ -2,9 +2,9 @@ import type { NextConfig } from "next";
 import createNextIntlPlugin from "next-intl/plugin";
 
 const nextConfig: NextConfig = {
-  // Dev HMR websocket sends Origin: http://127.0.0.1:<port>. Binding -H 0.0.0.0
-  // does not allow that host, so Chrome gets a bare "Unauthorized" and never hydrates.
-  allowedDevOrigins: ["127.0.0.1"],
+  // Dev HMR checks Origin. 0.0.0.0 does not allow 127.0.0.1, and a public
+  // tunnel host is blocked the same way, so the client never hydrates.
+  allowedDevOrigins: ["127.0.0.1", "**.trycloudflare.com"],
   images: {
     remotePatterns: [
       {
