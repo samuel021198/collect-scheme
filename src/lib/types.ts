@@ -1,3 +1,5 @@
+import type { CardPrint } from "./finishes";
+
 export type CardNames = {
   en: string;
   zh?: string;
@@ -21,6 +23,7 @@ export type CatalogCard = {
   rarity: string;
   imageSmall: string;
   imageLarge: string;
+  prints?: CardPrint[];
 };
 
 export type CardSnap = {

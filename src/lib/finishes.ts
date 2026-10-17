@@ -17,14 +17,6 @@ export type Finish = {
   tone: FinishTone;
 };
 
-const REVERSE: Finish = {
-  id: "reverse",
-  mark: "RH",
-  en: "Reverse Holo",
-  zh: "反向閃",
-  tone: "reverse",
-};
-
 const FINISHES: Record<string, Finish> = {
   Common: { id: "common", mark: "C", en: "Common", zh: "普通", tone: "plain" },
   Uncommon: { id: "uncommon", mark: "U", en: "Uncommon", zh: "非普通", tone: "plain" },
@@ -94,25 +86,43 @@ const FINISHES: Record<string, Finish> = {
   "Trainer Rare": { id: "rare", mark: "R", en: "Trainer Rare", zh: "訓練家稀有", tone: "illustration" },
 };
 
-const PARALLEL = new Set(["common", "uncommon", "rare", "holo"]);
+export type CardPrint = {
+  t: string;
+  f?: string;
+  s?: string[];
+  u?: string;
+  z?: string;
+};
 
-const REVERSE_SERIES = new Set([
-  "e-Card",
-  "EX",
-  "ADV",
-  "PCG",
-  "Diamond & Pearl",
-  "Platinum",
-  "LEGEND",
-  "HeartGold & SoulSilver",
-  "Call of Legends",
-  "Black & White",
-  "XY",
-  "Sun & Moon",
-  "Sword & Shield",
-  "Scarlet & Violet",
-  "Mega Evolution",
-]);
+const FOIL: Record<string, { en: string; zh: string; mark: string }> = {
+  cosmos: { en: "Cosmos", zh: "宇宙", mark: "COS" },
+  pokeball: { en: "Poké Ball", zh: "精靈球", mark: "PB" },
+  masterball: { en: "Master Ball", zh: "大師球", mark: "MB" },
+  greatball: { en: "Great Ball", zh: "超級球", mark: "GB" },
+  ultraball: { en: "Ultra Ball", zh: "高級球", mark: "UB" },
+  "cracked-ice": { en: "Cracked Ice", zh: "碎冰", mark: "ICE" },
+  starlight: { en: "Starlight", zh: "星光", mark: "SL" },
+  galaxy: { en: "Galaxy", zh: "銀河", mark: "GX" },
+  energy: { en: "Energy", zh: "能量", mark: "EN" },
+  mirror: { en: "Mirror", zh: "鏡面", mark: "MR" },
+  tinsel: { en: "Tinsel", zh: "金蔥", mark: "TN" },
+  gold: { en: "Gold", zh: "金", mark: "G" },
+  league: { en: "League", zh: "聯盟", mark: "LG" },
+  rainbow: { en: "Rainbow", zh: "彩虹", mark: "RB" },
+  glitter: { en: "Glitter", zh: "閃粉", mark: "GL" },
+};
+
+const STAMP: Record<string, { en: string; zh: string; mark: string }> = {
+  "1st-edition": { en: "1st Edition", zh: "初版", mark: "1st" },
+  gamestop: { en: "GameStop Stamp", zh: "GameStop 印章", mark: "GS" },
+  "eb-games": { en: "EB Games Stamp", zh: "EB Games 印章", mark: "EB" },
+  "pokemon-center": { en: "Pokémon Center Stamp", zh: "寶可夢中心印章", mark: "PC" },
+  "pre-release": { en: "Prerelease Stamp", zh: "預發售印章", mark: "PRE" },
+  staff: { en: "Staff Stamp", zh: "工作人員印章", mark: "STAFF" },
+  "professor-program": { en: "Professor Program Stamp", zh: "教授計劃印章", mark: "PROF" },
+  "pokemon-together": { en: "Pokémon Together Stamp", zh: "Pokémon Together 印章", mark: "PT" },
+  "w-promo": { en: "W Promo", zh: "W 促銷章", mark: "W" },
+};
 
 export function finishForRarity(rarity: string): Finish | null {
   const named = FINISHES[rarity];
@@ -121,14 +131,114 @@ export function finishForRarity(rarity: string): Finish | null {
   return { id: "other", mark: rarity.slice(0, 4), en: rarity, zh: rarity, tone: "plain" };
 }
 
-export function cardFinishes(card: { rarity: string; series?: string | null }): Finish[] {
-  const primary = finishForRarity(card.rarity);
-  if (!primary) return [];
-  if (card.series === "Legendary Collection" && PARALLEL.has(primary.id)) {
-    return primary.id === "holo" ? [REVERSE, primary] : [REVERSE];
+function titled(value: string) {
+  return value
+    .split("-")
+    .map((part) => (part ? part[0].toUpperCase() + part.slice(1) : part))
+    .join(" ");
+}
+
+function stampCopy(stamp: string, setName: string) {
+  if (stamp === "set-logo") {
+    const name = setName || "Set";
+    return { en: `${name} Stamp`, zh: `${name} 印章`, mark: "ST" };
   }
-  if (REVERSE_SERIES.has(card.series ?? "") && PARALLEL.has(primary.id)) return [primary, REVERSE];
-  return [primary];
+  return STAMP[stamp] ?? { en: `${titled(stamp)} Stamp`, zh: `${titled(stamp)} 印章`, mark: stamp.slice(0, 3).toUpperCase() };
+}
+
+function expectedType(rarity: string) {
+  const primary = finishForRarity(rarity);
+  if (!primary) return "normal";
+  return primary.tone === "plain" ? "normal" : "holo";
+}
+
+function isMainPrint(rarity: string, print: CardPrint) {
+  if (print.f || print.z === "jumbo" || (print.s && print.s.length > 0)) return false;
+  if (print.u && print.u !== "unlimited") return false;
+  return print.t === expectedType(rarity);
+}
+
+function printCopy(print: CardPrint, setName: string): { en: string; zh: string; mark: string; tone: FinishTone } {
+  if (print.u === "shadowless" && print.s?.includes("1st-edition")) {
+    return { en: "1st Edition", zh: "初版", mark: "1st", tone: "holo" };
+  }
+  if (print.u === "shadowless") return { en: "Shadowless", zh: "無陰影", mark: "SH", tone: "holo" };
+  if (print.u === "1999-2000-copyright") return { en: "1999–2000", zh: "1999–2000", mark: "©", tone: "holo" };
+
+  const stamps = (print.s ?? []).map((stamp) => stampCopy(stamp, setName));
+  const foil = print.f ? (FOIL[print.f] ?? { en: titled(print.f), zh: titled(print.f), mark: print.f.slice(0, 3).toUpperCase() }) : null;
+  const stampEn = stamps.map((stamp) => stamp.en).join(" · ");
+  const stampZh = stamps.map((stamp) => stamp.zh).join(" · ");
+
+  if (stampEn && !foil) {
+    return { en: stampEn, zh: stampZh, mark: stamps[0]?.mark ?? "ST", tone: "promo" };
+  }
+
+  let en = "Non-holo";
+  let zh = "非閃";
+  let mark = "N";
+  let tone: FinishTone = "plain";
+  if (foil && print.t === "reverse") {
+    en = `${foil.en} Reverse Holo`;
+    zh = `${foil.zh}反向閃`;
+    mark = foil.mark === "COS" ? "CRH" : foil.mark;
+    tone = "reverse";
+  } else if (foil && print.t === "holo") {
+    en = `${foil.en} Holo`;
+    zh = `${foil.zh}閃`;
+    mark = foil.mark === "COS" ? "CH" : foil.mark;
+    tone = "holo";
+  } else if (print.t === "reverse") {
+    en = "Reverse Holo";
+    zh = "反向閃";
+    mark = "RH";
+    tone = "reverse";
+  } else if (print.t === "holo") {
+    en = "Holo";
+    zh = "閃卡";
+    mark = "H";
+    tone = "holo";
+  }
+  if (print.z === "jumbo") {
+    en = `${en} Jumbo`;
+    zh = `${zh}大卡`;
+  }
+  if (stampEn) {
+    en = `${en} · ${stampEn}`;
+    zh = `${zh} · ${stampZh}`;
+    mark = stamps[0]?.mark ?? mark;
+    tone = "promo";
+  }
+  return { en, zh, mark, tone };
+}
+
+function printId(print: CardPrint, main: boolean, rarity: string) {
+  if (main) return finishForRarity(rarity)?.id ?? print.t;
+  const parts = [print.t];
+  if (print.f) parts.push(print.f);
+  if (print.u && print.u !== "unlimited") parts.push(print.u);
+  if (print.s?.length) parts.push(...print.s);
+  if (print.z === "jumbo") parts.push("jumbo");
+  return parts.join("-");
+}
+
+export function cardFinishes(card: { rarity: string; setName?: string | null; prints?: CardPrint[] | null }): Finish[] {
+  const prints = card.prints?.filter((print) => print.t) ?? [];
+  if (prints.length === 0) {
+    const primary = finishForRarity(card.rarity);
+    return primary ? [primary] : [];
+  }
+  const setName = card.setName ?? "";
+  const used = new Set<string>();
+  return prints.map((print) => {
+    const main = isMainPrint(card.rarity, print);
+    const primary = main ? finishForRarity(card.rarity) : null;
+    const copy = primary ?? printCopy(print, setName);
+    let id = printId(print, Boolean(primary), card.rarity);
+    while (used.has(id)) id = `${id}-2`;
+    used.add(id);
+    return { id, mark: copy.mark, en: copy.en, zh: copy.zh, tone: copy.tone };
+  });
 }
 
 export function finishLabel(finish: Finish, locale: string) {

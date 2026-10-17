@@ -2,6 +2,7 @@ import { existsSync, readFileSync, statSync } from "node:fs";
 import { join } from "node:path";
 import rawShops from "../../data/shops.json";
 import { searchNamedCards, type PrintLang } from "./catalog";
+import type { CardPrint } from "./finishes";
 import type { CatalogCard, Shop } from "./types";
 
 type StoredCard = {
@@ -21,12 +22,23 @@ type StoredCard = {
 type Cache<T> = { mtime: number; value: T };
 
 let cardCache: Cache<CatalogCard[]> | null = null;
+let printCache: Cache<Record<string, CardPrint[]>> | null = null;
 
 function cardsFile() {
   return join(process.cwd(), "data/tcg/cards.json");
 }
 
-function toCard(raw: StoredCard): CatalogCard {
+function loadPrints() {
+  const file = join(process.cwd(), "data/tcg/variants.json");
+  if (!existsSync(file)) return {};
+  const mtime = statSync(file).mtimeMs;
+  if (printCache?.mtime === mtime) return printCache.value;
+  const value = JSON.parse(readFileSync(file, "utf8")) as Record<string, CardPrint[]>;
+  printCache = { mtime, value };
+  return value;
+}
+
+function toCard(raw: StoredCard, prints: CardPrint[] | undefined): CatalogCard {
   return {
     id: raw.id,
     names: raw.zh ? { en: raw.name, zh: raw.zh } : { en: raw.name },
@@ -43,6 +55,7 @@ function toCard(raw: StoredCard): CatalogCard {
     rarity: raw.rarity,
     imageSmall: raw.image,
     imageLarge: raw.image,
+    prints: prints && prints.length > 0 ? prints : undefined,
   };
 }
 
@@ -51,7 +64,8 @@ export function loadCards() {
   if (!existsSync(file)) return [];
   const mtime = statSync(file).mtimeMs;
   if (cardCache?.mtime === mtime) return cardCache.value;
-  const cards = (JSON.parse(readFileSync(file, "utf8")) as StoredCard[]).map(toCard);
+  const prints = loadPrints();
+  const cards = (JSON.parse(readFileSync(file, "utf8")) as StoredCard[]).map((raw) => toCard(raw, prints[raw.id]));
   cardCache = { mtime, value: cards };
   return cards;
 }

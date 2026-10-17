@@ -2,50 +2,76 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import { cardFinishes } from "./finishes.ts";
 
-test("base-set cards stay a single finish", () => {
+test("a card with no recorded printings stays on its rarity", () => {
   assert.deepEqual(
-    cardFinishes({ rarity: "Rare Holo", series: "Original" }).map((finish) => finish.id),
+    cardFinishes({ rarity: "Rare Holo" }).map((finish) => finish.id),
     ["holo"],
   );
   assert.deepEqual(
-    cardFinishes({ rarity: "Common", series: "Original" }).map((finish) => finish.id),
+    cardFinishes({ rarity: "Common", series: "Scarlet & Violet" }).map((finish) => finish.id),
     ["common"],
   );
 });
 
-test("modern commons also come as reverse holos", () => {
+test("reverse holo is added only when that card was printed that way", () => {
   assert.deepEqual(
-    cardFinishes({ rarity: "Common", series: "Scarlet & Violet" }).map((finish) => finish.id),
-    ["common", "reverse"],
+    cardFinishes({
+      rarity: "Common",
+      prints: [{ t: "normal" }, { t: "reverse" }],
+    }).map((finish) => finish.mark),
+    ["C", "RH"],
   );
   assert.deepEqual(
-    cardFinishes({ rarity: "Rare Holo", series: "Sword & Shield" }).map((finish) => finish.mark),
-    ["H", "RH"],
+    cardFinishes({ rarity: "Rare", prints: [{ t: "holo" }] }).map((finish) => finish.mark),
+    ["H"],
   );
 });
 
-test("illustration rares and ex cards do not grow a reverse holo", () => {
+test("151 Bulbasaur has the stamp and cosmos reverse that Wartortle does not", () => {
+  const bulbasaur = cardFinishes({
+    rarity: "Common",
+    setName: "Scarlet & Violet 151",
+    prints: [
+      { t: "normal" },
+      { t: "reverse" },
+      { t: "normal", s: ["set-logo"] },
+      { t: "reverse", f: "cosmos" },
+    ],
+  });
   assert.deepEqual(
-    cardFinishes({ rarity: "Illustration Rare", series: "Scarlet & Violet" }).map((finish) => finish.id),
-    ["illustration"],
+    bulbasaur.map((finish) => finish.en),
+    ["Common", "Reverse Holo", "Scarlet & Violet 151 Stamp", "Cosmos Reverse Holo"],
   );
   assert.deepEqual(
-    cardFinishes({ rarity: "Double Rare", series: "Scarlet & Violet" }).map((finish) => finish.mark),
+    cardFinishes({
+      rarity: "Uncommon",
+      prints: [{ t: "normal" }, { t: "reverse" }],
+    }).map((finish) => finish.en),
+    ["Uncommon", "Reverse Holo"],
+  );
+});
+
+test("Charizard ex and illustration rares stay a single holo printing", () => {
+  assert.deepEqual(
+    cardFinishes({ rarity: "Double Rare", prints: [{ t: "holo" }] }).map((finish) => finish.mark),
     ["RR"],
   );
   assert.deepEqual(
-    cardFinishes({ rarity: "Art Rare", series: "Scarlet & Violet" }).map((finish) => finish.mark),
-    ["AR"],
+    cardFinishes({ rarity: "Illustration Rare", prints: [{ t: "holo" }] }).map((finish) => finish.id),
+    ["illustration"],
   );
 });
 
-test("Legendary Collection is the reverse-holo printing", () => {
+test("Japanese 151 commons use ball-pattern reverses", () => {
   assert.deepEqual(
-    cardFinishes({ rarity: "Common", series: "Legendary Collection" }).map((finish) => finish.id),
-    ["reverse"],
+    cardFinishes({
+      rarity: "Common",
+      prints: [{ t: "normal" }, { t: "reverse", f: "pokeball" }, { t: "reverse", f: "masterball" }],
+    }).map((finish) => finish.en),
+    ["Common", "Poké Ball Reverse Holo", "Master Ball Reverse Holo"],
   );
 });
 
 test("unknown rarity has no invented finish", () => {
-  assert.deepEqual(cardFinishes({ rarity: "Unknown", series: "Scarlet & Violet" }), []);
+  assert.deepEqual(cardFinishes({ rarity: "Unknown" }), []);
 });
