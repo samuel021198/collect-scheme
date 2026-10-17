@@ -1,9 +1,7 @@
 import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
+import { SearchBar } from "@/components/search-bar";
 import { SetTile } from "@/components/set-tile";
-import { buttonVariants } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Link } from "@/i18n/navigation";
 import { resolveLocale } from "@/i18n/locale";
 import { matchesPrint, parsePrintLang } from "@/lib/catalog";
@@ -68,16 +66,7 @@ export default async function SetsPage({
         ))}
       </div>
 
-      <form action={`/${locale}/sets`} className="flex flex-col gap-2 sm:max-w-xl sm:flex-row">
-        <Label htmlFor="set-q" className="sr-only">
-          {t("searchLabel")}
-        </Label>
-        {lang === "ja" ? <input type="hidden" name="lang" value="ja" /> : null}
-        <Input id="set-q" name="q" defaultValue={q} placeholder={t("searchPlaceholder")} className="h-11 sm:flex-1" />
-        <button type="submit" className={cn(buttonVariants(), "h-11 px-5")}>
-          {t("search")}
-        </button>
-      </form>
+      <SearchBar locale={locale} q={q} lang={lang} mode="set" idPrefix="sets" showLang={false} />
 
       <p className="text-sm text-muted-foreground">{t("count", { count: shown })}</p>
 

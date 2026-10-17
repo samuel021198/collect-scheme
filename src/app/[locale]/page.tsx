@@ -3,25 +3,15 @@ import { Link } from "@/i18n/navigation";
 import { CardTile } from "@/components/card-tile";
 import { SearchBar } from "@/components/search-bar";
 import { resolveLocale } from "@/i18n/locale";
+import { popularCards } from "@/lib/catalog";
 import { loadCards, loadShops } from "@/lib/content";
 import { loadSets } from "@/lib/sets";
-import type { CatalogCard } from "@/lib/types";
-
-const FEATURED = ["Charizard", "Pikachu", "Umbreon", "Mew", "Lugia", "Gengar", "Eevee", "Iono"];
-
-function pickFeatured(cards: CatalogCard[], name: string) {
-  const intl = (card: CatalogCard) => (card.region ?? "intl") === "intl";
-  return (
-    cards.find((card) => intl(card) && card.names.en === name) ??
-    cards.find((card) => intl(card) && card.names.en.startsWith(`${name} `))
-  );
-}
 
 export default async function HomePage({ params }: { params: Promise<{ locale: string }> }) {
   const locale = await resolveLocale(params);
   const t = await getTranslations("home");
   const cards = loadCards();
-  const featured = FEATURED.map((name) => pickFeatured(cards, name)).filter((card) => card != null);
+  const featured = popularCards(cards, "en");
 
   return (
     <div className="grid gap-14">
@@ -31,7 +21,10 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
           <h1 className="font-display text-4xl leading-tight text-balance md:text-6xl">{t("title")}</h1>
           <p className="max-w-2xl text-base leading-7 text-muted-foreground md:text-lg">{t("lede")}</p>
         </div>
-        <SearchBar locale={locale} idPrefix="home" />
+        <div className="grid gap-4 lg:grid-cols-2">
+          <SearchBar locale={locale} mode="card" idPrefix="home-card" heading />
+          <SearchBar locale={locale} mode="set" idPrefix="home-set" heading />
+        </div>
         <p className="text-sm text-muted-foreground">
           {t("statCards", { count: cards.length })} · {t("statSets", { count: loadSets().length })} ·{" "}
           {t("statShops", { count: loadShops().length })}

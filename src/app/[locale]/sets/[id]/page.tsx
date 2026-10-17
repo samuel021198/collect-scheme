@@ -128,10 +128,7 @@ export default async function SetPage({
           </>
         )}
         {set.code ? (
-          <Link
-            href={`/encyclopedia?q=${encodeURIComponent(set.code)}&lang=${lang}&kind=set`}
-            className="text-sm text-primary"
-          >
+          <Link href={setsBrowseHref(lang, set.code)} className="text-sm text-primary">
             {t("searchSet")}
           </Link>
         ) : null}

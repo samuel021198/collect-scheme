@@ -24,8 +24,8 @@ npm run lint
 
 ## 現在有什麼
 
-- **圖鑑**：先揀英文卡或日文卡，再揀搜寶可夢定係搜系列。搜「噴火龍」只列出該語言的噴火龍；搜系列代號「SV2A」會對上日文 151。
-- **系列**：英文卡同日文卡分開瀏覽，按世代排列，含標誌、代號、發行日和張數。不列市價。
+- **卡牌搜尋**：只找一張卡。未搜尋時先顯示熱門卡。可以打卡名，或者「噴火龍 006/165」、「SV2a 006」呢類指定編號。英文卡同日文卡分開。
+- **系列搜尋**：只找系列。代號「SV2A」對上日文 151。英文卡同日文卡分開瀏覽。不列市價。
 - **店舖（香港）**：MOONROAD 信和 246、Bengal TCG、PikaBox、Card Holo。地址整理自各店公開頁面，出門前請再確認。
 - **交換**：用瀏覽器裡的暱稱刊登收購或出讓，標一張卡，並在貼文下留言。沒有帳號密碼。貼文寫進 `data/trades.local.json`（已 gitignore）。刪掉那個檔案就回到兩則示範貼文。
 - **拍賣**：只有「即將推出」頁，不能出價。
@@ -65,8 +65,8 @@ The encyclopedia and set index live in `data/tcg/`. Names, numbers, set codes, a
 
 ### What works now
 
-- **Encyclopedia**: choose English or Japanese, then search a Pokémon or a set. Charizard lists that Pokémon in the language you picked. The set code SV2A matches Japanese 151.
-- **Sets**: English and Japanese expansions are browsed separately, grouped by era, with logo, code, release date, and card count. Prices are not included.
+- **Card search**: finds one card. Popular cards stay at the front until you search. A name, or a name plus a number such as `Charizard 006/165` or `SV2a 006`, narrows to that card. English and Japanese prints are separate.
+- **Set search**: finds an expansion. The code SV2A matches Japanese 151. English and Japanese sets are browsed separately. Prices are not included.
 - **Shops (HK)**: MOONROAD Sino Centre 246, Bengal TCG, PikaBox, Card Holo. Addresses are copied from the shops' public pages. Confirm hours before you visit.
 - **Trade**: pick a nickname stored in the browser, post a buy or sell tagged to a card, and reply on the thread. There is no password. New posts go to `data/trades.local.json` (gitignored). Delete that file to return to the two demo posts.
 - **Auction**: a coming-soon page only. Bidding is disabled.

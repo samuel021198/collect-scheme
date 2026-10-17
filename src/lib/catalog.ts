@@ -97,7 +97,41 @@ function nameRank(name: string, query: string, cjk: boolean): number | null {
   return Math.min(direct, compactRank);
 }
 
+function numberKey(term: string) {
+  const raw = term.toLowerCase().replace(/^#/, "");
+  if (!/^\d{1,3}(?:\/\d{1,3})?$/.test(raw)) return null;
+  return raw;
+}
+
+function sameNumber(cardNumber: string, token: string) {
+  const full = cardNumber.toLowerCase();
+  if (full === token) return true;
+  const left = (value: string) => value.split("/")[0]?.replace(/^0+/, "") || "0";
+  const right = (value: string) => value.split("/")[1]?.replace(/^0+/, "") || "";
+  if (token.includes("/")) return left(full) === left(token) && right(full) === right(token);
+  return left(full) === left(token);
+}
+
+function specificRank(card: CatalogCard, query: string) {
+  const terms = query.split(/\s+/).filter(Boolean);
+  const numbers = terms.map(numberKey).filter((token): token is string => token != null);
+  if (numbers.length === 0) return null;
+  if (!numbers.every((token) => sameNumber(card.number, token))) return null;
+  const rest = terms.filter((term) => numberKey(term) == null);
+  if (rest.length === 0) return 3;
+  const code = fold(card.setCode ?? "");
+  if (rest.length === 1 && code && fold(rest[0] ?? "") === code) return 0;
+  const hay = fold(`${card.names.en} ${card.names.zh ?? ""} ${card.setName} ${code}`);
+  if (rest.every((term) => hay.includes(fold(term)))) {
+    return rest.some((term) => code && fold(term) === code) ? 0 : 1;
+  }
+  return null;
+}
+
 function cardRank(card: CatalogCard, query: string): number | null {
+  const specific = specificRank(card, query);
+  if (specific != null) return specific;
+  if (query.split(/\s+/).some((term) => numberKey(term))) return null;
   const cjk = /[\u3400-\u9fff]/.test(query);
   const en = nameRank(card.names.en, query, cjk);
   const zh = card.names.zh ? nameRank(card.names.zh, query, cjk) : null;
@@ -106,17 +140,47 @@ function cardRank(card: CatalogCard, query: string): number | null {
     if (zh == null) return en;
     return Math.min(en, zh);
   }
-  const number = card.number.toLowerCase();
-  const printed = number.split("/")[0] ?? "";
-  if (number === query || (printed && printed === query)) return 3;
   const terms = query.split(/\s+/).filter(Boolean);
   if (terms.length > 1) {
     const nameHay = fold(`${card.names.en} ${card.names.zh ?? ""}`);
     if (terms.every((term) => nameHay.includes(term))) return 2;
-    const hay = `${nameHay} ${fold(card.setName)} ${number}`;
+    const hay = `${nameHay} ${fold(card.setName)} ${card.number.toLowerCase()}`;
     if (terms.every((term) => hay.includes(term))) return 4;
   }
   return null;
+}
+
+export const POPULAR_NAMES = ["Charizard", "Pikachu", "Umbreon", "Mew", "Lugia", "Gengar", "Eevee", "Iono"] as const;
+
+const RARITY_FRONT = [
+  /special illustration/i,
+  /illustration rare/i,
+  /special art/i,
+  /art rare/i,
+  /hyper rare/i,
+  /rare holo/i,
+  /double rare/i,
+  /super rare/i,
+];
+
+function rarityScore(rarity: string) {
+  const index = RARITY_FRONT.findIndex((pattern) => pattern.test(rarity));
+  return index === -1 ? RARITY_FRONT.length : index;
+}
+
+export function popularCards<T extends CatalogCard>(cards: T[], lang: PrintLang) {
+  const pool = cards.filter((card) => matchesPrint(card.region, lang));
+  const picks: T[] = [];
+  for (const name of POPULAR_NAMES) {
+    const key = fold(name);
+    const exact = pool.filter((card) => fold(card.names.en) === key);
+    const named =
+      exact.length > 0 ? exact : pool.filter((card) => fold(card.names.en).startsWith(`${key} `));
+    if (named.length === 0) continue;
+    const best = named.reduce((lead, card) => (rarityScore(card.rarity) < rarityScore(lead.rarity) ? card : lead));
+    if (!picks.some((card) => card.id === best.id)) picks.push(best);
+  }
+  return picks;
 }
 
 export function searchNamedCards<T extends CatalogCard>(cards: T[], query: string, lang: PrintLang = "en") {
