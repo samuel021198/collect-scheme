@@ -1,6 +1,6 @@
 import { getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
-import { CardTile } from "@/components/card-tile";
+import { CardGrid } from "@/components/card-grid";
 import { SearchBar } from "@/components/search-bar";
 import { resolveLocale } from "@/i18n/locale";
 import { loadCards, loadShops } from "@/lib/content";
@@ -39,11 +39,7 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
               {t("seeAll")}
             </Link>
           </div>
-          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
-            {featured.map((card, index) => (
-              <CardTile key={card.id} card={card} locale={locale} priority={index < 4} />
-            ))}
-          </div>
+          <CardGrid cards={featured} locale={locale} priorityCount={4} />
         </section>
       ) : null}
     </div>

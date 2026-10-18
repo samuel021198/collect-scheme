@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import { notFound } from "next/navigation";
 import { getTranslations } from "next-intl/server";
-import { CardTile } from "@/components/card-tile";
+import { CardGrid } from "@/components/card-grid";
 import { Badge } from "@/components/ui/badge";
 import { Link } from "@/i18n/navigation";
 import { resolveLocale } from "@/i18n/locale";
@@ -99,11 +99,7 @@ export default async function SetPage({
         ) : (
           <>
             <p className="text-sm text-muted-foreground">{t("cards", { count: matched.length })}</p>
-            <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
-              {cards.map((card) => (
-                <CardTile key={card.id} card={card} locale={locale} />
-              ))}
-            </div>
+            <CardGrid cards={cards} locale={locale} />
             {pages > 1 ? (
               <div className="flex items-center justify-between gap-3 text-sm">
                 {page > 1 ? (

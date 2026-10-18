@@ -1,7 +1,7 @@
 import { randomBytes } from "node:crypto";
 import { getCard } from "./content";
 import { databaseUrl, ensureDb, sql } from "./db";
-import { cleanCondition, cleanQuantity, type ConditionType } from "./grades";
+import { cleanCardIds, cleanCondition, cleanQuantity, type ConditionType } from "./grades";
 
 export type CollectionItem = {
   id: string;
@@ -76,6 +76,19 @@ export async function addCollection(
     RETURNING id, quantity
   `;
   return { ok: true as const, id: String(rows[0]?.id), quantity: Number(rows[0]?.quantity) || quantity };
+}
+
+export async function addCollectionMany(userId: string, cardIds: unknown, quantity: unknown) {
+  const ids = cleanCardIds(cardIds);
+  const copies = cleanQuantity(quantity);
+  if (!copies || ids.length === 0) return { ok: false as const, error: "quantity" as const };
+  let added = 0;
+  for (const cardId of ids) {
+    const result = await addCollection(userId, { cardId, condition: "raw", quantity: copies });
+    if (result.ok) added += 1;
+  }
+  if (added === 0) return { ok: false as const, error: "missing" as const };
+  return { ok: true as const, added };
 }
 
 export async function dropCollection(userId: string, itemId: string, requested: unknown) {

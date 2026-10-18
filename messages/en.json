@@ -254,6 +254,27 @@
     "remove": "Remove from wishlist",
     "count": "{count} cards"
   },
+  "quick": {
+    "pick": "Choose a few",
+    "picking": "Done choosing",
+    "selected": "{count} selected",
+    "wish": "Wish",
+    "wished": "Wished",
+    "collection": "Collection",
+    "binder": "Binder",
+    "each": "Copies each",
+    "add": "Add",
+    "cancel": "Cancel",
+    "which": "Binder",
+    "addedWish": "Added to the wishlist",
+    "addedCollection": "Added to the collection",
+    "addedBinder": "Placed in the binder",
+    "noBinder": "No binder yet. Open one.",
+    "full": "The binder filled up partway",
+    "badCount": "Use 1–99 copies",
+    "badBinderCount": "A binder can take up to 12 copies at a time",
+    "failed": "Could not add those. Try again."
+  },
   "binder": {
     "title": "Binders",
     "new": "New binder",

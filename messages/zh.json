@@ -254,6 +254,27 @@
     "remove": "移出願望",
     "count": "{count} 張"
   },
+  "quick": {
+    "pick": "揀幾張",
+    "picking": "完成揀選",
+    "selected": "已選 {count}",
+    "wish": "願望",
+    "wished": "已想要",
+    "collection": "收藏",
+    "binder": "卡簿",
+    "each": "每張幾多",
+    "add": "加入",
+    "cancel": "取消",
+    "which": "邊本卡簿",
+    "addedWish": "已加入願望",
+    "addedCollection": "已加入收藏",
+    "addedBinder": "已放入卡簿",
+    "noBinder": "未有卡簿，去開一本",
+    "full": "卡簿滿了，只放得一部分",
+    "badCount": "張數要係 1 到 99",
+    "badBinderCount": "放入卡簿每次最多 12 張",
+    "failed": "暫時加唔到，再試一次"
+  },
   "binder": {
     "title": "卡簿",
     "new": "開新卡簿",

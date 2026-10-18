@@ -4,6 +4,7 @@ import { getMessages, getTranslations } from "next-intl/server";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 import { NickProvider } from "@/components/nick";
+import { QuickAddProvider } from "@/components/quick-add";
 import { resolveLocale } from "@/i18n/locale";
 import { routing } from "@/i18n/routing";
 import "../globals.css";
@@ -42,11 +43,13 @@ export default async function LocaleLayout({
       <body className="flex min-h-full flex-col">
         <NextIntlClientProvider messages={messages}>
           <NickProvider>
-            <SiteHeader />
-            <main id="content" className="mx-auto w-full max-w-6xl flex-1 px-4 py-8">
-              {children}
-            </main>
-            <SiteFooter />
+            <QuickAddProvider>
+              <SiteHeader />
+              <main id="content" className="mx-auto w-full max-w-6xl flex-1 px-4 py-8">
+                {children}
+              </main>
+              <SiteFooter />
+            </QuickAddProvider>
           </NickProvider>
         </NextIntlClientProvider>
       </body>

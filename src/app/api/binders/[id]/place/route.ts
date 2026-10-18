@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { currentUser } from "@/lib/auth";
-import { placeInBinder } from "@/lib/binders";
+import { placeCards, placeInBinder } from "@/lib/binders";
 import { databaseUrl } from "@/lib/db";
 
 function num(value: unknown) {
@@ -19,6 +19,11 @@ export async function POST(request: Request, context: { params: Promise<{ id: st
     body = (await request.json()) as Record<string, unknown>;
   } catch {
     return NextResponse.json({ error: "generic" }, { status: 400 });
+  }
+  if (Array.isArray(body.cardIds)) {
+    const many = await placeCards(user.id, id, body.cardIds, body.quantity);
+    if (!many.ok) return NextResponse.json({ error: many.error, placed: many.placed }, { status: many.error === "full" || many.error === "taken" ? 409 : 400 });
+    return NextResponse.json({ ok: true, placed: many.placed });
   }
   const result = await placeInBinder(user.id, id, {
     collectionItemId: body.collectionItemId,

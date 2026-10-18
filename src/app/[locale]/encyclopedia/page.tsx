@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
-import { CardTile } from "@/components/card-tile";
+import { CardGrid } from "@/components/card-grid";
 import { SearchBar } from "@/components/search-bar";
 import { Link } from "@/i18n/navigation";
 import { resolveLocale } from "@/i18n/locale";
@@ -69,11 +69,7 @@ export default async function EncyclopediaPage({
               {t("prompt")}
             </p>
           ) : (
-            <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
-              {shelf.map((card, index) => (
-                <CardTile key={card.id} card={card} locale={locale} priority={index < 4} />
-              ))}
-            </div>
+            <CardGrid cards={shelf} locale={locale} priorityCount={4} />
           )}
         </section>
       ) : matched.length === 0 ? (
@@ -88,11 +84,7 @@ export default async function EncyclopediaPage({
       ) : (
         <>
           <p className="text-sm text-muted-foreground">{t("count", { count: matched.length })}</p>
-          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
-            {cards.map((card, index) => (
-              <CardTile key={card.id} card={card} locale={locale} priority={index < 4} />
-            ))}
-          </div>
+          <CardGrid cards={cards} locale={locale} priorityCount={4} />
           {pages > 1 ? (
             <div className="flex items-center justify-between gap-3 text-sm">
               {page > 1 ? (

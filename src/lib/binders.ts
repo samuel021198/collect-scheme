@@ -2,7 +2,7 @@ import { randomBytes } from "node:crypto";
 import { cache } from "react";
 import { addCollection, type CollectionItem } from "./collection";
 import { databaseUrl, ensureDb, sql } from "./db";
-import { type ConditionType } from "./grades";
+import { cleanCardIds, cleanQuantity, type ConditionType } from "./grades";
 import { cleanBinderName, cleanLayout, layoutSize, packSlots, type BinderLayout } from "./binder-rules";
 
 const MAX_BINDERS = 24;
@@ -259,6 +259,24 @@ export async function placeInBinder(
     VALUES (${newId("s")}, ${binderId}, ${spot.page}, ${spot.row}, ${spot.col}, ${itemId})
   `;
   return { ok: true as const, itemId };
+}
+
+export async function placeCards(userId: string, binderId: string, cardIds: unknown, quantity: unknown) {
+  const ids = cleanCardIds(cardIds, 24);
+  const copies = cleanQuantity(quantity);
+  if (!copies || copies > 12 || ids.length === 0) return { ok: false as const, error: "quantity" as const, placed: 0 };
+  let placed = 0;
+  for (const cardId of ids) {
+    const added = await addCollection(userId, { cardId, condition: "raw", quantity: copies });
+    if (!added.ok) continue;
+    for (let index = 0; index < copies; index += 1) {
+      const spot = await placeInBinder(userId, binderId, { collectionItemId: added.id });
+      if (!spot.ok) return { ok: false as const, error: spot.error, placed };
+      placed += 1;
+    }
+  }
+  if (placed === 0) return { ok: false as const, error: "missing" as const, placed: 0 };
+  return { ok: true as const, placed };
 }
 
 export async function clearSlot(userId: string, binderId: string, page: number, row: number, col: number) {

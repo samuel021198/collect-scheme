@@ -41,6 +41,17 @@ export function cleanQuantity(value: unknown) {
   return quantity;
 }
 
+export function cleanCardIds(value: unknown, limit = 48) {
+  if (!Array.isArray(value)) return [];
+  const ids: string[] = [];
+  for (const item of value) {
+    if (typeof item !== "string" || !/^[A-Za-z0-9-]{1,40}$/.test(item) || ids.includes(item)) continue;
+    ids.push(item);
+    if (ids.length >= limit) break;
+  }
+  return ids;
+}
+
 export function quantityLeft(owned: number, requested: unknown) {
   const amount = cleanQuantity(requested);
   if (!amount || !Number.isInteger(owned) || owned < 1 || amount > owned) return null;

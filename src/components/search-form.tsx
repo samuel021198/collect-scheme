@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import { useEffect, useId, useState } from "react";
+import { QuickButtons } from "@/components/quick-add";
 import { buttonVariants } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -142,24 +143,26 @@ export function SearchForm({
                     <div key="cards" className="grid gap-1">
                       <p className="px-2 pt-1 text-xs text-muted-foreground">{cardsLabel}</p>
                       {cards.map((card) => (
-                        <Link
-                          key={card.id}
-                          href={`/encyclopedia/${card.id}`}
-                          className="grid grid-cols-[2.5rem_1fr] items-center gap-2 rounded-lg px-2 py-1.5 hover:bg-muted"
-                          onClick={() => note({ id: card.id })}
-                        >
-                          {card.image ? (
-                            <Image src={card.image} alt="" width={40} height={56} unoptimized className="h-14 w-10 rounded object-contain" />
-                          ) : (
-                            <span className="h-14 w-10 rounded bg-muted" />
-                          )}
-                          <span className="min-w-0">
-                            <span className="block truncate text-sm">{card.title}</span>
-                            <span className="block truncate text-xs text-muted-foreground">
-                              {[card.setName, card.number ? `#${card.number}` : ""].filter(Boolean).join(" · ")}
+                        <div key={card.id} className="flex items-center gap-2 rounded-lg px-2 py-1.5 hover:bg-muted">
+                          <Link
+                            href={`/encyclopedia/${card.id}`}
+                            className="grid min-w-0 flex-1 grid-cols-[2.5rem_1fr] items-center gap-2"
+                            onClick={() => note({ id: card.id })}
+                          >
+                            {card.image ? (
+                              <Image src={card.image} alt="" width={40} height={56} unoptimized className="h-14 w-10 rounded object-contain" />
+                            ) : (
+                              <span className="h-14 w-10 rounded bg-muted" />
+                            )}
+                            <span className="min-w-0">
+                              <span className="block truncate text-sm">{card.title}</span>
+                              <span className="block truncate text-xs text-muted-foreground">
+                                {[card.setName, card.number ? `#${card.number}` : ""].filter(Boolean).join(" · ")}
+                              </span>
                             </span>
-                          </span>
-                        </Link>
+                          </Link>
+                          <QuickButtons cardId={card.id} compact />
+                        </div>
                       ))}
                     </div>
                   );
