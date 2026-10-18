@@ -171,7 +171,14 @@ export function searchNamedCards<T extends CatalogCard>(cards: T[], query: strin
       a.card.setName.localeCompare(b.card.setName) ||
       a.card.number.localeCompare(b.card.number),
   );
-  return hits.map((hit) => hit.card);
+  const seen = new Set<string>();
+  const unique: T[] = [];
+  for (const hit of hits) {
+    if (seen.has(hit.card.id)) continue;
+    seen.add(hit.card.id);
+    unique.push(hit.card);
+  }
+  return unique;
 }
 
 export function filterCards<T extends CatalogCard>(cards: T[], filter: string) {

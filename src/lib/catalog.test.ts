@@ -144,6 +144,24 @@ test("search matches Chinese and English names in one print", () => {
   assert.equal(printForLocale("en"), "en");
 });
 
+test("a card filed under a set and its subset is listed once", () => {
+  const parent: CatalogCard = {
+    ...cards[0],
+    id: "40030",
+    names: { en: "Ditto", zh: "百變怪" },
+    setId: "crz",
+    setName: "Crown Zenith",
+    setCode: "CRZ",
+    number: "GG22/GG70",
+    region: "intl",
+  };
+  const subset: CatalogCard = { ...parent, setId: "crz-gg", setName: "Crown Zenith (Galarian Gallery)" };
+  assert.deepEqual(
+    searchNamedCards([subset, parent], "Ditto").map((card) => card.setName),
+    ["Crown Zenith"],
+  );
+});
+
 test("type filter keeps trainers on their own chip", () => {
   assert.deepEqual(
     filterCards(cards, "Fire").map((card) => card.id),
