@@ -53,7 +53,7 @@ export default async function CardPage({
     : card.supertype
       ? textLabel("supertype", card.supertype, locale)
       : "";
-  const sellers = listPosts().filter((post) => post.side === "sell" && post.card.id === card.id);
+  const sellers = (await listPosts()).filter((post) => post.side === "sell" && post.card.id === card.id);
 
   const facts = [
     [t("set"), card.setName],

@@ -13,7 +13,7 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
   const locale = await resolveLocale(params);
   const t = await getTranslations("home");
   const cards = loadCards();
-  const featured = recentCards(cards);
+  const featured = await recentCards(cards);
 
   return (
     <div className="grid gap-14">

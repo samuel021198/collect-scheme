@@ -7,7 +7,7 @@ export async function POST(request: Request) {
   } catch {
     return Response.json({ ok: false }, { status: 400 });
   }
-  if (typeof body.id === "string") rememberCard(body.id);
-  else if (typeof body.q === "string") rememberQuery(body.q);
+  if (typeof body.id === "string") await rememberCard(body.id);
+  else if (typeof body.q === "string") await rememberQuery(body.q);
   return Response.json({ ok: true });
 }

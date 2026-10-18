@@ -47,7 +47,7 @@ export default async function EncyclopediaPage({
   const start = (page - 1) * PAGE_SIZE;
   const cards = matched.slice(start, start + PAGE_SIZE);
   const pages = Math.max(1, Math.ceil(matched.length / PAGE_SIZE));
-  const shelf = q ? [] : recentCards();
+  const shelf = q ? [] : await recentCards();
 
   function href(nextPage: number) {
     const query = new URLSearchParams();

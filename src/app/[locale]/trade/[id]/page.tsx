@@ -18,7 +18,7 @@ export async function generateMetadata({
   params: Promise<{ locale: string; id: string }>;
 }): Promise<Metadata> {
   const { locale, id } = await params;
-  const post = getPost(id);
+  const post = await getPost(id);
   const t = await getTranslations({ locale, namespace: "trade" });
   if (!post) return { title: "Collect Scheme" };
   return { title: `${t(post.side)} · ${cardTitle(post.card.names, locale)}` };
@@ -28,7 +28,7 @@ export default async function TradePostPage({ params }: { params: Promise<{ loca
   const { id } = await params;
   const locale = await resolveLocale(params);
   const t = await getTranslations("trade");
-  const post = getPost(id);
+  const post = await getPost(id);
   if (!post) notFound();
   const title = cardTitle(post.card.names, locale);
   const subtitle = cardSubtitle(post.card.names, locale);

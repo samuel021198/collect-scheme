@@ -34,7 +34,7 @@ export default async function TradePage({
   const locale = await resolveLocale(params);
   const side = one((await searchParams).side);
   const t = await getTranslations("trade");
-  const posts = listPosts().filter((post) => (side === "buy" || side === "sell" ? post.side === side : true));
+  const posts = (await listPosts()).filter((post) => (side === "buy" || side === "sell" ? post.side === side : true));
   const filters = [
     { href: "/trade", id: "all", label: t("all") },
     { href: "/trade?side=sell", id: "sell", label: t("sell") },
