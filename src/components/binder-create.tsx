@@ -12,12 +12,13 @@ export function BinderCreate() {
   const account = useTranslations("account");
   const router = useRouter();
   const [name, setName] = useState("");
+  const [layout, setLayout] = useState("3x3");
   const [error, setError] = useState("");
   const [pending, setPending] = useState(false);
 
   return (
     <form
-      className="grid max-w-xl gap-2 rounded-2xl border border-border bg-card p-4"
+      className="grid max-w-xl gap-3 rounded-2xl border border-border bg-card p-4"
       onSubmit={(event) => {
         event.preventDefault();
         setPending(true);
@@ -25,12 +26,12 @@ export function BinderCreate() {
         void fetch("/api/binders", {
           method: "POST",
           headers: { "content-type": "application/json" },
-          body: JSON.stringify({ name }),
+          body: JSON.stringify({ name, layout }),
         })
           .then(async (response) => {
-            const payload = (await response.json()) as { error?: string; id?: string };
+            const payload = (await response.json()) as { id?: string; error?: string };
             if (!response.ok || !payload.id) {
-              setError(payload.error === "name" ? t("errName") : payload.error === "full" ? t("full") : account("err_generic"));
+              setError(payload.error === "name" ? t("errName") : account("err_generic"));
               setPending(false);
               return;
             }
@@ -44,12 +45,15 @@ export function BinderCreate() {
       }}
     >
       <Label htmlFor="binder-name">{t("new")}</Label>
-      <div className="flex flex-col gap-2 sm:flex-row">
-        <Input id="binder-name" value={name} placeholder={t("namePlaceholder")} onChange={(event) => setName(event.target.value)} />
-        <Button type="submit" disabled={pending} className="h-10">
-          {t("create")}
-        </Button>
+      <Input id="binder-name" value={name} placeholder={t("namePlaceholder")} onChange={(event) => setName(event.target.value)} />
+      <div className="flex flex-wrap gap-2">
+        {["3x3", "4x3", "4x4"].map((value) => (
+          <Button key={value} type="button" size="sm" variant={layout === value ? "default" : "outline"} onClick={() => setLayout(value)}>
+            {value.replace("x", "×")}
+          </Button>
+        ))}
       </div>
+      <Button type="submit" disabled={pending} className="h-10 w-fit">{t("create")}</Button>
       {error ? <p className="text-sm text-destructive">{error}</p> : null}
     </form>
   );

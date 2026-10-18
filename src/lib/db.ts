@@ -78,4 +78,32 @@ async function migrate() {
     added_at timestamptz NOT NULL DEFAULT now(),
     PRIMARY KEY (binder_id, card_id)
   )`;
+  await q`ALTER TABLE binders ADD COLUMN IF NOT EXISTS page_layout text NOT NULL DEFAULT '3x3'`;
+  // BGS subgrades and TAG tag_score (100–1000) are not stored yet.
+  await q`CREATE TABLE IF NOT EXISTS collection_items (
+    id text PRIMARY KEY,
+    user_id text NOT NULL REFERENCES users (id) ON DELETE CASCADE,
+    card_id text NOT NULL,
+    condition_type text NOT NULL,
+    grade text NOT NULL DEFAULT '',
+    quantity integer NOT NULL DEFAULT 1,
+    created_at timestamptz NOT NULL DEFAULT now(),
+    updated_at timestamptz NOT NULL DEFAULT now()
+  )`;
+  await q`CREATE UNIQUE INDEX IF NOT EXISTS collection_items_key ON collection_items (user_id, card_id, condition_type, grade)`;
+  await q`CREATE INDEX IF NOT EXISTS collection_items_user_idx ON collection_items (user_id, updated_at DESC)`;
+  await q`CREATE TABLE IF NOT EXISTS binder_pages (
+    binder_id text NOT NULL REFERENCES binders (id) ON DELETE CASCADE,
+    page_index integer NOT NULL,
+    PRIMARY KEY (binder_id, page_index)
+  )`;
+  await q`CREATE TABLE IF NOT EXISTS binder_slots (
+    id text PRIMARY KEY,
+    binder_id text NOT NULL REFERENCES binders (id) ON DELETE CASCADE,
+    page_index integer NOT NULL,
+    row_index integer NOT NULL,
+    col_index integer NOT NULL,
+    collection_item_id text NOT NULL REFERENCES collection_items (id) ON DELETE CASCADE,
+    UNIQUE (binder_id, page_index, row_index, col_index)
+  )`;
 }

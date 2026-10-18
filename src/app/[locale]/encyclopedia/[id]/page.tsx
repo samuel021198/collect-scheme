@@ -2,14 +2,16 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import { notFound } from "next/navigation";
 import { getTranslations } from "next-intl/server";
-import { AddToBinder } from "@/components/add-to-binder";
+import { CardActions } from "@/components/card-actions";
 import { RarityMark } from "@/components/rarity-stamp";
 import { Link } from "@/i18n/navigation";
 import { resolveLocale } from "@/i18n/locale";
 import { currentUser } from "@/lib/auth";
-import { binderChoices } from "@/lib/binders";
+import { listBinders } from "@/lib/binders";
 import { cardTitle } from "@/lib/catalog";
+import { collectionForCard } from "@/lib/collection";
 import { getCard } from "@/lib/content";
+import { conditionLabel } from "@/lib/grades";
 import { cardFinishes, finishLabel } from "@/lib/finishes";
 import { textLabel } from "@/lib/labels";
 import { listPosts } from "@/lib/trades";
@@ -41,6 +43,7 @@ export default async function CardPage({
   const { id } = await params;
   const locale = await resolveLocale(params);
   const t = await getTranslations("encyclopedia");
+  const collection = await getTranslations("collection");
   const card = await getCard(id);
   if (!card) notFound();
   const finishes = cardFinishes(card);
@@ -55,7 +58,8 @@ export default async function CardPage({
       : "";
   const sellers = (await listPosts()).filter((post) => post.side === "sell" && post.card.id === card.id);
   const user = await currentUser();
-  const binders = user ? await binderChoices(user.id, card.id) : null;
+  const owned = user ? await collectionForCard(user.id, card.id) : [];
+  const binders = user ? await listBinders(user.id) : [];
 
   const facts = [
     [t("set"), card.setName],
@@ -153,7 +157,15 @@ export default async function CardPage({
             </div>
           )}
         </section>
-        <AddToBinder cardId={card.id} finish={finish?.id ?? null} binders={binders} />
+        <CardActions
+          cardId={card.id}
+          signedIn={Boolean(user)}
+          items={owned.map((item) => ({
+            id: item.id,
+            label: `${item.condition === "raw" ? collection("raw") : conditionLabel(item.condition, item.grade)} ×${item.quantity}`,
+          }))}
+          binders={binders.map((item) => ({ id: item.id, name: item.name }))}
+        />
         <Link
           href={`/trade/new?card=${card.id}`}
           className="inline-flex h-10 w-fit items-center rounded-lg bg-primary px-4 text-sm font-medium text-primary-foreground"

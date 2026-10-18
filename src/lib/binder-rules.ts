@@ -1,4 +1,16 @@
-export type BinderStatus = "wishlist" | "owned";
+export const LAYOUTS = ["3x3", "4x3", "4x4"] as const;
+
+export type BinderLayout = (typeof LAYOUTS)[number];
+
+export function layoutSize(layout: BinderLayout) {
+  if (layout === "4x4") return { cols: 4, rows: 4 };
+  if (layout === "4x3") return { cols: 4, rows: 3 };
+  return { cols: 3, rows: 3 };
+}
+
+export function cleanLayout(value: unknown): BinderLayout | null {
+  return value === "3x3" || value === "4x3" || value === "4x4" ? value : null;
+}
 
 export function cleanBinderName(value: unknown) {
   if (typeof value !== "string") return null;
@@ -7,19 +19,14 @@ export function cleanBinderName(value: unknown) {
   return name;
 }
 
-export function cleanStatus(value: unknown): BinderStatus | null {
-  return value === "wishlist" || value === "owned" ? value : null;
-}
+export type PackedSlot = { page: number; row: number; col: number };
 
-export function cleanFinish(value: unknown) {
-  if (value == null || value === "") return null;
-  if (typeof value !== "string") return null;
-  const finish = value.trim();
-  if (finish.length < 1 || finish.length > 40 || !/^[A-Za-z0-9_-]+$/.test(finish)) return null;
-  return finish;
-}
-
-export function binderProgress(statuses: BinderStatus[]) {
-  const owned = statuses.filter((status) => status === "owned").length;
-  return { owned, total: statuses.length };
+export function packSlots(count: number, layout: BinderLayout): PackedSlot[] {
+  const { cols, rows } = layoutSize(layout);
+  const perPage = cols * rows;
+  return Array.from({ length: count }, (_, index) => ({
+    page: Math.floor(index / perPage),
+    row: Math.floor((index % perPage) / cols),
+    col: index % cols,
+  }));
 }

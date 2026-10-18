@@ -25,7 +25,12 @@ export async function SiteHeader() {
     { href: "/encyclopedia", label: t("encyclopedia") },
     { href: "/sets", label: t("sets") },
     { href: "/shops", label: t("shops") },
-    ...(user ? [{ href: "/binders", label: t("binders") }] : []),
+    ...(user
+      ? [
+          { href: "/collection", label: t("collection") },
+          { href: "/binders", label: t("binders") },
+        ]
+      : []),
     { href: "/trade", label: t("trade") },
     { href: "/auction", label: t("auction"), quiet: true },
   ];
