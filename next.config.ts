@@ -5,6 +5,10 @@ const nextConfig: NextConfig = {
   // Dev HMR checks Origin. 0.0.0.0 does not allow 127.0.0.1, and a public
   // tunnel host is blocked the same way, so the client never hydrates.
   allowedDevOrigins: ["127.0.0.1", "**.trycloudflare.com"],
+  // Catalog JSON is read with readFileSync, so the file tracer will not see it.
+  outputFileTracingIncludes: {
+    "/**": ["./data/tcg/**/*.json"],
+  },
   images: {
     remotePatterns: [
       {
