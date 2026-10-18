@@ -4,7 +4,7 @@ import { useRef, useState } from "react";
 import Image from "next/image";
 import { useTranslations } from "next-intl";
 import { useRouter } from "@/i18n/navigation";
-import { cardTitle, printForLocale, validatePost } from "@/lib/catalog";
+import { cardTitle, printForLocale, validatePostFields } from "@/lib/catalog";
 import { textLabel } from "@/lib/labels";
 import type { CatalogCard, ErrorCode } from "@/lib/types";
 import { buttonVariants } from "@/components/ui/button";
@@ -12,7 +12,6 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { cn } from "cn";
-import { useNick } from "./nick";
 
 const ERRORS = new Set<ErrorCode>([
   "nick",
@@ -29,16 +28,15 @@ const ERRORS = new Set<ErrorCode>([
 export function TradeForm({
   locale,
   initialCard,
+  authorName,
 }: {
   locale: string;
   initialCard: CatalogCard | null;
+  authorName: string;
 }) {
   const t = useTranslations("trade");
   const errors = useTranslations("errors");
   const router = useRouter();
-  const { nick, setNick } = useNick();
-  const [authorDraft, setAuthorDraft] = useState<string | null>(null);
-  const author = authorDraft ?? nick;
   const [side, setSide] = useState<"buy" | "sell">("sell");
   const [cardId, setCardId] = useState(initialCard?.id ?? "");
   const lang = printForLocale(locale);
@@ -76,20 +74,18 @@ export function TradeForm({
 
   async function onSubmit(event: React.FormEvent) {
     event.preventDefault();
-    const code = validatePost({ author, side, description, contact, cardId });
+    const code = validatePostFields({ side, description, contact, cardId });
     if (code) {
       setError(code);
       return;
     }
     setPending(true);
     setError(null);
-    setNick(author.trim());
     try {
       const response = await fetch("/api/trades", {
         method: "POST",
         headers: { "content-type": "application/json" },
         body: JSON.stringify({
-          author: author.trim(),
           side,
           description,
           contact,
@@ -112,15 +108,7 @@ export function TradeForm({
 
   return (
     <form onSubmit={onSubmit} className="grid gap-5">
-      <div className="grid gap-2">
-        <Label htmlFor="author">{t("nick")}</Label>
-        <Input
-          id="author"
-          value={author}
-          onChange={(event) => setAuthorDraft(event.target.value)}
-          autoComplete="nickname"
-        />
-      </div>
+      <p className="text-sm text-muted-foreground">{t("postingAs", { name: authorName })}</p>
 
       <fieldset className="grid gap-2">
         <legend className="text-sm font-medium">{t("side")}</legend>

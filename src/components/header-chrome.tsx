@@ -32,7 +32,6 @@ export function HeaderChrome({ logo }: { logo: ReactNode }) {
         ]
       : []),
     { href: "/trade", label: t("trade") },
-    { href: "/auction", label: t("auction"), quiet: true },
   ];
 
   return (

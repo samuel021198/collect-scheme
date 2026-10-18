@@ -1,8 +1,10 @@
 import type { Metadata } from "next";
+import { redirect } from "next/navigation";
 import { getTranslations } from "next-intl/server";
 import { TradeForm } from "@/components/trade-form";
 import { Link } from "@/i18n/navigation";
 import { resolveLocale } from "@/i18n/locale";
+import { currentUser } from "@/lib/auth";
 import { getCard } from "@/lib/content";
 
 export const dynamic = "force-dynamic";
@@ -30,6 +32,11 @@ export default async function NewTradePage({
 }) {
   const locale = await resolveLocale(params);
   const cardId = one((await searchParams).card);
+  const user = await currentUser();
+  if (!user) {
+    const next = cardId ? `/trade/new?card=${encodeURIComponent(cardId)}` : "/trade/new";
+    redirect(`/${locale}/login?next=${encodeURIComponent(next)}`);
+  }
   const t = await getTranslations("trade");
   const initialCard = cardId ? await getCard(cardId) : null;
 
@@ -42,7 +49,7 @@ export default async function NewTradePage({
         <h1 className="font-display text-4xl">{t("formTitle")}</h1>
         <p className="rounded-2xl border border-primary/30 bg-primary/10 px-4 py-3 text-sm leading-6">{t("disclaimer")}</p>
       </div>
-      <TradeForm locale={locale} initialCard={initialCard} />
+      <TradeForm locale={locale} initialCard={initialCard} authorName={user.name} />
     </div>
   );
 }

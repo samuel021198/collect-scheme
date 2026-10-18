@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import Image from "next/image";
 import { useTranslations } from "next-intl";
 import { Link, useRouter } from "@/i18n/navigation";
@@ -38,6 +38,8 @@ export function BinderDesk({
   const [page, setPage] = useState(pageIndexes[0] ?? 0);
   const [cards, setCards] = useState(slots);
   const [drag, setDrag] = useState<string | null>(null);
+  const [selected, setSelected] = useState<string | null>(null);
+  const dragged = useRef(false);
   const [error, setError] = useState("");
   const [pending, setPending] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
@@ -79,6 +81,7 @@ export function BinderDesk({
     const source = cards.find((slot) => slot.page === fromPage && slot.row === fromRow && slot.col === fromCol);
     const target = cards.find((slot) => slot.page === shown && slot.row === row && slot.col === col);
     if (!source) return;
+    setSelected(null);
     setCards((current) =>
       current
         .filter((slot) => slot !== source && slot !== target)
@@ -88,6 +91,20 @@ export function BinderDesk({
       from: { page: fromPage, row: fromRow, col: fromCol },
       to: { page: shown, row, col },
     });
+  }
+
+  function onCell(row: number, col: number) {
+    if (dragged.current) {
+      dragged.current = false;
+      return;
+    }
+    const key = `${shown}:${row}:${col}`;
+    if (selected && selected !== key) {
+      move(selected, row, col);
+      return;
+    }
+    if (!at(row, col)) return;
+    setSelected(selected === key ? null : key);
   }
 
   return (
@@ -135,9 +152,20 @@ export function BinderDesk({
           const col = index % cols;
           const slot = at(row, col);
           const key = `${shown}:${row}:${col}`;
+          const active = selected === key;
           return (
             <div
               key={key}
+              role="button"
+              tabIndex={0}
+              aria-pressed={active}
+              onClick={() => onCell(row, col)}
+              onKeyDown={(event) => {
+                if (event.key === "Enter" || event.key === " ") {
+                  event.preventDefault();
+                  onCell(row, col);
+                }
+              }}
               onDragOver={(event) => event.preventDefault()}
               onDrop={(event) => {
                 event.preventDefault();
@@ -145,25 +173,39 @@ export function BinderDesk({
                 if (from) move(from, row, col);
                 setDrag(null);
               }}
-              className="relative aspect-[245/342] rounded-xl border border-dashed border-border bg-black/30"
+              className={`relative aspect-[245/342] cursor-pointer rounded-xl border border-dashed bg-black/30 ${active ? "border-solid border-primary ring-2 ring-primary" : "border-border"}`}
             >
               {slot ? (
                 <div
                   draggable
                   onDragStart={(event) => {
+                    dragged.current = true;
                     event.dataTransfer.setData("text/plain", key);
                     setDrag(key);
                   }}
+                  onDragEnd={() => {
+                    window.setTimeout(() => {
+                      dragged.current = false;
+                    }, 50);
+                  }}
                   className="absolute inset-0 cursor-grab"
                 >
-                  <Link href={`/encyclopedia/${slot.cardId}`} draggable={false} className="absolute inset-0">
-                    {slot.image ? <Image src={slot.image} alt="" fill unoptimized sizes="160px" className="object-contain" /> : null}
+                  {slot.image ? <Image src={slot.image} alt="" fill unoptimized sizes="160px" className="pointer-events-none object-contain" /> : null}
+                  <span className="pointer-events-none absolute bottom-1 left-1 rounded bg-background/80 px-1.5 py-0.5 text-[10px]">{slot.label}</span>
+                  <Link
+                    href={`/encyclopedia/${slot.cardId}`}
+                    draggable={false}
+                    onClick={(event) => event.stopPropagation()}
+                    className="absolute right-1 bottom-1 rounded bg-background/80 px-1.5 py-0.5 text-[10px]"
+                  >
+                    {t("open")}
                   </Link>
-                  <span className="absolute bottom-1 left-1 rounded bg-background/80 px-1.5 py-0.5 text-[10px]">{slot.label}</span>
                   <button
                     type="button"
                     className="absolute top-1 right-1 rounded bg-background/80 px-1.5 text-xs"
-                    onClick={() => {
+                    onClick={(event) => {
+                      event.stopPropagation();
+                      if (selected === key) setSelected(null);
                       setCards((current) => current.filter((item) => item !== slot));
                       void call(`/api/binders/${binderId}/slots?page=${shown}&row=${row}&col=${col}`, "DELETE");
                     }}
@@ -178,7 +220,14 @@ export function BinderDesk({
           );
         })}
       </div>
-      <p className="text-xs text-muted-foreground">{t("dragHint")}</p>
+      <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
+        <p>{t("dragHint")}</p>
+        {selected ? (
+          <button type="button" className="text-primary" onClick={() => setSelected(null)}>
+            {t("cancelMove")}
+          </button>
+        ) : null}
+      </div>
       {error ? <p className="text-sm text-destructive">{error}</p> : null}
       {confirmDelete ? (
         <Button type="button" variant="destructive" disabled={pending} onClick={() => void call(`/api/binders/${binderId}`, "DELETE").then((ok) => ok && router.push("/binders"))}>

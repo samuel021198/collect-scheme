@@ -194,14 +194,12 @@ export function shouldQueryLive(query: string, apiKey: string | undefined) {
   return true;
 }
 
-export function validatePost(input: {
-  author: string;
+export function validatePostFields(input: {
   side: string;
   description: string;
   contact: string;
   cardId: string;
 }): ErrorCode | null {
-  if (!NICK.test(input.author.trim())) return "nick";
   if (input.side !== "buy" && input.side !== "sell") return "side";
   if (!/^[A-Za-z0-9-]{1,40}$/.test(input.cardId)) return "card";
   const description = input.description.trim();
@@ -211,11 +209,26 @@ export function validatePost(input: {
   return null;
 }
 
+export function validatePost(input: {
+  author: string;
+  side: string;
+  description: string;
+  contact: string;
+  cardId: string;
+}): ErrorCode | null {
+  if (!NICK.test(input.author.trim())) return "nick";
+  return validatePostFields(input);
+}
+
+export function validateReplyBody(body: string): ErrorCode | null {
+  const text = body.trim();
+  if (text.length < 1 || text.length > 400) return "body";
+  return null;
+}
+
 export function validateReply(input: { author: string; body: string }): ErrorCode | null {
   if (!NICK.test(input.author.trim())) return "nick";
-  const body = input.body.trim();
-  if (body.length < 1 || body.length > 400) return "body";
-  return null;
+  return validateReplyBody(input.body);
 }
 
 export function formatWhen(iso: string, locale: string) {

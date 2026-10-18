@@ -17,7 +17,6 @@
     "binders": "Binders",
     "login": "Log in",
     "logout": "Log out",
-    "auction": "Auction (coming soon)",
     "primary": "Primary",
     "skip": "Skip to content"
   },
@@ -167,8 +166,9 @@
     "contactLabel": "How to reach you",
     "contactPlaceholder": "IG, Discord, or a phone number you are willing to share",
     "submit": "Publish post",
-    "nick": "Nickname",
-    "nickHint": "Demo only. The name stays in this browser. There is no password.",
+    "postingAs": "Posting as {name}",
+    "replyAs": "Replying as {name}",
+    "loginToReply": "Log in to reply",
     "back": "Back to the board"
   },
   "auction": {
@@ -262,7 +262,9 @@
     "rename": "Rename",
     "addPage": "Add page",
     "clear": "Take out",
-    "dragHint": "Drag a card onto another slot to swap.",
+    "dragHint": "Tap a slot, then tap another to move or swap. You can change page first. Drag still works.",
+    "open": "Card",
+    "cancelMove": "Cancel selection",
     "delete": "Delete binder",
     "deleteConfirm": "Delete this binder",
     "taken": "That slot is full.",

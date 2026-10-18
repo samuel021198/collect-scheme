@@ -17,7 +17,6 @@
     "binders": "卡簿",
     "login": "登入",
     "logout": "登出",
-    "auction": "拍賣（即將推出）",
     "primary": "主要",
     "skip": "跳到內容"
   },
@@ -167,8 +166,9 @@
     "contactLabel": "怎樣聯絡你",
     "contactPlaceholder": "IG、Discord，或你願意公開的電話",
     "submit": "刊登",
-    "nick": "暱稱",
-    "nickHint": "只供示範。暱稱存在這部瀏覽器，沒有密碼。",
+    "postingAs": "以 {name} 刊登",
+    "replyAs": "以 {name} 留言",
+    "loginToReply": "登入之後先可以留言",
     "back": "返回交換板"
   },
   "auction": {
@@ -262,7 +262,9 @@
     "rename": "改名",
     "addPage": "加一頁",
     "clear": "取出",
-    "dragHint": "拖張卡去另一格就可以換位。",
+    "dragHint": "點一格，再點另一格就換位，換頁再點也可以。亦可以拖過去。",
+    "open": "圖鑑",
+    "cancelMove": "取消選取",
     "delete": "刪除卡簿",
     "deleteConfirm": "確認刪除",
     "taken": "呢格已有卡。",

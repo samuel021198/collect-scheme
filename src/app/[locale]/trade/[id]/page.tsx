@@ -6,6 +6,7 @@ import { ReplyForm } from "@/components/reply-form";
 import { Badge } from "@/components/ui/badge";
 import { Link } from "@/i18n/navigation";
 import { resolveLocale } from "@/i18n/locale";
+import { currentUser } from "@/lib/auth";
 import { cardTitle, formatWhen } from "@/lib/catalog";
 import { textLabel } from "@/lib/labels";
 import { getPost } from "@/lib/trades";
@@ -28,6 +29,7 @@ export default async function TradePostPage({ params }: { params: Promise<{ loca
   const { id } = await params;
   const locale = await resolveLocale(params);
   const t = await getTranslations("trade");
+  const user = await currentUser();
   const post = await getPost(id);
   if (!post) notFound();
   const title = cardTitle(post.card.names, locale);
@@ -84,7 +86,13 @@ export default async function TradePostPage({ params }: { params: Promise<{ loca
               ))}
             </ol>
           )}
-          <ReplyForm postId={post.id} />
+          {user ? (
+            <ReplyForm postId={post.id} authorName={user.name} />
+          ) : (
+            <Link href={`/login?next=${encodeURIComponent(`/trade/${post.id}`)}`} className="text-sm text-primary">
+              {t("loginToReply")}
+            </Link>
+          )}
         </section>
       </div>
     </article>

@@ -2,7 +2,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { unstable_cache } from "next/cache";
 import seedPosts from "../../data/trades.seed.json";
-import { validatePost, validateReply } from "./catalog";
+import { validatePostFields, validateReplyBody } from "./catalog";
 import { getCard } from "./content";
 import { databaseUrl, ensureDb, sql } from "./db";
 import type { CardSnap, CatalogCard, ErrorCode, Reply, TradePost } from "./types";
@@ -161,15 +161,25 @@ function text(value: unknown) {
   return typeof value === "string" ? value.trim() : "";
 }
 
-export async function createPost(value: unknown): Promise<{ ok: true; id: string } | { ok: false; error: ErrorCode }> {
+function accountAuthor(name: string) {
+  const trimmed = name.trim().replace(/\s+/g, " ");
+  if (trimmed.length < 1 || trimmed.length > 40) return null;
+  return trimmed;
+}
+
+export async function createPost(
+  value: unknown,
+  authorName: string,
+): Promise<{ ok: true; id: string } | { ok: false; error: ErrorCode }> {
   const body = readBody(value);
   if (!body) return { ok: false, error: "generic" };
-  const author = text(body.author);
+  const author = accountAuthor(authorName);
+  if (!author) return { ok: false, error: "nick" };
   const side = text(body.side);
   const description = text(body.description);
   const contact = text(body.contact);
   const cardId = text(body.cardId);
-  const invalid = validatePost({ author, side, description, contact, cardId });
+  const invalid = validatePostFields({ side, description, contact, cardId });
   if (invalid) return { ok: false, error: invalid };
 
   const card = await getCard(cardId);
@@ -208,12 +218,14 @@ export async function createPost(value: unknown): Promise<{ ok: true; id: string
 export async function addReply(
   postId: string,
   value: unknown,
+  authorName: string,
 ): Promise<{ ok: true; id: string } | { ok: false; error: ErrorCode }> {
   const body = readBody(value);
   if (!body) return { ok: false, error: "generic" };
-  const author = text(body.author);
+  const author = accountAuthor(authorName);
+  if (!author) return { ok: false, error: "nick" };
   const replyBody = text(body.body);
-  const invalid = validateReply({ author, body: replyBody });
+  const invalid = validateReplyBody(replyBody);
   if (invalid) return { ok: false, error: invalid };
   if (!/^[A-Za-z0-9-]{1,80}$/.test(postId)) return { ok: false, error: "not_found" };
 
