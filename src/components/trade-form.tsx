@@ -4,7 +4,7 @@ import { useRef, useState } from "react";
 import Image from "next/image";
 import { useTranslations } from "next-intl";
 import { useRouter } from "@/i18n/navigation";
-import { cardTitle, validatePost } from "@/lib/catalog";
+import { cardTitle, printForLocale, validatePost } from "@/lib/catalog";
 import { textLabel } from "@/lib/labels";
 import type { CatalogCard, ErrorCode } from "@/lib/types";
 import { buttonVariants } from "@/components/ui/button";
@@ -34,7 +34,6 @@ export function TradeForm({
   initialCard: CatalogCard | null;
 }) {
   const t = useTranslations("trade");
-  const search = useTranslations("search");
   const errors = useTranslations("errors");
   const router = useRouter();
   const { nick, setNick } = useNick();
@@ -42,7 +41,7 @@ export function TradeForm({
   const author = authorDraft ?? nick;
   const [side, setSide] = useState<"buy" | "sell">("sell");
   const [cardId, setCardId] = useState(initialCard?.id ?? "");
-  const [lang, setLang] = useState<"en" | "ja">(initialCard?.region === "jp" ? "ja" : "en");
+  const lang = printForLocale(locale);
   const [query, setQuery] = useState("");
   const [results, setResults] = useState<CatalogCard[]>(initialCard ? [initialCard] : []);
   const requestId = useRef(0);
@@ -73,11 +72,6 @@ export function TradeForm({
   function onQuery(value: string) {
     setQuery(value);
     void loadMatches(value, lang);
-  }
-
-  function onLang(next: "en" | "ja") {
-    setLang(next);
-    void loadMatches(query, next);
   }
 
   async function onSubmit(event: React.FormEvent) {
@@ -126,7 +120,6 @@ export function TradeForm({
           onChange={(event) => setAuthorDraft(event.target.value)}
           autoComplete="nickname"
         />
-        <p className="text-xs text-muted-foreground">{t("nickHint")}</p>
       </div>
 
       <fieldset className="grid gap-2">
@@ -141,23 +134,6 @@ export function TradeForm({
               className={`rounded-full border px-3 py-1.5 text-sm ${side === value ? "border-primary bg-primary text-primary-foreground" : "border-border text-muted-foreground"}`}
             >
               {t(value)}
-            </button>
-          ))}
-        </div>
-      </fieldset>
-
-      <fieldset className="grid gap-2">
-        <legend className="text-sm font-medium">{search("lang")}</legend>
-        <div className="flex gap-2">
-          {(["en", "ja"] as const).map((value) => (
-            <button
-              key={value}
-              type="button"
-              aria-pressed={lang === value}
-              onClick={() => onLang(value)}
-              className={`rounded-full border px-3 py-1.5 text-sm ${lang === value ? "border-primary bg-primary text-primary-foreground" : "border-border text-muted-foreground"}`}
-            >
-              {search(value)}
             </button>
           ))}
         </div>
@@ -197,7 +173,7 @@ export function TradeForm({
                 <span>
                   <span className="block text-sm">{cardTitle(card.names, locale)}</span>
                   <span className="block text-xs text-muted-foreground">
-                    {[card.region === "jp" ? search("ja") : search("en"), card.setCode, card.setName, card.number ? `#${card.number}` : ""]
+                    {[card.setCode, card.setName, card.number ? `#${card.number}` : ""]
                       .filter(Boolean)
                       .join(" · ")}{" "}
                     · {textLabel("rarity", card.rarity, locale)}

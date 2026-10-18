@@ -7,6 +7,7 @@ import {
   validatePost,
   validateReply,
   cardTitle,
+  printForLocale,
 } from "./catalog.ts";
 import type { CatalogCard } from "./types.ts";
 
@@ -139,6 +140,8 @@ test("search matches Chinese and English names in one print", () => {
   );
   assert.equal(cardTitle(cards[0].names, "zh"), "噴火龍");
   assert.equal(cardTitle(cards[0].names, "en"), "Charizard");
+  assert.equal(printForLocale("zh"), "ja");
+  assert.equal(printForLocale("en"), "en");
 });
 
 test("type filter keeps trainers on their own chip", () => {

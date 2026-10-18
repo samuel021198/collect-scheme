@@ -9,9 +9,6 @@ import { Link } from "@/i18n/navigation";
 import type { PrintLang } from "@/lib/catalog";
 import { cn } from "cn";
 
-const pill =
-  "inline-flex cursor-pointer rounded-full border border-border px-3 py-1.5 text-sm text-muted-foreground peer-checked:border-primary peer-checked:bg-primary peer-checked:text-primary-foreground peer-focus-visible:ring-2 peer-focus-visible:ring-ring";
-
 type CardHit = {
   id: string;
   title: string;
@@ -37,15 +34,10 @@ export function SearchForm({
   mode,
   idPrefix,
   heading = false,
-  showLang = true,
   action,
   title,
-  hint,
   placeholder,
   submit,
-  langLabel,
-  english,
-  japanese,
   cardsLabel,
   setsLabel,
   emptyLabel,
@@ -56,15 +48,10 @@ export function SearchForm({
   mode: "card" | "set";
   idPrefix: string;
   heading?: boolean;
-  showLang?: boolean;
   action: string;
   title: string;
-  hint: string;
   placeholder: string;
   submit: string;
-  langLabel: string;
-  english: string;
-  japanese: string;
   cardsLabel: string;
   setsLabel: string;
   emptyLabel: string;
@@ -101,7 +88,7 @@ export function SearchForm({
       method: "POST",
       keepalive: true,
       headers: { "content-type": "application/json" },
-      body: JSON.stringify(body),
+      body: JSON.stringify({ ...body, lang }),
     });
   }
 
@@ -114,27 +101,8 @@ export function SearchForm({
       className="grid gap-4 rounded-2xl border border-border bg-card p-4"
       onSubmit={() => note({ q: value.trim() })}
     >
-      {heading ? (
-        <div className="grid gap-1">
-          <h2 className="font-display text-2xl">{title}</h2>
-          <p className="text-sm leading-6 text-muted-foreground">{hint}</p>
-        </div>
-      ) : null}
-      {showLang ? (
-        <fieldset className="grid gap-2">
-          <legend className="text-xs text-muted-foreground">{langLabel}</legend>
-          <div className="flex flex-wrap gap-2">
-            {(["en", "ja"] as const).map((item) => (
-              <label key={item}>
-                <input type="radio" name="lang" value={item} defaultChecked={lang === item} className="peer sr-only" />
-                <span className={pill}>{item === "ja" ? japanese : english}</span>
-              </label>
-            ))}
-          </div>
-        </fieldset>
-      ) : (
-        <input type="hidden" name="lang" value={lang} />
-      )}
+      {heading ? <h2 className="font-display text-2xl">{title}</h2> : null}
+      <input type="hidden" name="lang" value={lang} />
       <div className="flex flex-col gap-2 sm:flex-row">
         <Label htmlFor={`${idPrefix}-q`} className="sr-only">
           {title}
@@ -188,8 +156,6 @@ export function SearchForm({
                           <span className="min-w-0">
                             <span className="block truncate text-sm">{card.title}</span>
                             <span className="block truncate text-xs text-muted-foreground">
-                              {card.region === "jp" ? japanese : english}
-                              {" · "}
                               {[card.setName, card.number ? `#${card.number}` : ""].filter(Boolean).join(" · ")}
                             </span>
                           </span>
@@ -206,9 +172,7 @@ export function SearchForm({
                         <Link key={set.id} href={`/sets/${set.id}`} className="rounded-lg px-2 py-1.5 hover:bg-muted">
                           <span className="block truncate text-sm">{set.name}</span>
                           <span className="block truncate text-xs text-muted-foreground">
-                            {set.region === "jp" ? japanese : english}
-                            {set.code ? ` · ${set.code}` : ""}
-                            {set.series ? ` · ${set.series}` : ""}
+                            {[set.code, set.series].filter(Boolean).join(" · ")}
                           </span>
                         </Link>
                       ))}

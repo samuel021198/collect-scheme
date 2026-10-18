@@ -3,10 +3,9 @@ import Image from "next/image";
 import { notFound } from "next/navigation";
 import { getTranslations } from "next-intl/server";
 import { RarityMark } from "@/components/rarity-stamp";
-import { Badge } from "@/components/ui/badge";
 import { Link } from "@/i18n/navigation";
 import { resolveLocale } from "@/i18n/locale";
-import { cardSubtitle, cardTitle } from "@/lib/catalog";
+import { cardTitle } from "@/lib/catalog";
 import { getCard } from "@/lib/content";
 import { cardFinishes, finishLabel } from "@/lib/finishes";
 import { textLabel } from "@/lib/labels";
@@ -39,7 +38,6 @@ export default async function CardPage({
   const { id } = await params;
   const locale = await resolveLocale(params);
   const t = await getTranslations("encyclopedia");
-  const search = await getTranslations("search");
   const card = await getCard(id);
   if (!card) notFound();
   const finishes = cardFinishes(card);
@@ -47,7 +45,6 @@ export default async function CardPage({
   const finish = finishes.find((item) => item.id === requested) ?? finishes[0] ?? null;
 
   const title = cardTitle(card.names, locale);
-  const subtitle = cardSubtitle(card.names, locale);
   const attribute = card.types.length
     ? card.types.map((kind) => textLabel("type", kind, locale)).join(" · ")
     : card.supertype
@@ -88,15 +85,6 @@ export default async function CardPage({
             {t("back")}
           </Link>
           <h1 className="font-display text-4xl">{title}</h1>
-          <Badge variant="outline" className="w-fit">
-            {card.region === "jp" ? search("ja") : search("en")}
-          </Badge>
-          {subtitle ? <p className="text-muted-foreground">{subtitle}</p> : null}
-          {locale === "zh" && !card.names.zh ? (
-            <Badge variant="outline" className="w-fit">
-              {t("missingZh")}
-            </Badge>
-          ) : null}
         </div>
         {finishes.length > 1 ? (
           <div className="flex flex-wrap gap-2">

@@ -2,11 +2,9 @@ import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 import { SearchBar } from "@/components/search-bar";
 import { SetTile } from "@/components/set-tile";
-import { Link } from "@/i18n/navigation";
 import { resolveLocale } from "@/i18n/locale";
-import { matchesPrint, parsePrintLang } from "@/lib/catalog";
-import { groupSets, loadSets, seriesAnchor, seriesLabel, setsBrowseHref } from "@/lib/sets";
-import { cn } from "cn";
+import { matchesPrint, printForLocale } from "@/lib/catalog";
+import { groupSets, loadSets, seriesAnchor, seriesLabel } from "@/lib/sets";
 
 export async function generateMetadata({
   params,
@@ -32,9 +30,8 @@ export default async function SetsPage({
   const locale = await resolveLocale(params);
   const raw = await searchParams;
   const q = one(raw.q);
-  const lang = parsePrintLang(one(raw.lang));
+  const lang = printForLocale(locale);
   const t = await getTranslations("sets");
-  const search = await getTranslations("search");
   const groups = groupSets(
     loadSets().filter((set) => matchesPrint(set.region, lang)),
     q,
@@ -43,30 +40,9 @@ export default async function SetsPage({
 
   return (
     <div className="grid gap-8">
-      <div className="grid max-w-2xl gap-2">
-        <h1 className="font-display text-4xl">{t("title")}</h1>
-        <p className="text-sm leading-6 text-muted-foreground">{t("intro")}</p>
-      </div>
+      <h1 className="font-display text-4xl">{t("title")}</h1>
 
-      <div className="flex flex-wrap gap-2" aria-label={search("lang")}>
-        {(["en", "ja"] as const).map((value) => (
-          <Link
-            key={value}
-            href={setsBrowseHref(value, q)}
-            aria-current={lang === value ? "page" : undefined}
-            className={cn(
-              "rounded-full border px-3 py-1.5 text-sm",
-              lang === value
-                ? "border-primary bg-primary text-primary-foreground"
-                : "border-border text-muted-foreground",
-            )}
-          >
-            {search(value)}
-          </Link>
-        ))}
-      </div>
-
-      <SearchBar locale={locale} q={q} lang={lang} mode="set" idPrefix="sets" showLang={false} />
+      <SearchBar locale={locale} q={q} lang={lang} mode="set" idPrefix="sets" />
 
       <p className="text-sm text-muted-foreground">{t("count", { count: shown })}</p>
 

@@ -22,10 +22,7 @@ export default async function ShopsPage({ params }: { params: Promise<{ locale: 
 
   return (
     <div className="grid gap-6">
-      <div className="grid max-w-2xl gap-2">
-        <h1 className="font-display text-4xl">{t("title")}</h1>
-        <p className="text-sm leading-6 text-muted-foreground">{t("intro")}</p>
-      </div>
+      <h1 className="font-display text-4xl">{t("title")}</h1>
       <div className="grid gap-3 md:grid-cols-2">
         {shops.map((shop) => (
           <Link

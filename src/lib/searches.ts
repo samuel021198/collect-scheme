@@ -1,6 +1,6 @@
 import { existsSync, mkdirSync, readFileSync, renameSync, writeFileSync } from "node:fs";
 import path from "node:path";
-import { searchNamedCards } from "./catalog";
+import { matchesPrint, searchNamedCards, type PrintLang } from "./catalog";
 import { loadCards } from "./content";
 import { databaseUrl, ensureDb, sql } from "./db";
 import { rankSearches, type SearchEvent } from "./search-rank";
@@ -55,15 +55,13 @@ export async function rememberCard(id: string, now = Date.now()) {
   else await rememberCardFile(id, now);
 }
 
-export async function rememberQuery(query: string, cards: CatalogCard[] = loadCards()) {
-  const en = searchNamedCards(cards, query, "en")[0];
-  const ja = searchNamedCards(cards, query, "ja")[0];
-  if (en) await rememberCard(en.id);
-  if (ja && ja.id !== en?.id) await rememberCard(ja.id);
+export async function rememberQuery(query: string, lang: PrintLang = "en", cards: CatalogCard[] = loadCards()) {
+  const hit = searchNamedCards(cards, query, lang)[0];
+  if (hit) await rememberCard(hit.id);
 }
 
 async function recentIds(now: number) {
-  if (!databaseUrl()) return rankSearches(existsSync(filePath) ? readEvents() : [], now);
+  if (!databaseUrl()) return rankSearches(existsSync(filePath) ? readEvents() : [], now, 48);
   await ensureDb();
   const cutoff = new Date(now - WINDOW_MS).toISOString();
   const rows = await sql()`
@@ -72,13 +70,18 @@ async function recentIds(now: number) {
     WHERE at >= ${cutoff}
     GROUP BY card_id
     ORDER BY n DESC, latest DESC, card_id ASC
-    LIMIT 8
+    LIMIT 48
   `;
   return rows.map((row) => String(row.card_id));
 }
 
-export async function recentCards(cards: CatalogCard[] = loadCards(), now = Date.now()) {
-  const byId = new Map(cards.map((card) => [card.id, card]));
+export async function recentCards(cards?: CatalogCard[], lang?: PrintLang) {
+  const now = Date.now();
+  const shelf = cards ?? loadCards();
+  const byId = new Map(shelf.map((card) => [card.id, card]));
   const ids = await recentIds(now);
-  return ids.map((id) => byId.get(id)).filter((card): card is CatalogCard => card != null);
+  return ids
+    .map((id) => byId.get(id))
+    .filter((card): card is CatalogCard => card != null && (lang == null || matchesPrint(card.region, lang)))
+    .slice(0, 8);
 }

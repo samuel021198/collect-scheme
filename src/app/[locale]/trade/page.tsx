@@ -4,7 +4,8 @@ import { getTranslations } from "next-intl/server";
 import { Badge } from "@/components/ui/badge";
 import { Link } from "@/i18n/navigation";
 import { resolveLocale } from "@/i18n/locale";
-import { cardTitle, formatWhen } from "@/lib/catalog";
+import { cardTitle, formatWhen, matchesPrint, printForLocale } from "@/lib/catalog";
+import { loadCards } from "@/lib/content";
 import { textLabel } from "@/lib/labels";
 import { listPosts } from "@/lib/trades";
 
@@ -34,7 +35,12 @@ export default async function TradePage({
   const locale = await resolveLocale(params);
   const side = one((await searchParams).side);
   const t = await getTranslations("trade");
-  const posts = (await listPosts()).filter((post) => (side === "buy" || side === "sell" ? post.side === side : true));
+  const print = printForLocale(locale);
+  const regions = new Map(loadCards().map((card) => [card.id, card.region]));
+  const posts = (await listPosts()).filter(
+    (post) =>
+      matchesPrint(regions.get(post.card.id), print) && (side === "buy" || side === "sell" ? post.side === side : true),
+  );
   const filters = [
     { href: "/trade", id: "all", label: t("all") },
     { href: "/trade?side=sell", id: "sell", label: t("sell") },

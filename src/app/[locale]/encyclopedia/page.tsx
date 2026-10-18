@@ -4,7 +4,7 @@ import { CardTile } from "@/components/card-tile";
 import { SearchBar } from "@/components/search-bar";
 import { Link } from "@/i18n/navigation";
 import { resolveLocale } from "@/i18n/locale";
-import { parsePrintLang } from "@/lib/catalog";
+import { printForLocale } from "@/lib/catalog";
 import { queryCards } from "@/lib/content";
 import { recentCards } from "@/lib/searches";
 import { setsBrowseHref } from "@/lib/sets";
@@ -39,39 +39,31 @@ export default async function EncyclopediaPage({
   const locale = await resolveLocale(params);
   const raw = await searchParams;
   const q = one(raw.q).trim();
-  const lang = parsePrintLang(one(raw.lang));
+  const lang = printForLocale(locale);
   const page = Math.max(1, Number(one(raw.page)) || 1);
   const t = await getTranslations("encyclopedia");
-  const search = await getTranslations("search");
   const matched = q ? queryCards(q, lang) : [];
   const start = (page - 1) * PAGE_SIZE;
   const cards = matched.slice(start, start + PAGE_SIZE);
   const pages = Math.max(1, Math.ceil(matched.length / PAGE_SIZE));
-  const shelf = q ? [] : await recentCards();
+  const shelf = q ? [] : await recentCards(undefined, lang);
 
   function href(nextPage: number) {
     const query = new URLSearchParams();
     if (q) query.set("q", q);
-    query.set("lang", lang);
     if (nextPage > 1) query.set("page", String(nextPage));
     return `/encyclopedia?${query.toString()}`;
   }
 
   return (
     <div className="grid gap-6">
-      <div className="grid max-w-2xl gap-2">
-        <h1 className="font-display text-4xl">{t("title")}</h1>
-        <p className="text-sm leading-6 text-muted-foreground">{t("intro")}</p>
-      </div>
+      <h1 className="font-display text-4xl">{t("title")}</h1>
 
       <SearchBar locale={locale} q={q} lang={lang} mode="card" idPrefix="encyclopedia" />
 
       {!q ? (
         <section className="grid gap-4">
-          <div className="grid gap-1">
-            <h2 className="font-display text-2xl">{t("popular")}</h2>
-            <p className="text-sm text-muted-foreground">{t("popularNote")}</p>
-          </div>
+          <h2 className="font-display text-2xl">{t("popular")}</h2>
           {shelf.length === 0 ? (
             <p className="rounded-2xl border border-dashed border-border px-4 py-10 text-center text-sm text-muted-foreground">
               {t("prompt")}
@@ -86,7 +78,6 @@ export default async function EncyclopediaPage({
         </section>
       ) : matched.length === 0 ? (
         <div className="grid gap-3">
-          <p className="text-sm text-muted-foreground">{search(lang)}</p>
           <p className="rounded-2xl border border-dashed border-border px-4 py-10 text-center text-sm text-muted-foreground">
             {t("empty")}{" "}
             <Link href={setsBrowseHref(lang)} className="text-primary">
@@ -96,9 +87,7 @@ export default async function EncyclopediaPage({
         </div>
       ) : (
         <>
-          <p className="text-sm text-muted-foreground">
-            {search(lang)} · {t("count", { count: matched.length })}
-          </p>
+          <p className="text-sm text-muted-foreground">{t("count", { count: matched.length })}</p>
           <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
             {cards.map((card, index) => (
               <CardTile key={card.id} card={card} locale={locale} priority={index < 4} />

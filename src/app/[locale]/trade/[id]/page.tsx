@@ -6,7 +6,7 @@ import { ReplyForm } from "@/components/reply-form";
 import { Badge } from "@/components/ui/badge";
 import { Link } from "@/i18n/navigation";
 import { resolveLocale } from "@/i18n/locale";
-import { cardSubtitle, cardTitle, formatWhen } from "@/lib/catalog";
+import { cardTitle, formatWhen } from "@/lib/catalog";
 import { textLabel } from "@/lib/labels";
 import { getPost } from "@/lib/trades";
 
@@ -31,7 +31,6 @@ export default async function TradePostPage({ params }: { params: Promise<{ loca
   const post = await getPost(id);
   if (!post) notFound();
   const title = cardTitle(post.card.names, locale);
-  const subtitle = cardSubtitle(post.card.names, locale);
 
   return (
     <article className="grid gap-8 lg:grid-cols-[minmax(0,16rem)_1fr]">
@@ -49,7 +48,6 @@ export default async function TradePostPage({ params }: { params: Promise<{ loca
         />
         <Link href={`/encyclopedia/${post.card.id}`} className="text-sm text-primary">
           {title}
-          {subtitle ? ` · ${subtitle}` : ""}
         </Link>
       </div>
       <div className="grid gap-6">

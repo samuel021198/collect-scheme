@@ -66,7 +66,6 @@ export function ReplyForm({ postId }: { postId: string }) {
           onChange={(event) => setAuthorDraft(event.target.value)}
           className="h-9 rounded-lg border border-input bg-transparent px-2.5 text-sm outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50"
         />
-        <p className="text-xs text-muted-foreground">{t("nickHint")}</p>
       </div>
       <div className="grid gap-2">
         <Label htmlFor="reply-body">{t("replyLabel")}</Label>

@@ -1,8 +1,7 @@
 import Image from "next/image";
-import { getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import { RarityMark } from "@/components/rarity-stamp";
-import { cardSubtitle, cardTitle } from "@/lib/catalog";
+import { cardTitle } from "@/lib/catalog";
 import { cardFinishes } from "@/lib/finishes";
 import { textLabel, TYPE_DOT } from "@/lib/labels";
 import type { CatalogCard } from "@/lib/types";
@@ -17,10 +16,7 @@ export async function CardTile({
   locale: string;
   priority?: boolean;
 }) {
-  const print = await getTranslations("search");
-  const language = card.region === "jp" ? print("ja") : print("en");
   const title = cardTitle(card.names, locale);
-  const subtitle = cardSubtitle(card.names, locale);
   const kinds = card.types.length > 0 ? card.types : card.supertype === "Trainer" ? ["Trainer"] : [];
   const finish = cardFinishes(card)[0] ?? null;
 
@@ -43,14 +39,12 @@ export async function CardTile({
       </div>
       <div className="flex flex-1 flex-col px-1 pt-2.5 pb-1">
         <p className="text-sm leading-snug font-medium">{title}</p>
-        {subtitle ? <p className="text-xs text-muted-foreground">{subtitle}</p> : null}
         <p className="mt-1 text-xs text-muted-foreground">
           {[card.setCode, card.setName, card.number ? `#${card.number}` : ""]
             .filter(Boolean)
             .join(" · ")}
         </p>
         <div className="mt-2 flex flex-wrap gap-1">
-          <Badge variant="outline">{language}</Badge>
           {card.rarity ? <Badge variant="outline">{textLabel("rarity", card.rarity, locale)}</Badge> : null}
           {kinds.slice(0, 2).map((kind) => (
             <Badge key={kind} variant="secondary">

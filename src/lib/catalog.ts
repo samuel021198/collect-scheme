@@ -36,6 +36,10 @@ export function parsePrintLang(value: string | undefined): PrintLang {
   return "en";
 }
 
+export function printForLocale(locale: string): PrintLang {
+  return locale === "zh" ? "ja" : "en";
+}
+
 export function parseSearchKind(value: string | undefined): SearchKind {
   return value === "set" ? "set" : "card";
 }
