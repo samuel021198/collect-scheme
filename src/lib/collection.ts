@@ -45,8 +45,15 @@ export async function listCollection(userId: string) {
 }
 
 export async function collectionForCard(userId: string, cardId: string) {
-  const items = await listCollection(userId);
-  return items.filter((item) => item.cardId === cardId);
+  if (!databaseUrl()) return [];
+  await ensureDb();
+  const rows = await sql()`
+    SELECT id, card_id, condition_type, grade, quantity, updated_at
+    FROM collection_items
+    WHERE user_id = ${userId} AND card_id = ${cardId}
+    ORDER BY updated_at DESC, id ASC
+  `;
+  return rows.map((row) => rowItem(row)).filter((item): item is CollectionItem => item != null);
 }
 
 export async function addCollection(

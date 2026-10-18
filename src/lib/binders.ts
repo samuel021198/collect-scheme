@@ -1,4 +1,5 @@
 import { randomBytes } from "node:crypto";
+import { cache } from "react";
 import { addCollection, type CollectionItem } from "./collection";
 import { databaseUrl, ensureDb, sql } from "./db";
 import { type ConditionType } from "./grades";
@@ -66,21 +67,23 @@ export async function listBinders(userId: string): Promise<BinderSummary[]> {
   }));
 }
 
-export async function binderView(userId: string, binderId: string) {
+async function binderViewUncached(userId: string, binderId: string) {
   if (!databaseUrl()) return null;
   await ensureDb();
   const binder = await owned(userId, binderId);
   if (!binder) return null;
   await ensurePage(binderId, 0);
-  const pages = await sql()`SELECT page_index FROM binder_pages WHERE binder_id = ${binderId} ORDER BY page_index ASC`;
-  const slots = await sql()`
+  const [pages, slots] = await Promise.all([
+    sql()`SELECT page_index FROM binder_pages WHERE binder_id = ${binderId} ORDER BY page_index ASC`,
+    sql()`
     SELECT s.id, s.page_index, s.row_index, s.col_index, s.collection_item_id,
       c.card_id, c.condition_type, c.grade, c.quantity
     FROM binder_slots s
     JOIN collection_items c ON c.id = s.collection_item_id
     WHERE s.binder_id = ${binderId}
     ORDER BY s.page_index, s.row_index, s.col_index
-  `;
+  `,
+  ]);
   return {
     binder: {
       id: String(binder.id),
@@ -103,6 +106,8 @@ export async function binderView(userId: string, binderId: string) {
     })),
   };
 }
+
+export const binderView = cache(binderViewUncached);
 
 export async function createBinder(userId: string, name: unknown, layout: unknown) {
   if (!databaseUrl()) return { ok: false as const, error: "unavailable" as const };

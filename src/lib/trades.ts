@@ -1,5 +1,6 @@
 import fs from "node:fs";
 import path from "node:path";
+import { unstable_cache } from "next/cache";
 import seedPosts from "../../data/trades.seed.json";
 import { validatePost, validateReply } from "./catalog";
 import { getCard } from "./content";
@@ -95,8 +96,10 @@ async function listPostsDb(): Promise<TradePost[]> {
   await ensureDb();
   await seedDatabase();
   const q = sql();
-  const posts = await q`SELECT id, side, card, description, contact, author, created_at FROM trade_posts`;
-  const replies = await q`SELECT id, post_id, author, body, created_at FROM trade_replies`;
+  const [posts, replies] = await Promise.all([
+    q`SELECT id, side, card, description, contact, author, created_at FROM trade_posts`,
+    q`SELECT id, post_id, author, body, created_at FROM trade_replies`,
+  ]);
   const byPost = new Map<string, Reply[]>();
   for (const reply of replies) {
     const postId = String(reply.post_id);
@@ -130,6 +133,8 @@ export async function listPosts(): Promise<TradePost[]> {
   if (!databaseUrl()) return listPostsFile();
   return listPostsDb();
 }
+
+export const listPostsCached = unstable_cache(async () => listPosts(), ["trade-posts"], { revalidate: 60 });
 
 export async function getPost(id: string) {
   const posts = await listPosts();

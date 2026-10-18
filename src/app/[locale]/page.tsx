@@ -8,7 +8,7 @@ import { matchesPrint, printForLocale } from "@/lib/catalog";
 import { recentCards } from "@/lib/searches";
 import { loadSets } from "@/lib/sets";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 120;
 
 export default async function HomePage({ params }: { params: Promise<{ locale: string }> }) {
   const locale = await resolveLocale(params);

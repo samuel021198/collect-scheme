@@ -1,40 +1,53 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
 import { Link, useRouter } from "@/i18n/navigation";
 import { ConditionFields } from "@/components/condition-fields";
 import { Button } from "@/components/ui/button";
-import { gradesFor, type ConditionType } from "@/lib/grades";
+import { conditionLabel, gradesFor, type ConditionType } from "@/lib/grades";
 
-type Item = { id: string; label: string };
+type Item = { id: string; condition: ConditionType; grade: string; quantity: number };
 type Binder = { id: string; name: string };
+type Desk = { signedIn: boolean; items: Item[]; binders: Binder[] };
 
-export function CardActions({
-  cardId,
-  signedIn,
-  items,
-  binders,
-}: {
-  cardId: string;
-  signedIn: boolean;
-  items: Item[];
-  binders: Binder[];
-}) {
+export function CardActions({ cardId }: { cardId: string }) {
   const t = useTranslations("collection");
   const binder = useTranslations("binder");
   const account = useTranslations("account");
   const router = useRouter();
   const login = `/login?next=${encodeURIComponent(`/encyclopedia/${cardId}`)}`;
+  const [desk, setDesk] = useState<Desk | null>(null);
   const [condition, setCondition] = useState<ConditionType>("raw");
   const [grade, setGrade] = useState("");
   const [quantity, setQuantity] = useState("1");
-  const [itemId, setItemId] = useState(items[0]?.id ?? "new");
-  const [binderId, setBinderId] = useState(binders[0]?.id ?? "");
+  const [itemId, setItemId] = useState("new");
+  const [binderId, setBinderId] = useState("");
   const [error, setError] = useState("");
   const [pending, setPending] = useState(false);
   const [holes, setHoles] = useState<{ page: number; row: number; col: number }[]>([]);
   const labels = { condition: t("condition"), grade: t("grade"), quantity: t("quantity"), raw: t("raw") };
+
+  useEffect(() => {
+    const controller = new AbortController();
+    fetch(`/api/cards/${cardId}/desk`, { signal: controller.signal })
+      .then((response) => response.json())
+      .then((body: Desk) => {
+        setDesk(body);
+        setItemId(body.items[0]?.id ?? "new");
+        setBinderId(body.binders[0]?.id ?? "");
+      })
+      .catch(() => setDesk({ signedIn: false, items: [], binders: [] }));
+    return () => controller.abort();
+  }, [cardId]);
+
+  if (!desk) {
+    return <div className="h-24 rounded-2xl border border-dashed border-border" />;
+  }
+
+  const items = desk.items;
+  const binders = desk.binders;
+  const signedIn = desk.signedIn;
 
   if (!signedIn) {
     return (
@@ -66,6 +79,12 @@ export function CardActions({
         setPending(false);
         return false;
       }
+      const next = (await fetch(`/api/cards/${cardId}/desk`).then((response) => response.json())) as Desk;
+      setDesk(next);
+      setItemId((current) =>
+        current !== "new" && next.items.some((item) => item.id === current) ? current : (next.items[0]?.id ?? "new"),
+      );
+      setBinderId((current) => (next.binders.some((item) => item.id === current) ? current : (next.binders[0]?.id ?? "")));
       setPending(false);
       router.refresh();
       return true;
@@ -116,7 +135,9 @@ export function CardActions({
             {binder("whichCopy")}
             <select value={itemId} className="h-10 rounded-lg border border-border bg-background px-2" onChange={(event) => setItemId(event.target.value)}>
               {items.map((item) => (
-                <option key={item.id} value={item.id}>{item.label}</option>
+                <option key={item.id} value={item.id}>
+                  {item.condition === "raw" ? t("raw") : conditionLabel(item.condition, item.grade)} ×{item.quantity}
+                </option>
               ))}
               <option value="new">{binder("newCopy")}</option>
             </select>

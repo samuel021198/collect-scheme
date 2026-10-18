@@ -2,6 +2,8 @@ import { neon, type NeonQueryFunction } from "@neondatabase/serverless";
 
 type Sql = NeonQueryFunction<false, false>;
 
+const SCHEMA_VERSION = 1;
+
 let client: Sql | null = null;
 let ready: Promise<void> | null = null;
 
@@ -24,6 +26,12 @@ export function ensureDb() {
 
 async function migrate() {
   const q = sql();
+  await q`CREATE TABLE IF NOT EXISTS schema_meta (
+    id integer PRIMARY KEY,
+    version integer NOT NULL
+  )`;
+  const current = await q`SELECT version FROM schema_meta WHERE id = 1`;
+  if (Number(current[0]?.version) >= SCHEMA_VERSION) return;
   await q`CREATE TABLE IF NOT EXISTS users (
     id text PRIMARY KEY,
     nick text UNIQUE NOT NULL,
@@ -106,4 +114,8 @@ async function migrate() {
     collection_item_id text NOT NULL REFERENCES collection_items (id) ON DELETE CASCADE,
     UNIQUE (binder_id, page_index, row_index, col_index)
   )`;
+  await q`
+    INSERT INTO schema_meta (id, version) VALUES (1, ${SCHEMA_VERSION})
+    ON CONFLICT (id) DO UPDATE SET version = EXCLUDED.version
+  `;
 }

@@ -1,4 +1,5 @@
 import { createHash, randomBytes } from "node:crypto";
+import { cache } from "react";
 import { cookies } from "next/headers";
 import { databaseUrl, ensureDb, sql } from "./db";
 import { displayName, hashPassword, normalizeEmail, validPassword, verifyPassword } from "./password";
@@ -37,7 +38,7 @@ export function sessionCookie(token: string) {
   };
 }
 
-export async function currentUser(): Promise<Account | null> {
+export const currentUser = cache(async function currentUser(): Promise<Account | null> {
   if (!databaseUrl()) return null;
   try {
     const token = (await cookies()).get(COOKIE)?.value;
@@ -56,7 +57,7 @@ export async function currentUser(): Promise<Account | null> {
   } catch {
     return null;
   }
-}
+});
 
 async function openSession(userId: string) {
   await ensureDb();

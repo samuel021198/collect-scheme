@@ -9,6 +9,8 @@ import { resolveLocale } from "@/i18n/locale";
 import { routing } from "@/i18n/routing";
 import "../globals.css";
 
+export const preferredRegion = "hkg1";
+
 const display = Fraunces({
   subsets: ["latin"],
   variable: "--font-display",
@@ -40,19 +42,12 @@ export default async function LocaleLayout({
 }) {
   const locale = await resolveLocale(params);
   const messages = await getMessages();
-  const t = await getTranslations("nav");
 
   return (
     <html lang={locale === "zh" ? "zh-Hant" : "en"} className={`${display.variable} h-full antialiased`}>
       <body className="flex min-h-full flex-col">
         <NextIntlClientProvider messages={messages}>
           <NickProvider>
-            <a
-              href="#content"
-              className="sr-only focus:not-sr-only focus:absolute focus:top-3 focus:left-3 focus:z-50 focus:rounded-full focus:bg-primary focus:px-3 focus:py-2 focus:text-primary-foreground"
-            >
-              {t("skip")}
-            </a>
             <SiteHeader />
             <main id="content" className="mx-auto w-full max-w-6xl flex-1 px-4 py-8">
               {children}

@@ -3,20 +3,16 @@ import Image from "next/image";
 import { notFound } from "next/navigation";
 import { getTranslations } from "next-intl/server";
 import { CardActions } from "@/components/card-actions";
-import { RarityMark } from "@/components/rarity-stamp";
+import { FinishChoices, FinishMark } from "@/components/finish-controls";
 import { Link } from "@/i18n/navigation";
 import { resolveLocale } from "@/i18n/locale";
-import { currentUser } from "@/lib/auth";
-import { listBinders } from "@/lib/binders";
 import { cardTitle } from "@/lib/catalog";
-import { collectionForCard } from "@/lib/collection";
 import { getCard } from "@/lib/content";
-import { conditionLabel } from "@/lib/grades";
-import { cardFinishes, finishLabel } from "@/lib/finishes";
+import { cardFinishes } from "@/lib/finishes";
 import { textLabel } from "@/lib/labels";
-import { listPosts } from "@/lib/trades";
+import { listPostsCached } from "@/lib/trades";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 300;
 
 export async function generateMetadata({
   params,
@@ -29,37 +25,20 @@ export async function generateMetadata({
   return { title };
 }
 
-function one(value: string | string[] | undefined) {
-  return Array.isArray(value) ? (value[0] ?? "") : (value ?? "");
-}
-
-export default async function CardPage({
-  params,
-  searchParams,
-}: {
-  params: Promise<{ locale: string; id: string }>;
-  searchParams: Promise<{ finish?: string | string[] }>;
-}) {
+export default async function CardPage({ params }: { params: Promise<{ locale: string; id: string }> }) {
   const { id } = await params;
   const locale = await resolveLocale(params);
   const t = await getTranslations("encyclopedia");
-  const collection = await getTranslations("collection");
   const card = await getCard(id);
   if (!card) notFound();
   const finishes = cardFinishes(card);
-  const requested = one((await searchParams).finish);
-  const finish = finishes.find((item) => item.id === requested) ?? finishes[0] ?? null;
-
   const title = cardTitle(card.names, locale);
   const attribute = card.types.length
     ? card.types.map((kind) => textLabel("type", kind, locale)).join(" · ")
     : card.supertype
       ? textLabel("supertype", card.supertype, locale)
       : "";
-  const sellers = (await listPosts()).filter((post) => post.side === "sell" && post.card.id === card.id);
-  const user = await currentUser();
-  const owned = user ? await collectionForCard(user.id, card.id) : [];
-  const binders = user ? await listBinders(user.id) : [];
+  const sellers = (await listPostsCached()).filter((post) => post.side === "sell" && post.card.id === card.id);
 
   const facts = [
     [t("set"), card.setName],
@@ -83,9 +62,10 @@ export default async function CardPage({
             height={825}
             unoptimized
             priority
+            sizes="280px"
             className="h-auto w-full"
           />
-          <RarityMark finish={finish} locale={locale} />
+          <FinishMark finishes={finishes} locale={locale} />
         </div>
       </div>
       <div className="grid gap-5">
@@ -95,22 +75,8 @@ export default async function CardPage({
           </Link>
           <h1 className="font-display text-4xl">{title}</h1>
         </div>
-        {finishes.length > 1 ? (
-          <div className="flex flex-wrap gap-2">
-            {finishes.map((item) => (
-              <Link
-                key={item.id}
-                href={item.id === finishes[0]?.id ? `/encyclopedia/${card.id}` : `/encyclopedia/${card.id}?finish=${item.id}`}
-                aria-current={finish?.id === item.id ? "page" : undefined}
-                className={`rounded-full border px-3 py-1.5 text-sm ${finish?.id === item.id ? "border-primary bg-primary text-primary-foreground" : "border-border text-muted-foreground"}`}
-              >
-                {finishLabel(item, locale)}
-              </Link>
-            ))}
-          </div>
-        ) : finishes.length === 0 ? (
-          <p className="text-sm text-muted-foreground">{t("noRarity")}</p>
-        ) : null}
+        <FinishChoices cardId={card.id} finishes={finishes} locale={locale} />
+        {finishes.length === 0 ? <p className="text-sm text-muted-foreground">{t("noRarity")}</p> : null}
         {card.region === "jp" ? (
           <a
             href={`https://www.pokemon-card.com/card-search/index.php?keyword=${encodeURIComponent(card.names.en)}&se_ta=&regulation_sidebar_form=all&pg=&illust=&sm_and_keyword=true`}
@@ -157,15 +123,7 @@ export default async function CardPage({
             </div>
           )}
         </section>
-        <CardActions
-          cardId={card.id}
-          signedIn={Boolean(user)}
-          items={owned.map((item) => ({
-            id: item.id,
-            label: `${item.condition === "raw" ? collection("raw") : conditionLabel(item.condition, item.grade)} ×${item.quantity}`,
-          }))}
-          binders={binders.map((item) => ({ id: item.id, name: item.name }))}
-        />
+        <CardActions cardId={card.id} />
         <Link
           href={`/trade/new?card=${card.id}`}
           className="inline-flex h-10 w-fit items-center rounded-lg bg-primary px-4 text-sm font-medium text-primary-foreground"

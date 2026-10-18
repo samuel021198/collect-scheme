@@ -1,5 +1,6 @@
 import { existsSync, mkdirSync, readFileSync, renameSync, writeFileSync } from "node:fs";
 import path from "node:path";
+import { unstable_cache } from "next/cache";
 import { matchesPrint, searchNamedCards, type PrintLang } from "./catalog";
 import { loadCards } from "./content";
 import { databaseUrl, ensureDb, sql } from "./db";
@@ -60,19 +61,31 @@ export async function rememberQuery(query: string, lang: PrintLang = "en", cards
   if (hit) await rememberCard(hit.id);
 }
 
+const recentIdsCached = unstable_cache(
+  async () => {
+    await ensureDb();
+    const cutoff = new Date(Date.now() - WINDOW_MS).toISOString();
+    const rows = await sql()`
+      SELECT card_id, count(*)::int AS n, max(at) AS latest
+      FROM search_events
+      WHERE at >= ${cutoff}
+      GROUP BY card_id
+      ORDER BY n DESC, latest DESC, card_id ASC
+      LIMIT 48
+    `;
+    return rows.map((row) => String(row.card_id));
+  },
+  ["recent-card-ids"],
+  { revalidate: 120 },
+);
+
 async function recentIds(now: number) {
   if (!databaseUrl()) return rankSearches(existsSync(filePath) ? readEvents() : [], now, 48);
-  await ensureDb();
-  const cutoff = new Date(now - WINDOW_MS).toISOString();
-  const rows = await sql()`
-    SELECT card_id, count(*)::int AS n, max(at) AS latest
-    FROM search_events
-    WHERE at >= ${cutoff}
-    GROUP BY card_id
-    ORDER BY n DESC, latest DESC, card_id ASC
-    LIMIT 48
-  `;
-  return rows.map((row) => String(row.card_id));
+  try {
+    return await recentIdsCached();
+  } catch {
+    return [];
+  }
 }
 
 export async function recentCards(cards?: CatalogCard[], lang?: PrintLang) {

@@ -32,6 +32,7 @@ export async function CardTile({
           fill
           unoptimized
           priority={priority}
+          loading={priority ? "eager" : "lazy"}
           sizes="(max-width: 640px) 45vw, 220px"
           className="object-contain"
         />

@@ -24,6 +24,7 @@ type Cache<T> = { mtime: number; value: T };
 type Trait = { types?: string[]; category?: string };
 
 let cardCache: Cache<CatalogCard[]> | null = null;
+let cardsById = new Map<string, CatalogCard>();
 let printCache: Cache<Record<string, CardPrint[]>> | null = null;
 let traitCache: Cache<Record<string, Trait>> | null = null;
 
@@ -95,6 +96,7 @@ export function loadCards() {
     toCard(raw, prints[raw.id], traits[raw.id]),
   );
   cardCache = { mtime, value: cards };
+  cardsById = new Map(cards.map((card) => [card.id, card]));
   return cards;
 }
 
@@ -112,5 +114,6 @@ export function cardsInSet(setId: string) {
 
 export async function getCard(id: string): Promise<CatalogCard | null> {
   if (!/^[A-Za-z0-9-]{1,40}$/.test(id)) return null;
-  return loadCards().find((card) => card.id === id) ?? null;
+  if (cardsById.size === 0) loadCards();
+  return cardsById.get(id) ?? null;
 }
