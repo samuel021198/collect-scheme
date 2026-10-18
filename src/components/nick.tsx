@@ -1,10 +1,6 @@
 "use client";
 
-import { createContext, useContext, useState, useSyncExternalStore } from "react";
-import { useTranslations } from "next-intl";
-import { buttonVariants } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { cn } from "cn";
+import { createContext, useContext, useSyncExternalStore } from "react";
 
 const KEY = "collect-scheme-nick";
 const EVENT = "collect-scheme-nick";
@@ -42,56 +38,4 @@ export function useNick() {
   const value = useContext(NickContext);
   if (!value) throw new Error("NickProvider missing");
   return value;
-}
-
-export function NickChip() {
-  const t = useTranslations("nick");
-  const { nick, setNick } = useNick();
-  const [editing, setEditing] = useState(false);
-  const [draft, setDraft] = useState<string | null>(null);
-  const value = draft ?? nick;
-
-  if (editing || !nick) {
-    return (
-      <form
-        className="flex items-center gap-1"
-        onSubmit={(event) => {
-          event.preventDefault();
-          const next = value.trim();
-          if (next.length < 2) return;
-          setNick(next);
-          setDraft(null);
-          setEditing(false);
-        }}
-      >
-        <label className="sr-only" htmlFor="header-nick">
-          {t("label")}
-        </label>
-        <Input
-          id="header-nick"
-          value={value}
-          placeholder={t("placeholder")}
-          onChange={(event) => setDraft(event.target.value)}
-          className="h-8 w-32"
-        />
-        <button type="submit" className={cn(buttonVariants({ size: "sm" }))}>
-          {t("save")}
-        </button>
-      </form>
-    );
-  }
-
-  return (
-    <button
-      type="button"
-      onClick={() => {
-        setDraft(nick);
-        setEditing(true);
-      }}
-      className="rounded-full border border-border px-3 py-1 text-xs text-muted-foreground hover:text-foreground"
-    >
-      {nick}
-      <span className="ml-2 text-primary">{t("change")}</span>
-    </button>
-  );
 }

@@ -5,7 +5,6 @@ import { currentUser } from "@/lib/auth";
 import { LanguageSwitcher } from "./language-switcher";
 import { LogoutButton } from "./logout-button";
 import { NavLinks } from "./nav-links";
-import { NickChip } from "./nick";
 
 function Mark() {
   return (
@@ -50,7 +49,6 @@ export async function SiteHeader() {
                 {t("login")}
               </Link>
             )}
-            <NickChip />
             <Suspense fallback={<div className="h-8 w-24 rounded-full bg-muted" />}>
               <LanguageSwitcher />
             </Suspense>
