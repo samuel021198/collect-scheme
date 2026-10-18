@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { BookOpen, Heart, Layers } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { CardTile } from "@/components/card-tile";
 import { useQuickAdd } from "@/components/quick-add";
@@ -34,7 +35,7 @@ export function CardGrid({
       <div className="flex flex-wrap items-center gap-2">
         <button
           type="button"
-          className={`rounded-full border px-3 py-1.5 text-sm ${picking ? "border-primary bg-primary text-primary-foreground" : "border-border"}`}
+          className={`min-h-11 rounded-full border px-4 text-sm touch-manipulation ${picking ? "border-primary bg-primary text-primary-foreground" : "border-border"}`}
           onClick={() => {
             setPicking((current) => !current);
             setSelected([]);
@@ -45,9 +46,9 @@ export function CardGrid({
         {picking && selected.length > 0 ? (
           <>
             <span className="text-sm text-muted-foreground">{t("selected", { count: selected.length })}</span>
-            <button type="button" className="rounded-full border border-border px-3 py-1.5 text-sm" onClick={() => run("wish")}>{t("wish")}</button>
-            <button type="button" className="rounded-full border border-border px-3 py-1.5 text-sm" onClick={() => run("collection")}>{t("collection")}</button>
-            <button type="button" className="rounded-full border border-border px-3 py-1.5 text-sm" onClick={() => run("binder")}>{t("binder")}</button>
+            <button type="button" aria-label={t("wish")} title={t("wish")} className="grid size-11 place-items-center rounded-full border border-border touch-manipulation" onClick={() => run("wish")}><Heart className="size-5" /></button>
+            <button type="button" aria-label={t("collection")} title={t("collection")} className="grid size-11 place-items-center rounded-full border border-border touch-manipulation" onClick={() => run("collection")}><Layers className="size-5" /></button>
+            <button type="button" aria-label={t("binder")} title={t("binder")} className="grid size-11 place-items-center rounded-full border border-border touch-manipulation" onClick={() => run("binder")}><BookOpen className="size-5" /></button>
           </>
         ) : null}
       </div>

@@ -63,7 +63,7 @@ export function CardTile({
           </Link>
         )}
         {picking ? (
-          <span className={`pointer-events-none absolute top-2 left-2 z-20 grid size-6 place-items-center rounded-full text-xs ${selected ? "bg-primary text-primary-foreground" : "bg-background/90"}`}>
+          <span className={`pointer-events-none absolute top-2 left-2 z-20 grid size-8 place-items-center rounded-full text-sm ${selected ? "bg-primary text-primary-foreground" : "bg-background/90"}`}>
             {selected ? "✓" : ""}
           </span>
         ) : null}
@@ -79,7 +79,10 @@ export function CardTile({
           <span className="mt-1 block text-xs text-muted-foreground">{meta}</span>
         </Link>
       )}
-      <div className="mt-2 flex flex-wrap gap-1 px-1">
+      <div className="mt-2">
+        <QuickButtons cardId={card.id} spread />
+      </div>
+      <div className="mt-2 hidden flex-wrap gap-1 px-1 sm:flex">
         {card.rarity ? <Badge variant="outline">{textLabel("rarity", card.rarity, locale)}</Badge> : null}
         {kinds.slice(0, 2).map((kind) => (
           <Badge key={kind} variant="secondary">
@@ -87,9 +90,6 @@ export function CardTile({
             {textLabel("type", kind, locale)}
           </Badge>
         ))}
-      </div>
-      <div className="mt-2">
-        <QuickButtons cardId={card.id} />
       </div>
     </article>
   );

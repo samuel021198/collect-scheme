@@ -143,7 +143,7 @@ export function SearchForm({
                     <div key="cards" className="grid gap-1">
                       <p className="px-2 pt-1 text-xs text-muted-foreground">{cardsLabel}</p>
                       {cards.map((card) => (
-                        <div key={card.id} className="flex items-center gap-2 rounded-lg px-2 py-1.5 hover:bg-muted">
+                        <div key={card.id} className="grid gap-1 rounded-lg px-2 py-1.5 hover:bg-muted sm:flex sm:items-center sm:gap-2">
                           <Link
                             href={`/encyclopedia/${card.id}`}
                             className="grid min-w-0 flex-1 grid-cols-[2.5rem_1fr] items-center gap-2"

@@ -22,10 +22,10 @@ export function CountField({
   return (
     <div className="grid gap-1 text-sm">
       <label htmlFor={id}>{label}</label>
-      <div className="flex h-10 w-fit items-center rounded-lg border border-border">
+      <div className="flex h-12 w-fit items-center rounded-lg border border-border">
         <button
           type="button"
-          className="h-full px-3 text-base"
+          className="h-full min-w-12 text-lg touch-manipulation"
           aria-label={t("less")}
           onClick={() => onChange(String(Math.max(1, chosen - 1)))}
         >
@@ -35,12 +35,12 @@ export function CountField({
           id={id}
           inputMode="numeric"
           value={value}
-          className="h-full w-12 bg-transparent text-center outline-none"
+          className="h-full w-14 bg-transparent text-center text-base outline-none"
           onChange={(event) => onChange(event.target.value)}
         />
         <button
           type="button"
-          className="h-full px-3 text-base"
+          className="h-full min-w-12 text-lg touch-manipulation"
           aria-label={t("more")}
           onClick={() => onChange(String(Math.min(max, (chosen < 1 ? 0 : chosen) + 1)))}
         >

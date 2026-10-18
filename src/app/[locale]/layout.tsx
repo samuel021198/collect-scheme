@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { NextIntlClientProvider } from "next-intl";
 import { getMessages, getTranslations } from "next-intl/server";
 import { SiteFooter } from "@/components/site-footer";
@@ -10,6 +10,12 @@ import { routing } from "@/i18n/routing";
 import "../globals.css";
 
 export const preferredRegion = "hkg1";
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  viewportFit: "cover",
+};
 
 export function generateStaticParams() {
   return routing.locales.map((locale) => ({ locale }));
@@ -45,7 +51,7 @@ export default async function LocaleLayout({
           <NickProvider>
             <QuickAddProvider>
               <SiteHeader />
-              <main id="content" className="mx-auto w-full max-w-6xl flex-1 px-4 py-8">
+              <main id="content" className="mx-auto w-full max-w-6xl flex-1 px-3 py-4 sm:px-4 sm:py-8">
                 {children}
               </main>
               <SiteFooter />

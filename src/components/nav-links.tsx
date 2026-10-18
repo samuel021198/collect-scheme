@@ -13,7 +13,7 @@ export function NavLinks({
   const pathname = usePathname();
 
   return (
-    <nav className="flex gap-1 overflow-x-auto" aria-label={label}>
+    <nav className="-mx-1 flex gap-1 overflow-x-auto px-1" aria-label={label}>
       {items.map((item) => {
         const active = pathname === item.href || pathname.startsWith(`${item.href}/`);
         return (
@@ -21,7 +21,7 @@ export function NavLinks({
             key={item.href}
             href={item.href}
             aria-current={active ? "page" : undefined}
-            className={`shrink-0 rounded-full px-3 py-1.5 text-sm ${
+            className={`inline-flex min-h-11 shrink-0 items-center rounded-full px-3 text-sm touch-manipulation ${
               active
                 ? "bg-primary/15 text-primary"
                 : item.quiet

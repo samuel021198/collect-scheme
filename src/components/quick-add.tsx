@@ -1,6 +1,7 @@
 "use client";
 
 import { createContext, useContext, useEffect, useState } from "react";
+import { BookOpen, Heart, Layers } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { Link, usePathname, useRouter } from "@/i18n/navigation";
 import { CountField } from "@/components/count-field";
@@ -185,11 +186,11 @@ export function QuickAddProvider({ children }: { children: React.ReactNode }) {
       {draft ? <div className="h-48" /> : null}
       {note && !draft ? <p className="sr-only">{note}</p> : null}
       {draft ? (
-        <div className="fixed inset-x-0 bottom-0 z-40 border-t border-border bg-background/95 p-4 backdrop-blur">
+        <div className="fixed inset-x-0 bottom-0 z-50 border-t border-border bg-background/95 px-4 pt-4 pb-[max(1rem,env(safe-area-inset-bottom))] backdrop-blur">
           <div className="mx-auto grid max-w-6xl gap-3">
             <div className="flex items-center justify-between gap-3">
               <p className="text-sm font-medium">{t(draft.kind)} · {t("selected", { count: draft.ids.length })}</p>
-              <button type="button" className="text-sm text-muted-foreground" onClick={() => setDraft(null)}>
+              <button type="button" className="inline-flex min-h-11 items-center px-2 text-sm text-muted-foreground touch-manipulation" onClick={() => setDraft(null)}>
                 {t("cancel")}
               </button>
             </div>
@@ -204,7 +205,7 @@ export function QuickAddProvider({ children }: { children: React.ReactNode }) {
                   {t("which")}
                   <select
                     value={binderId}
-                    className="h-10 rounded-lg border border-border bg-background px-2"
+                    className="h-12 rounded-lg border border-border bg-background px-2 text-base"
                     onChange={(event) => setBinderId(event.target.value)}
                   >
                     {binders.map((binder) => (
@@ -215,7 +216,7 @@ export function QuickAddProvider({ children }: { children: React.ReactNode }) {
               )
             ) : null}
             {note ? <p className="text-sm text-primary">{note}</p> : null}
-            <Button type="button" className="h-10 w-fit" disabled={pending || (draft.kind === "binder" && !binderId)} onClick={() => void confirm()}>
+            <Button type="button" className="h-12 w-full sm:w-fit" disabled={pending || (draft.kind === "binder" && !binderId)} onClick={() => void confirm()}>
               {t("add")}
             </Button>
           </div>
@@ -227,23 +228,26 @@ export function QuickAddProvider({ children }: { children: React.ReactNode }) {
   );
 }
 
-export function QuickButtons({ cardId, compact = false }: { cardId: string; compact?: boolean }) {
+export function QuickButtons({ cardId, compact = false, spread = false }: { cardId: string; compact?: boolean; spread?: boolean }) {
   const t = useTranslations("quick");
   const { wished, toggleWish, open } = useQuickAdd();
   const saved = wished.has(cardId);
-  const className = compact
-    ? "rounded-md border border-border px-1.5 py-1 text-[10px] leading-none"
-    : "rounded-md bg-background/90 px-1 py-1.5 text-[10px] leading-none";
+  const className = spread
+    ? "grid h-11 place-items-center rounded-xl border border-border bg-background touch-manipulation"
+    : compact
+      ? "grid size-11 shrink-0 place-items-center rounded-full border border-border bg-background touch-manipulation"
+      : "grid size-11 place-items-center rounded-full bg-background/90 text-foreground shadow-md touch-manipulation";
+
   return (
-    <div className={compact ? "flex gap-1" : "grid grid-cols-3 gap-1"}>
-      <button type="button" className={`${className} ${saved ? "text-rose-500" : ""}`} onClick={() => toggleWish(cardId)}>
-        {saved ? t("wished") : t("wish")}
+    <div className={spread ? "grid grid-cols-3 gap-1" : "flex justify-center gap-1"}>
+      <button type="button" aria-label={saved ? t("wished") : t("wish")} aria-pressed={saved} title={t("wish")} className={`${className} ${saved ? "text-rose-500" : ""}`} onClick={() => toggleWish(cardId)}>
+        <Heart className={saved ? "size-5 fill-rose-500" : "size-5"} />
       </button>
-      <button type="button" className={className} onClick={() => open([cardId], "collection")}>
-        {t("collection")}
+      <button type="button" aria-label={t("collection")} title={t("collection")} className={className} onClick={() => open([cardId], "collection")}>
+        <Layers className="size-5" />
       </button>
-      <button type="button" className={className} onClick={() => open([cardId], "binder")}>
-        {t("binder")}
+      <button type="button" aria-label={t("binder")} title={t("binder")} className={className} onClick={() => open([cardId], "binder")}>
+        <BookOpen className="size-5" />
       </button>
     </div>
   );

@@ -88,7 +88,7 @@ export default async function EncyclopediaPage({
           {pages > 1 ? (
             <div className="flex items-center justify-between gap-3 text-sm">
               {page > 1 ? (
-                <Link href={href(page - 1)} className="text-primary">
+                <Link href={href(page - 1)} className="inline-flex min-h-11 items-center text-primary">
                   {t("prev")}
                 </Link>
               ) : (
@@ -98,7 +98,7 @@ export default async function EncyclopediaPage({
                 {page} / {pages}
               </span>
               {page < pages ? (
-                <Link href={href(page + 1)} className="text-primary">
+                <Link href={href(page + 1)} className="inline-flex min-h-11 items-center text-primary">
                   {t("next")}
                 </Link>
               ) : (

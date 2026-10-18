@@ -21,7 +21,7 @@ export function LanguageSwitcher() {
           locale={code}
           hrefLang={code === "zh" ? "zh-Hant" : "en"}
           aria-current={locale === code ? "true" : undefined}
-          className={`rounded-full px-3 py-1.5 ${locale === code ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground"}`}
+          className={`inline-flex min-h-10 items-center rounded-full px-3 touch-manipulation ${locale === code ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground"}`}
         >
           {t(code)}
         </Link>

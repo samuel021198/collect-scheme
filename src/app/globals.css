@@ -132,6 +132,14 @@
 
 body {
   background-color: var(--background);
+  touch-action: manipulation;
+}
+
+@media (max-width: 639px) {
+  h1.font-display {
+    font-size: 1.75rem;
+    line-height: 1.25;
+  }
 }
 
 .font-display {
