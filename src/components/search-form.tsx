@@ -101,7 +101,7 @@ export function SearchForm({
       className="grid gap-4 rounded-2xl border border-border bg-card p-4"
       onSubmit={() => note({ q: value.trim() })}
     >
-      {heading ? <h2 className="font-display text-2xl">{title}</h2> : null}
+      {heading ? <h2 className="text-sm font-medium">{title}</h2> : null}
       <input type="hidden" name="lang" value={lang} />
       <div className="flex flex-col gap-2 sm:flex-row">
         <Label htmlFor={`${idPrefix}-q`} className="sr-only">

@@ -1,6 +1,6 @@
 {
   "meta": {
-    "homeDescription": "A collector's encyclopedia for the Pokémon Trading Card Game, with Hong Kong card shops and a peer-to-peer trade board.",
+    "homeDescription": "Pokémon card catalog, Hong Kong shops, and a trade board.",
     "encyclopedia": "Card search",
     "sets": "Set search",
     "shops": "Shops",
@@ -50,7 +50,7 @@
   },
   "home": {
     "eyebrow": "Pokémon TCG encyclopedia",
-    "title": "Know the card before you chase it.",
+    "title": "Collect Scheme",
     "lede": "",
     "searchLabel": "Search cards",
     "searchPlaceholder": "Name, set, or number",
@@ -172,10 +172,10 @@
     "back": "Back to the board"
   },
   "auction": {
-    "title": "Auctions are coming later",
-    "body": "This page cannot take a bid or close a lot. Collect Scheme will not hold money for you. If you want to move a card, use the trade board and talk to the other person directly.",
+    "title": "Auctions are not open",
+    "body": "You cannot bid here. Use the trade board to move a card.",
     "disabled": "Not open",
-    "lot": "Preview lot",
+    "lot": "Lot",
     "toTrade": "Go to the trade board"
   },
   "nick": {
@@ -269,8 +269,8 @@
     "errName": "Use 1–40 characters."
   },
   "notFound": {
-    "title": "That page is not on the shelf",
-    "body": "The card, shop, or post may have moved.",
+    "title": "That page is not here",
+    "body": "The card, shop, or post is gone.",
     "home": "Back home"
   }
 }

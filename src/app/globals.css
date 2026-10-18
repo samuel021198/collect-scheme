@@ -132,14 +132,9 @@
 
 body {
   background-color: var(--background);
-  background-image: radial-gradient(
-    ellipse 90% 42% at 50% -12%,
-    oklch(0.8 0.12 82 / 0.16),
-    transparent 58%
-  );
-  background-attachment: fixed;
 }
 
 .font-display {
-  font-family: var(--font-display), "Noto Sans TC", Georgia, serif;
+  font-family: var(--font-sans);
+  font-weight: 600;
 }

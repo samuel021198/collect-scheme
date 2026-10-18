@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import { Fraunces } from "next/font/google";
 import { NextIntlClientProvider } from "next-intl";
 import { getMessages, getTranslations } from "next-intl/server";
 import { SiteFooter } from "@/components/site-footer";
@@ -10,11 +9,6 @@ import { routing } from "@/i18n/routing";
 import "../globals.css";
 
 export const preferredRegion = "hkg1";
-
-const display = Fraunces({
-  subsets: ["latin"],
-  variable: "--font-display",
-});
 
 export function generateStaticParams() {
   return routing.locales.map((locale) => ({ locale }));
@@ -44,7 +38,7 @@ export default async function LocaleLayout({
   const messages = await getMessages();
 
   return (
-    <html lang={locale === "zh" ? "zh-Hant" : "en"} className={`${display.variable} h-full antialiased`}>
+    <html lang={locale === "zh" ? "zh-Hant" : "en"} className="h-full antialiased">
       <body className="flex min-h-full flex-col">
         <NextIntlClientProvider messages={messages}>
           <NickProvider>

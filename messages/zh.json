@@ -1,6 +1,6 @@
 {
   "meta": {
-    "homeDescription": "給收藏家的寶可夢卡牌圖鑑，附香港卡店與同好交換板。",
+    "homeDescription": "寶可夢卡牌圖鑑、香港卡店、交換板。",
     "encyclopedia": "卡牌搜尋",
     "sets": "系列搜尋",
     "shops": "店舖",
@@ -50,7 +50,7 @@
   },
   "home": {
     "eyebrow": "寶可夢卡牌圖鑑",
-    "title": "追卡之前，先把這張卡認清楚。",
+    "title": "Collect Scheme",
     "lede": "Collect Scheme 是給收藏家的寶可夢卡牌圖鑑。卡牌搜尋找一張卡，系列搜尋找一套。兩邊都可以先揀英文卡或日文卡。旁邊有香港卡店和交換板。拍賣還沒有開放。",
     "searchLabel": "搜尋卡牌",
     "searchPlaceholder": "卡名、系列或編號",
@@ -172,10 +172,10 @@
     "back": "返回交換板"
   },
   "auction": {
-    "title": "拍賣稍後才會開放",
-    "body": "這個頁面不能出價，也不能結標。Collect Scheme 不會代你收錢。想轉手卡牌，請用交換板直接跟對方談。",
-    "disabled": "尚未開放",
-    "lot": "預覽品項",
+    "title": "拍賣未開",
+    "body": "這裡不能出價。想轉手，用交換板。",
+    "disabled": "未開",
+    "lot": "品項",
     "toTrade": "前往交換板"
   },
   "nick": {
@@ -269,8 +269,8 @@
     "errName": "卡簿名用 1 到 40 個字。"
   },
   "notFound": {
-    "title": "架上沒有這一頁",
-    "body": "卡牌、店舖或貼文可能已經不在。",
+    "title": "沒有這一頁",
+    "body": "卡、店或者貼文已經不在。",
     "home": "回到首頁"
   }
 }
