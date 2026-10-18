@@ -51,4 +51,31 @@ async function migrate() {
     at timestamptz NOT NULL
   )`;
   await q`CREATE INDEX IF NOT EXISTS search_events_at_idx ON search_events (at)`;
+  await q`ALTER TABLE users ADD COLUMN IF NOT EXISTS email text`;
+  await q`ALTER TABLE users ADD COLUMN IF NOT EXISTS password_hash text`;
+  await q`CREATE UNIQUE INDEX IF NOT EXISTS users_email_idx ON users (email)`;
+  await q`CREATE TABLE IF NOT EXISTS sessions (
+    id text PRIMARY KEY,
+    user_id text NOT NULL REFERENCES users (id) ON DELETE CASCADE,
+    token_hash text UNIQUE NOT NULL,
+    expires_at timestamptz NOT NULL,
+    created_at timestamptz NOT NULL DEFAULT now()
+  )`;
+  await q`CREATE INDEX IF NOT EXISTS sessions_user_idx ON sessions (user_id)`;
+  await q`CREATE TABLE IF NOT EXISTS binders (
+    id text PRIMARY KEY,
+    user_id text NOT NULL REFERENCES users (id) ON DELETE CASCADE,
+    name text NOT NULL,
+    cover_card_id text,
+    created_at timestamptz NOT NULL DEFAULT now()
+  )`;
+  await q`CREATE INDEX IF NOT EXISTS binders_user_idx ON binders (user_id)`;
+  await q`CREATE TABLE IF NOT EXISTS binder_cards (
+    binder_id text NOT NULL REFERENCES binders (id) ON DELETE CASCADE,
+    card_id text NOT NULL,
+    status text NOT NULL,
+    finish text,
+    added_at timestamptz NOT NULL DEFAULT now(),
+    PRIMARY KEY (binder_id, card_id)
+  )`;
 }

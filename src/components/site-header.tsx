@@ -1,7 +1,9 @@
 import { Suspense } from "react";
 import { getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
+import { currentUser } from "@/lib/auth";
 import { LanguageSwitcher } from "./language-switcher";
+import { LogoutButton } from "./logout-button";
 import { NavLinks } from "./nav-links";
 import { NickChip } from "./nick";
 
@@ -19,10 +21,12 @@ function Mark() {
 
 export async function SiteHeader() {
   const t = await getTranslations("nav");
+  const user = await currentUser();
   const items = [
     { href: "/encyclopedia", label: t("encyclopedia") },
     { href: "/sets", label: t("sets") },
     { href: "/shops", label: t("shops") },
+    ...(user ? [{ href: "/binders", label: t("binders") }] : []),
     { href: "/trade", label: t("trade") },
     { href: "/auction", label: t("auction"), quiet: true },
   ];
@@ -36,6 +40,16 @@ export async function SiteHeader() {
             Collect Scheme
           </Link>
           <div className="flex items-center gap-2">
+            {user ? (
+              <>
+                <span className="max-w-32 truncate text-sm text-muted-foreground">{user.name}</span>
+                <LogoutButton />
+              </>
+            ) : (
+              <Link href="/login" className="rounded-full border border-border px-3 py-1.5 text-sm">
+                {t("login")}
+              </Link>
+            )}
             <NickChip />
             <Suspense fallback={<div className="h-8 w-24 rounded-full bg-muted" />}>
               <LanguageSwitcher />

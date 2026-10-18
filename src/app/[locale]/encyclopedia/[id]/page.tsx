@@ -2,9 +2,12 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import { notFound } from "next/navigation";
 import { getTranslations } from "next-intl/server";
+import { AddToBinder } from "@/components/add-to-binder";
 import { RarityMark } from "@/components/rarity-stamp";
 import { Link } from "@/i18n/navigation";
 import { resolveLocale } from "@/i18n/locale";
+import { currentUser } from "@/lib/auth";
+import { binderChoices } from "@/lib/binders";
 import { cardTitle } from "@/lib/catalog";
 import { getCard } from "@/lib/content";
 import { cardFinishes, finishLabel } from "@/lib/finishes";
@@ -51,6 +54,8 @@ export default async function CardPage({
       ? textLabel("supertype", card.supertype, locale)
       : "";
   const sellers = (await listPosts()).filter((post) => post.side === "sell" && post.card.id === card.id);
+  const user = await currentUser();
+  const binders = user ? await binderChoices(user.id, card.id) : null;
 
   const facts = [
     [t("set"), card.setName],
@@ -148,6 +153,7 @@ export default async function CardPage({
             </div>
           )}
         </section>
+        <AddToBinder cardId={card.id} finish={finish?.id ?? null} binders={binders} />
         <Link
           href={`/trade/new?card=${card.id}`}
           className="inline-flex h-10 w-fit items-center rounded-lg bg-primary px-4 text-sm font-medium text-primary-foreground"

@@ -18,7 +18,7 @@ npm run lint
 
 ## 環境變數
 
-複製 `.env.example` 成 `.env.local`。
+複製 `.env.example` 成 `.env.local`。帳戶同卡簿一定要 `DATABASE_URL`（Neon Postgres）。未設定時，交換貼文同搜尋次數先會退回本機 JSON。
 
 圖鑑同系列目錄在 `data/tcg/`。卡名、編號、系列代號同卡圖跟 TCG Collector 的國際版同日文系列，不列市價。寶可夢中文名用 `data/names/species-zh.json` 對到英文物種名，所以搜尋「噴火龍」會對上 Charizard。`POKEMONTCG_API_KEY` 不再用來搜圖鑑。
 
@@ -27,7 +27,9 @@ npm run lint
 - **卡牌搜尋**：只找一張卡。打字時會即時列出相關卡牌同系列。未搜尋時顯示近兩個星期大家搜得最多嘅卡，中英文一齊計。可以打卡名，或者「噴火龍 006/165」、「SV2a 006」呢類指定編號。完整結果仍然可以分英文卡同日文卡。每張卡嘅版本跟該卡實際印過嘅清單（普通、反向閃、宇宙閃、印章），冇印過就唔會加。標記蓋喺現有卡圖上；日文卡另外連去官方卡表，不轉載那邊的圖。
 - **系列搜尋**：只找系列。代號「SV2A」對上日文 151。英文卡同日文卡分開瀏覽。不列市價。
 - **店舖（香港）**：MOONROAD 信和 246、Bengal TCG、PikaBox、Card Holo。地址整理自各店公開頁面，出門前請再確認。
-- **交換**：用瀏覽器裡的暱稱刊登收購或出讓，標一張卡，並在貼文下留言。沒有帳號密碼。有 `DATABASE_URL` 時，貼文同搜尋次數寫入 Neon Postgres（`trade_posts`、`trade_replies`、`search_events`）。`users` 表留俾之後嘅帳戶。未設定時仍然寫入 `data/trades.local.json`（已 gitignore）。
+- **帳戶**：電郵同密碼註冊、登入、登出。Session 放喺 httpOnly cookie。一定要 `DATABASE_URL`。
+- **卡簿**：登入後可以開多本私人卡簿。圖鑑卡頁「加入卡簿」，揀想要（黑白）或已有（彩色）。卡簿頁可以篩全部／想要／已有，並顯示進度，例如 12/40。
+- **交換**：用瀏覽器裡的暱稱刊登收購或出讓，標一張卡，並在貼文下留言。有 `DATABASE_URL` 時，貼文同搜尋次數寫入 Neon Postgres。未設定時仍然寫入 `data/trades.local.json`（已 gitignore）。
 - **拍賣**：只有「即將推出」頁，不能出價。
 
 交換板寫明交易由雙方自行進行。Collect Scheme 不收款、不保管卡、不運送。
@@ -36,8 +38,7 @@ npm run lint
 
 - 語言：在 `src/i18n/routing.ts` 加上 `ja`、`zh-Hans`，並新增 `messages/ja.json`、`messages/zh-Hans.json`，以及 `data/names/ja.json`。`src/i18n/request.ts` 的 catalogs 要一併補上。
 - 中文名：寶可夢物種名在 `data/names/species-zh.json`（英文名對繁中）。訓練家卡如果對不上，會繼續顯示英文名。
-- 帳戶：`users` 表已經喺 Postgres。登入仍然未做，而家仲係瀏覽器暱稱。
-- 更多城市、真實拍賣、價格、個人卡冊。
+- 更多城市、真實拍賣、價格。卡簿之後可以加公開連結同卡版本。
 
 ## English
 
@@ -59,7 +60,7 @@ npm run lint
 
 ### Environment
 
-Copy `.env.example` to `.env.local`.
+Copy `.env.example` to `.env.local`. Accounts and binders need `DATABASE_URL` (Neon Postgres). Without it, only trade posts and search counts fall back to local JSON.
 
 The encyclopedia and set index live in `data/tcg/`. Names, numbers, set codes, and scans follow TCG Collector's international and Japanese indexes. Prices are not included. Chinese Pokémon names come from `data/names/species-zh.json`, so searching 噴火龍 matches Charizard. `POKEMONTCG_API_KEY` is no longer used for search.
 
@@ -68,7 +69,9 @@ The encyclopedia and set index live in `data/tcg/`. Names, numbers, set codes, a
 - **Card search**: finds one card. Related cards and sets appear while you type. Before a search, the shelf shows the cards people looked up most in the last two weeks, English and Japanese together. A name, or a name plus a number such as `Charizard 006/165` or `SV2a 006`, narrows to that card. The full result list can still be limited to one print. Printings follow the list recorded for that exact card (non-holo, reverse holo, cosmos, stamp). A printing that was not made is not added. The mark is stamped on the scan we already have. Japanese cards also link to the official search; those photos are not copied.
 - **Set search**: finds an expansion. The code SV2A matches Japanese 151. English and Japanese sets are browsed separately. Prices are not included.
 - **Shops (HK)**: MOONROAD Sino Centre 246, Bengal TCG, PikaBox, Card Holo. Addresses are copied from the shops' public pages. Confirm hours before you visit.
-- **Trade**: pick a nickname stored in the browser, post a buy or sell tagged to a card, and reply on the thread. There is no password. With `DATABASE_URL`, posts and search counts go to Neon Postgres (`trade_posts`, `trade_replies`, `search_events`). A `users` table is reserved for accounts. Without that variable, posts stay in `data/trades.local.json` (gitignored).
+- **Account**: register, log in, and log out with email and password. The session is an httpOnly cookie. `DATABASE_URL` is required.
+- **Binders**: a signed-in collector can keep more than one private binder. On a card, choose Add to binder, then Wanted (grayscale) or Owned (full color). The binder page filters all / wanted / owned and shows progress, such as 12/40.
+- **Trade**: pick a nickname stored in the browser, post a buy or sell tagged to a card, and reply on the thread. With `DATABASE_URL`, posts and search counts go to Neon Postgres. Without that variable, posts stay in `data/trades.local.json` (gitignored).
 - **Auction**: a coming-soon page only. Bidding is disabled.
 
 The trade board says deals are peer-to-peer. Collect Scheme does not take payment, hold cards, or ship.
@@ -77,5 +80,4 @@ The trade board says deals are peer-to-peer. Collect Scheme does not take paymen
 
 - Locales: add `ja` and `zh-Hans` to `src/i18n/routing.ts`, then add `messages/<locale>.json`, `data/names/<locale>.json`, and an entry in `src/i18n/request.ts`.
 - Chinese names: Pokémon species live in `data/names/species-zh.json` (English name to Traditional Chinese). Trainer cards that do not match stay in English.
-- Accounts: the `users` table is already in Postgres. Sign-in is not built yet; the board still uses the browser nickname.
-- More cities, a real auction, prices, and personal binders.
+- More cities, a real auction, and prices. Binders can later add a public link and print variants.
