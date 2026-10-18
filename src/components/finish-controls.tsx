@@ -20,7 +20,7 @@ export function FinishMark({ finishes, locale }: { finishes: Finish[]; locale: s
 
 function Mark({ finishes, locale }: { finishes: Finish[]; locale: string }) {
   const requested = useSearchParams().get("finish");
-  return <RarityMark finish={chosen(finishes, requested)} locale={locale} />;
+  return <RarityMark finish={chosen(finishes, requested)} locale={locale} corner="left" />;
 }
 
 export function FinishChoices({

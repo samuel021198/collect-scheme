@@ -3,6 +3,7 @@ import Image from "next/image";
 import { notFound } from "next/navigation";
 import { getTranslations } from "next-intl/server";
 import { CardActions } from "@/components/card-actions";
+import { WishButton } from "@/components/wish-button";
 import { FinishChoices, FinishMark } from "@/components/finish-controls";
 import { Link } from "@/i18n/navigation";
 import { resolveLocale } from "@/i18n/locale";
@@ -66,6 +67,7 @@ export default async function CardPage({ params }: { params: Promise<{ locale: s
             className="h-auto w-full"
           />
           <FinishMark finishes={finishes} locale={locale} />
+          <WishButton cardId={card.id} />
         </div>
       </div>
       <div className="grid gap-5">

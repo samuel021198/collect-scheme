@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import { cleanBinderName, packSlots } from "./binder-rules.ts";
-import { cleanCondition, gradesFor } from "./grades.ts";
+import { cleanCondition, gradesFor, quantityLeft } from "./grades.ts";
 import { speciesOf } from "./species.ts";
 
 test("grader scales follow each company", () => {
@@ -20,6 +20,10 @@ test("grader scales follow each company", () => {
   assert.deepEqual(cleanCondition("bgs", "9.5"), { condition: "bgs", grade: "9.5" });
   assert.deepEqual(cleanCondition("cgc", "pristine_10"), { condition: "cgc", grade: "pristine_10" });
   assert.equal(cleanCondition("tag", "9.5"), null);
+  assert.equal(quantityLeft(2, 1), 1);
+  assert.equal(quantityLeft(2, 2), 0);
+  assert.equal(quantityLeft(2, 3), null);
+  assert.equal(quantityLeft(2, 0), null);
 });
 
 test("species groups printings of the same Pokémon", () => {

@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import { redirect } from "next/navigation";
 import { getTranslations } from "next-intl/server";
-import { RemoveItem } from "@/components/remove-item";
+import { DropCopies } from "@/components/drop-copies";
 import { Link } from "@/i18n/navigation";
 import { resolveLocale } from "@/i18n/locale";
 import { currentUser } from "@/lib/auth";
@@ -46,7 +46,9 @@ export default async function SpeciesPage({ params }: { params: Promise<{ locale
               <p className="mt-2 text-sm font-medium">{row.title}</p>
               <p className="text-xs text-muted-foreground">{[row.setName, row.number ? `#${row.number}` : ""].filter(Boolean).join(" · ")}</p>
               <p className="text-xs text-primary">{row.condition === "raw" ? t("raw") : conditionLabel(row.condition, row.grade)} · ×{row.quantity}</p>
-              <RemoveItem id={row.id} />
+              <div className="mt-2">
+                <DropCopies key={`${row.id}:${row.quantity}`} id={row.id} owned={row.quantity} />
+              </div>
             </article>
           ))}
         </div>

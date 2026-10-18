@@ -28,6 +28,7 @@ export function HeaderChrome({ logo }: { logo: ReactNode }) {
     ...(name
       ? [
           { href: "/collection", label: t("collection") },
+          { href: "/wishlist", label: t("wishlist") },
           { href: "/binders", label: t("binders") },
         ]
       : []),

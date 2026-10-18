@@ -25,9 +25,11 @@ const VEIL: Partial<Record<Finish["tone"], string>> = {
 export function RarityMark({
   finish,
   locale,
+  corner = "right",
 }: {
   finish: Finish | null;
   locale: string;
+  corner?: "left" | "right";
 }) {
   if (!finish) return null;
   const label = finishLabel(finish, locale);
@@ -36,7 +38,7 @@ export function RarityMark({
       {VEIL[finish.tone] ? <span aria-hidden className={cn("pointer-events-none absolute inset-0", VEIL[finish.tone])} /> : null}
       <span
         className={cn(
-          "pointer-events-none absolute top-2 right-2 z-10 grid h-8 min-w-8 place-items-center rounded-md border px-1 text-[10px] font-bold tracking-wide shadow-md",
+          `pointer-events-none absolute top-2 z-10 grid h-8 min-w-8 place-items-center rounded-md border px-1 text-[10px] font-bold tracking-wide shadow-md ${corner === "left" ? "left-2" : "right-2"}`,
           TONE[finish.tone],
         )}
       >

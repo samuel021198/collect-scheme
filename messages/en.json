@@ -14,6 +14,7 @@
     "shops": "Shops (HK)",
     "trade": "Trade",
     "collection": "Collection",
+    "wishlist": "Wishlist",
     "binders": "Binders",
     "login": "Log in",
     "logout": "Log out",
@@ -234,12 +235,24 @@
     "emptyFilter": "Nothing matches.",
     "back": "Collection",
     "remove": "Remove",
+    "dropCount": "How many",
+    "owned": "You have",
+    "less": "One fewer",
+    "more": "One more",
+    "errQuantity": "Use a whole number from 1 up to the copies you have, and at most 99.",
     "recent": "Recently added",
     "set": "Set",
     "name": "Name",
     "anyCondition": "Any condition",
     "anySet": "Any set",
     "errCondition": "Pick a grade for that company."
+  },
+  "wish": {
+    "title": "Wishlist",
+    "empty": "No cards saved yet.",
+    "add": "Add to wishlist",
+    "remove": "Remove from wishlist",
+    "count": "{count} cards"
   },
   "binder": {
     "title": "Binders",

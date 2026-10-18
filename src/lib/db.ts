@@ -2,7 +2,7 @@ import { neon, type NeonQueryFunction } from "@neondatabase/serverless";
 
 type Sql = NeonQueryFunction<false, false>;
 
-const SCHEMA_VERSION = 1;
+const SCHEMA_VERSION = 2;
 
 let client: Sql | null = null;
 let ready: Promise<void> | null = null;
@@ -105,6 +105,13 @@ async function migrate() {
     page_index integer NOT NULL,
     PRIMARY KEY (binder_id, page_index)
   )`;
+  await q`CREATE TABLE IF NOT EXISTS wishlist_items (
+    user_id text NOT NULL REFERENCES users (id) ON DELETE CASCADE,
+    card_id text NOT NULL,
+    created_at timestamptz NOT NULL DEFAULT now(),
+    PRIMARY KEY (user_id, card_id)
+  )`;
+  await q`CREATE INDEX IF NOT EXISTS wishlist_user_idx ON wishlist_items (user_id, created_at DESC)`;
   await q`CREATE TABLE IF NOT EXISTS binder_slots (
     id text PRIMARY KEY,
     binder_id text NOT NULL REFERENCES binders (id) ON DELETE CASCADE,

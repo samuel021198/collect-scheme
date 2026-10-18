@@ -4,8 +4,9 @@ import { useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
 import { Link, useRouter } from "@/i18n/navigation";
 import { ConditionFields } from "@/components/condition-fields";
+import { DropCopies } from "@/components/drop-copies";
 import { Button } from "@/components/ui/button";
-import { conditionLabel, gradesFor, type ConditionType } from "@/lib/grades";
+import { cleanQuantity, conditionLabel, gradesFor, type ConditionType } from "@/lib/grades";
 
 type Item = { id: string; condition: ConditionType; grade: string; quantity: number };
 type Binder = { id: string; name: string };
@@ -64,6 +65,16 @@ export function CardActions({ cardId }: { cardId: string }) {
     setGrade(next[0] ?? "");
   }
 
+  async function reload() {
+    const next = (await fetch(`/api/cards/${cardId}/desk`).then((response) => response.json())) as Desk;
+    setDesk(next);
+    setItemId((current) =>
+      current !== "new" && next.items.some((item) => item.id === current) ? current : (next.items[0]?.id ?? "new"),
+    );
+    setBinderId((current) => (next.binders.some((item) => item.id === current) ? current : (next.binders[0]?.id ?? "")));
+    router.refresh();
+  }
+
   async function send(url: string, body: unknown) {
     setPending(true);
     setError("");
@@ -75,18 +86,20 @@ export function CardActions({ cardId }: { cardId: string }) {
       });
       const payload = (await response.json()) as { error?: string };
       if (!response.ok) {
-        setError(payload.error === "condition" ? t("errCondition") : payload.error === "taken" ? binder("taken") : account("err_generic"));
+        setError(
+          payload.error === "condition"
+            ? t("errCondition")
+            : payload.error === "quantity"
+              ? t("errQuantity")
+              : payload.error === "taken"
+                ? binder("taken")
+                : account("err_generic"),
+        );
         setPending(false);
         return false;
       }
-      const next = (await fetch(`/api/cards/${cardId}/desk`).then((response) => response.json())) as Desk;
-      setDesk(next);
-      setItemId((current) =>
-        current !== "new" && next.items.some((item) => item.id === current) ? current : (next.items[0]?.id ?? "new"),
-      );
-      setBinderId((current) => (next.binders.some((item) => item.id === current) ? current : (next.binders[0]?.id ?? "")));
+      await reload();
       setPending(false);
-      router.refresh();
       return true;
     } catch {
       setError(account("err_generic"));
@@ -104,6 +117,10 @@ export function CardActions({ cardId }: { cardId: string }) {
         className="grid gap-3 rounded-2xl border border-border bg-card p-4"
         onSubmit={(event) => {
           event.preventDefault();
+          if (!cleanQuantity(quantity)) {
+            setError(t("errQuantity"));
+            return;
+          }
           void send("/api/collection", fresh);
         }}
       >
@@ -121,11 +138,29 @@ export function CardActions({ cardId }: { cardId: string }) {
         <Button type="submit" disabled={pending} className="h-10 w-fit">{t("add")}</Button>
       </form>
 
+      {items.length > 0 ? (
+        <div className="grid gap-3 rounded-2xl border border-border bg-card p-4">
+          <h2 className="text-sm font-medium">{t("owned")}</h2>
+          {items.map((item) => (
+            <div key={`${item.id}:${item.quantity}`} className="grid gap-2">
+              <p className="text-sm">
+                {item.condition === "raw" ? t("raw") : conditionLabel(item.condition, item.grade)} · ×{item.quantity}
+              </p>
+              <DropCopies id={item.id} owned={item.quantity} onDone={() => void reload()} />
+            </div>
+          ))}
+        </div>
+      ) : null}
+
       <form
         className="grid gap-3 rounded-2xl border border-border bg-card p-4"
         onSubmit={(event) => {
           event.preventDefault();
           if (!binderId) return;
+          if (useNew && !cleanQuantity(quantity)) {
+            setError(t("errQuantity"));
+            return;
+          }
           void send(`/api/binders/${binderId}/place`, useNew ? fresh : { collectionItemId: itemId });
         }}
       >
@@ -209,6 +244,10 @@ export function CardActions({ cardId }: { cardId: string }) {
                 variant="outline"
                 disabled={pending}
                 onClick={() => {
+                  if (useNew && !cleanQuantity(quantity)) {
+                    setError(t("errQuantity"));
+                    return;
+                  }
                   void send(`/api/binders/${binderId}/place`, { ...(useNew ? fresh : { collectionItemId: itemId }), ...slot });
                 }}
               >

@@ -41,6 +41,12 @@ export function cleanQuantity(value: unknown) {
   return quantity;
 }
 
+export function quantityLeft(owned: number, requested: unknown) {
+  const amount = cleanQuantity(requested);
+  if (!amount || !Number.isInteger(owned) || owned < 1 || amount > owned) return null;
+  return owned - amount;
+}
+
 export function gradeRank(condition: ConditionType, grade: string) {
   if (condition === "raw" || !grade) return -1;
   if (grade === "pristine_10") return 10.5;

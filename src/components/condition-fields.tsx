@@ -1,5 +1,6 @@
 "use client";
 
+import { CountField } from "@/components/count-field";
 import { CONDITIONS, gradeOption, gradesFor, type ConditionType } from "@/lib/grades";
 
 export function ConditionFields({
@@ -56,16 +57,7 @@ export function ConditionFields({
           ))}
         </select>
       </label>
-      <label className="grid gap-1 text-sm">
-        {labels.quantity}
-        <input
-          id={`${idPrefix}-qty`}
-          inputMode="numeric"
-          value={quantity}
-          className="h-10 rounded-lg border border-border bg-background px-2"
-          onChange={(event) => onQuantity(event.target.value)}
-        />
-      </label>
+      <CountField id={`${idPrefix}-qty`} value={quantity} max={99} label={labels.quantity} onChange={onQuantity} />
     </div>
   );
 }

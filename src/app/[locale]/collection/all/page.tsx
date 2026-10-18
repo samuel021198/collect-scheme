@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import { redirect } from "next/navigation";
 import { getTranslations } from "next-intl/server";
-import { RemoveItem } from "@/components/remove-item";
+import { DropCopies } from "@/components/drop-copies";
 import { Link } from "@/i18n/navigation";
 import { resolveLocale } from "@/i18n/locale";
 import { currentUser } from "@/lib/auth";
@@ -91,15 +91,17 @@ export default async function CollectionAllPage({
       ) : (
         <div className="grid gap-2">
           {rows.map((row) => (
-            <article key={row.id} className="grid grid-cols-[4.5rem_1fr_auto] items-center gap-3 rounded-2xl border border-border bg-card p-2">
+            <article key={row.id} className="grid grid-cols-[4.5rem_1fr] items-center gap-3 rounded-2xl border border-border bg-card p-2">
               <Link href={`/encyclopedia/${row.cardId}`} className="relative h-24 overflow-hidden rounded-lg bg-black/40">
                 {row.image ? <Image src={row.image} alt="" fill unoptimized sizes="72px" className="object-contain" /> : null}
               </Link>
               <div className="min-w-0">
                 <p className="truncate text-sm font-medium">{row.title}</p>
                 <p className="text-xs text-muted-foreground">{line(row, t("raw"))}</p>
+                <div className="mt-2">
+                  <DropCopies key={`${row.id}:${row.quantity}`} id={row.id} owned={row.quantity} />
+                </div>
               </div>
-              <RemoveItem id={row.id} />
             </article>
           ))}
         </div>

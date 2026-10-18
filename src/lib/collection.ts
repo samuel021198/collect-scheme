@@ -78,10 +78,26 @@ export async function addCollection(
   return { ok: true as const, id: String(rows[0]?.id), quantity: Number(rows[0]?.quantity) || quantity };
 }
 
-export async function deleteCollection(userId: string, itemId: string) {
+export async function dropCollection(userId: string, itemId: string, requested: unknown) {
   if (!databaseUrl()) return { ok: false as const, error: "unavailable" as const };
+  const amount = cleanQuantity(requested);
+  if (!amount) return { ok: false as const, error: "quantity" as const };
   await ensureDb();
-  const rows = await sql()`DELETE FROM collection_items WHERE id = ${itemId} AND user_id = ${userId} RETURNING id`;
-  if (!rows[0]) return { ok: false as const, error: "missing" as const };
-  return { ok: true as const };
+  const q = sql();
+  const removed = await q`
+    DELETE FROM collection_items
+    WHERE id = ${itemId} AND user_id = ${userId} AND quantity = ${amount}
+    RETURNING id
+  `;
+  if (removed[0]) return { ok: true as const, quantity: 0 };
+  const updated = await q`
+    UPDATE collection_items
+    SET quantity = quantity - ${amount}, updated_at = now()
+    WHERE id = ${itemId} AND user_id = ${userId} AND quantity > ${amount}
+    RETURNING quantity
+  `;
+  if (updated[0]) return { ok: true as const, quantity: Number(updated[0].quantity) };
+  const exists = await q`SELECT id FROM collection_items WHERE id = ${itemId} AND user_id = ${userId}`;
+  if (!exists[0]) return { ok: false as const, error: "missing" as const };
+  return { ok: false as const, error: "quantity" as const };
 }
