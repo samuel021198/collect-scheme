@@ -238,27 +238,38 @@ export async function placeInBinder(
   }
   if (!itemId) return { ok: false as const, error: "missing" as const };
   const { cols, rows } = layoutSize(layout);
-  let spot =
+  const explicit =
     typeof input.page === "number" && typeof input.row === "number" && typeof input.col === "number"
       ? { page: input.page, row: input.row, col: input.col }
       : null;
-  if (spot && (spot.page < 0 || spot.row < 0 || spot.row >= rows || spot.col < 0 || spot.col >= cols || spot.page >= MAX_PAGES)) {
+  if (explicit && (explicit.page < 0 || explicit.row < 0 || explicit.row >= rows || explicit.col < 0 || explicit.col >= cols || explicit.page >= MAX_PAGES)) {
     return { ok: false as const, error: "missing" as const };
   }
-  spot ??= await firstEmpty(binderId, layout);
-  if (!spot) return { ok: false as const, error: "full" as const };
-  await ensurePage(binderId, spot.page);
-  const occupied = await sql()`
-    SELECT id FROM binder_slots
-    WHERE binder_id = ${binderId} AND page_index = ${spot.page} AND row_index = ${spot.row} AND col_index = ${spot.col}
-    LIMIT 1
-  `;
-  if (occupied[0]) return { ok: false as const, error: "taken" as const };
-  await sql()`
-    INSERT INTO binder_slots (id, binder_id, page_index, row_index, col_index, collection_item_id)
-    VALUES (${newId("s")}, ${binderId}, ${spot.page}, ${spot.row}, ${spot.col}, ${itemId})
-  `;
-  return { ok: true as const, itemId };
+  const copies = explicit ? 1 : Math.min(cleanQuantity(input.quantity ?? 1) ?? 1, 12);
+  let placed = 0;
+  for (let index = 0; index < copies; index += 1) {
+    const spot = index === 0 && explicit ? explicit : await firstEmpty(binderId, layout);
+    if (!spot) {
+      if (placed === 0) return { ok: false as const, error: "full" as const, placed: 0 };
+      return { ok: false as const, error: "full" as const, placed };
+    }
+    await ensurePage(binderId, spot.page);
+    const occupied = await sql()`
+      SELECT id FROM binder_slots
+      WHERE binder_id = ${binderId} AND page_index = ${spot.page} AND row_index = ${spot.row} AND col_index = ${spot.col}
+      LIMIT 1
+    `;
+    if (occupied[0]) {
+      if (placed === 0) return { ok: false as const, error: explicit ? "taken" as const : "full" as const, placed: 0 };
+      return { ok: false as const, error: "full" as const, placed };
+    }
+    await sql()`
+      INSERT INTO binder_slots (id, binder_id, page_index, row_index, col_index, collection_item_id)
+      VALUES (${newId("s")}, ${binderId}, ${spot.page}, ${spot.row}, ${spot.col}, ${itemId})
+    `;
+    placed += 1;
+  }
+  return { ok: true as const, itemId, placed };
 }
 
 export async function placeCards(userId: string, binderId: string, cardIds: unknown, quantity: unknown) {

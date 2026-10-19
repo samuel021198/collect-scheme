@@ -47,7 +47,7 @@ export default async function SpeciesPage({ params }: { params: Promise<{ locale
               <p className="text-xs text-muted-foreground">{[row.setName, row.number ? `#${row.number}` : ""].filter(Boolean).join(" · ")}</p>
               <p className="text-xs text-primary">{row.condition === "raw" ? t("raw") : conditionLabel(row.condition, row.grade)} · ×{row.quantity}</p>
               <div className="mt-2">
-                <DropCopies key={`${row.id}:${row.quantity}`} id={row.id} owned={row.quantity} />
+                <DropCopies key={`${row.id}:${row.quantity}:${row.slotted}`} id={row.id} owned={row.quantity} slotted={row.slotted} />
               </div>
             </article>
           ))}

@@ -245,7 +245,10 @@
     "name": "卡名",
     "anyCondition": "任何狀態",
     "anySet": "任何系列",
-    "errCondition": "呢間公司要揀分數。"
+    "errCondition": "呢間公司要揀分數。",
+    "collectionOnly": "只加入收藏",
+    "release": "卡簿一齊拿走 {count} 格",
+    "releaseAll": "減晒會一齊清走卡簿入面 {count} 格"
   },
   "wish": {
     "title": "願望清單",
@@ -273,7 +276,8 @@
     "full": "卡簿滿了，只放得一部分",
     "badCount": "張數要係 1 到 99",
     "badBinderCount": "放入卡簿每次最多 12 張",
-    "failed": "暫時加唔到，再試一次"
+    "failed": "暫時加唔到，再試一次",
+    "legendHide": "知道了"
   },
   "binder": {
     "title": "卡簿",
@@ -302,7 +306,9 @@
     "delete": "刪除卡簿",
     "deleteConfirm": "確認刪除",
     "taken": "呢格已有卡。",
-    "errName": "卡簿名用 1 到 40 個字。"
+    "errName": "卡簿名用 1 到 40 個字。",
+    "full": "卡簿滿了，只放得一部分",
+    "badCount": "放入卡簿每次最多 12 張"
   },
   "notFound": {
     "title": "沒有這一頁",

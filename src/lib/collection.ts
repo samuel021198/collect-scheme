@@ -91,7 +91,34 @@ export async function addCollectionMany(userId: string, cardIds: unknown, quanti
   return { ok: true as const, added };
 }
 
-export async function dropCollection(userId: string, itemId: string, requested: unknown) {
+export async function slotCounts(userId: string) {
+  if (!databaseUrl()) return new Map<string, number>();
+  await ensureDb();
+  const rows = await sql()`
+    SELECT s.collection_item_id, count(*)::int AS slotted
+    FROM binder_slots s
+    JOIN collection_items c ON c.id = s.collection_item_id
+    WHERE c.user_id = ${userId}
+    GROUP BY s.collection_item_id
+  `;
+  return new Map(rows.map((row) => [String(row.collection_item_id), Number(row.slotted) || 0]));
+}
+
+async function releaseSlots(userId: string, itemId: string, amount: number) {
+  await sql()`
+    DELETE FROM binder_slots
+    WHERE id IN (
+      SELECT s.id
+      FROM binder_slots s
+      JOIN collection_items c ON c.id = s.collection_item_id
+      WHERE c.user_id = ${userId} AND c.id = ${itemId}
+      ORDER BY s.page_index, s.row_index, s.col_index
+      LIMIT ${amount}
+    )
+  `;
+}
+
+export async function dropCollection(userId: string, itemId: string, requested: unknown, release = false) {
   if (!databaseUrl()) return { ok: false as const, error: "unavailable" as const };
   const amount = cleanQuantity(requested);
   if (!amount) return { ok: false as const, error: "quantity" as const };
@@ -109,7 +136,10 @@ export async function dropCollection(userId: string, itemId: string, requested: 
     WHERE id = ${itemId} AND user_id = ${userId} AND quantity > ${amount}
     RETURNING quantity
   `;
-  if (updated[0]) return { ok: true as const, quantity: Number(updated[0].quantity) };
+  if (updated[0]) {
+    if (release) await releaseSlots(userId, itemId, amount);
+    return { ok: true as const, quantity: Number(updated[0].quantity) };
+  }
   const exists = await q`SELECT id FROM collection_items WHERE id = ${itemId} AND user_id = ${userId}`;
   if (!exists[0]) return { ok: false as const, error: "missing" as const };
   return { ok: false as const, error: "quantity" as const };

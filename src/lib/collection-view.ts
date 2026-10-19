@@ -1,5 +1,5 @@
 import { cardTitle } from "./catalog";
-import { listCollection, type CollectionItem } from "./collection";
+import { listCollection, slotCounts, type CollectionItem } from "./collection";
 import { getCard } from "./content";
 import { gradeRank, type ConditionType } from "./grades";
 import { speciesOf, speciesTitle } from "./species";
@@ -13,10 +13,11 @@ export type CollectionRow = CollectionItem & {
   setCode: string | null;
   number: string;
   image: string;
+  slotted: number;
 };
 
 export async function collectionRows(userId: string, locale: string) {
-  const items = await listCollection(userId);
+  const [items, slots] = await Promise.all([listCollection(userId), slotCounts(userId)]);
   const rows: CollectionRow[] = [];
   for (const item of items) {
     const card = await getCard(item.cardId);
@@ -31,6 +32,7 @@ export async function collectionRows(userId: string, locale: string) {
       setCode: card?.setCode ?? null,
       number: card?.number ?? "",
       image: card?.imageSmall ?? "",
+      slotted: slots.get(item.id) ?? 0,
     });
   }
   return rows;

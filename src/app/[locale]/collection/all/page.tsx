@@ -99,7 +99,7 @@ export default async function CollectionAllPage({
                 <p className="truncate text-sm font-medium">{row.title}</p>
                 <p className="text-xs text-muted-foreground">{line(row, t("raw"))}</p>
                 <div className="mt-2">
-                  <DropCopies key={`${row.id}:${row.quantity}`} id={row.id} owned={row.quantity} />
+                  <DropCopies key={`${row.id}:${row.quantity}:${row.slotted}`} id={row.id} owned={row.quantity} slotted={row.slotted} />
                 </div>
               </div>
             </article>

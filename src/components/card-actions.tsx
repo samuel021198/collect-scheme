@@ -4,11 +4,12 @@ import { useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
 import { Link, useRouter } from "@/i18n/navigation";
 import { ConditionFields } from "@/components/condition-fields";
+import { CountField } from "@/components/count-field";
 import { DropCopies } from "@/components/drop-copies";
 import { Button } from "@/components/ui/button";
 import { cleanQuantity, conditionLabel, gradesFor, type ConditionType } from "@/lib/grades";
 
-type Item = { id: string; condition: ConditionType; grade: string; quantity: number };
+type Item = { id: string; condition: ConditionType; grade: string; quantity: number; slotted?: number };
 type Binder = { id: string; name: string };
 type Desk = { signedIn: boolean; items: Item[]; binders: Binder[] };
 
@@ -35,8 +36,8 @@ export function CardActions({ cardId }: { cardId: string }) {
       .then((response) => response.json())
       .then((body: Desk) => {
         setDesk(body);
-        setItemId(body.items[0]?.id ?? "new");
-        setBinderId(body.binders[0]?.id ?? "");
+        setItemId("new");
+        setBinderId("");
       })
       .catch(() => setDesk({ signedIn: false, items: [], binders: [] }));
     return () => controller.abort();
@@ -86,6 +87,12 @@ export function CardActions({ cardId }: { cardId: string }) {
       });
       const payload = (await response.json()) as { error?: string };
       if (!response.ok) {
+        if (payload.error === "full") {
+          setError(binder("full"));
+          await reload();
+          setPending(false);
+          return false;
+        }
         setError(
           payload.error === "condition"
             ? t("errCondition")
@@ -109,7 +116,13 @@ export function CardActions({ cardId }: { cardId: string }) {
   }
 
   const fresh = { cardId, condition, grade, quantity: Number(quantity) || 1 };
-  const useNew = items.length === 0 || itemId === "new";
+  const useNew = !binderId || items.length === 0 || itemId === "new";
+
+  function placeBody(slot?: { page: number; row: number; col: number }) {
+    const copies = Number(quantity) || 1;
+    const base = useNew ? fresh : { collectionItemId: itemId, quantity: copies };
+    return slot ? { ...base, ...slot } : base;
+  }
 
   return (
     <div className="grid gap-4">
@@ -117,70 +130,22 @@ export function CardActions({ cardId }: { cardId: string }) {
         className="grid gap-3 rounded-2xl border border-border bg-card p-4"
         onSubmit={(event) => {
           event.preventDefault();
-          if (!cleanQuantity(quantity)) {
-            setError(t("errQuantity"));
+          const copies = cleanQuantity(quantity);
+          if (!copies || (binderId && copies > 12)) {
+            setError(binderId ? binder("badCount") : t("errQuantity"));
             return;
           }
-          void send("/api/collection", fresh);
-        }}
-      >
-        <h2 className="text-sm font-medium">{t("add")}</h2>
-        <ConditionFields
-          idPrefix="own"
-          condition={condition}
-          grade={grade}
-          quantity={quantity}
-          labels={labels}
-          onCondition={onCondition}
-          onGrade={setGrade}
-          onQuantity={setQuantity}
-        />
-        <Button type="submit" disabled={pending} className="h-10 w-fit">{t("add")}</Button>
-      </form>
-
-      {items.length > 0 ? (
-        <div className="grid gap-3 rounded-2xl border border-border bg-card p-4">
-          <h2 className="text-sm font-medium">{t("owned")}</h2>
-          {items.map((item) => (
-            <div key={`${item.id}:${item.quantity}`} className="grid gap-2">
-              <p className="text-sm">
-                {item.condition === "raw" ? t("raw") : conditionLabel(item.condition, item.grade)} · ×{item.quantity}
-              </p>
-              <DropCopies id={item.id} owned={item.quantity} onDone={() => void reload()} />
-            </div>
-          ))}
-        </div>
-      ) : null}
-
-      <form
-        className="grid gap-3 rounded-2xl border border-border bg-card p-4"
-        onSubmit={(event) => {
-          event.preventDefault();
-          if (!binderId) return;
-          if (useNew && !cleanQuantity(quantity)) {
-            setError(t("errQuantity"));
+          if (!binderId) {
+            void send("/api/collection", fresh);
             return;
           }
-          void send(`/api/binders/${binderId}/place`, useNew ? fresh : { collectionItemId: itemId });
+          void send(`/api/binders/${binderId}/place`, placeBody());
         }}
       >
-        <h2 className="text-sm font-medium">{binder("add")}</h2>
-        {items.length > 0 ? (
-          <label className="grid gap-1 text-sm">
-            {binder("whichCopy")}
-            <select value={itemId} className="h-10 rounded-lg border border-border bg-background px-2" onChange={(event) => setItemId(event.target.value)}>
-              {items.map((item) => (
-                <option key={item.id} value={item.id}>
-                  {item.condition === "raw" ? t("raw") : conditionLabel(item.condition, item.grade)} ×{item.quantity}
-                </option>
-              ))}
-              <option value="new">{binder("newCopy")}</option>
-            </select>
-          </label>
-        ) : null}
+        <h2 className="text-sm font-medium">{binderId ? binder("add") : t("add")}</h2>
         {useNew ? (
           <ConditionFields
-            idPrefix="slot"
+            idPrefix="own"
             condition={condition}
             grade={grade}
             quantity={quantity}
@@ -189,50 +154,71 @@ export function CardActions({ cardId }: { cardId: string }) {
             onGrade={setGrade}
             onQuantity={setQuantity}
           />
+        ) : (
+          <CountField id="own-qty" value={quantity} max={12} label={labels.quantity} onChange={setQuantity} />
+        )}
+        {binders.length > 0 ? (
+          <label className="grid gap-1 text-sm">
+            {binder("which")}
+            <select
+              value={binderId}
+              className="h-12 rounded-lg border border-border bg-background px-2 text-base"
+              onChange={(event) => {
+                setBinderId(event.target.value);
+                setHoles([]);
+              }}
+            >
+              <option value="">{t("collectionOnly")}</option>
+              {binders.map((item) => (
+                <option key={item.id} value={item.id}>{item.name}</option>
+              ))}
+            </select>
+          </label>
         ) : null}
-        <label className="grid gap-1 text-sm">
-          {binder("which")}
-          <select
-            value={binderId}
-            className="h-10 rounded-lg border border-border bg-background px-2"
-            onChange={(event) => {
-              setBinderId(event.target.value);
-              setHoles([]);
-            }}
-          >
-            {binders.length === 0 ? <option value="">{binder("empty")}</option> : null}
-            {binders.map((item) => (
-              <option key={item.id} value={item.id}>{item.name}</option>
-            ))}
-          </select>
-        </label>
-        <div className="flex flex-wrap gap-2">
-          <Button type="submit" disabled={pending || !binderId} className="h-10">{binder("firstEmpty")}</Button>
-          <Button
-            type="button"
-            variant="outline"
-            className="h-10"
-            disabled={pending || !binderId}
-            onClick={() => {
-              void fetch(`/api/binders/${binderId}`)
-                .then((response) => response.json())
-                .then((body: { binder?: { layout: string }; slots?: { page: number; row: number; col: number }[]; pageIndexes?: number[] }) => {
-                  const layout = body.binder?.layout ?? "3x3";
-                  const cols = layout === "3x3" ? 3 : 4;
-                  const rows = layout === "4x4" ? 4 : 3;
-                  const used = new Set((body.slots ?? []).map((slot) => `${slot.page}:${slot.row}:${slot.col}`));
-                  const pages = body.pageIndexes?.length ? body.pageIndexes : [0];
-                  const empty = pages.flatMap((page) =>
-                    Array.from({ length: rows * cols }, (_, index) => ({ page, row: Math.floor(index / cols), col: index % cols })).filter(
-                      (slot) => !used.has(`${slot.page}:${slot.row}:${slot.col}`),
-                    ),
-                  );
-                  setHoles(empty);
-                });
-            }}
-          >
-            {binder("pickSlot")}
+        {binderId && items.length > 0 ? (
+          <label className="grid gap-1 text-sm">
+            {binder("whichCopy")}
+            <select value={itemId} className="h-12 rounded-lg border border-border bg-background px-2 text-base" onChange={(event) => setItemId(event.target.value)}>
+              <option value="new">{binder("newCopy")}</option>
+              {items.map((item) => (
+                <option key={item.id} value={item.id}>
+                  {item.condition === "raw" ? t("raw") : conditionLabel(item.condition, item.grade)} ×{item.quantity}
+                </option>
+              ))}
+            </select>
+          </label>
+        ) : null}
+        <div className="flex flex-col gap-2 sm:flex-row">
+          <Button type="submit" disabled={pending} className="h-12 w-full sm:w-fit">
+            {binderId ? binder("firstEmpty") : t("add")}
           </Button>
+          {binderId ? (
+            <Button
+              type="button"
+              variant="outline"
+              className="h-12 w-full sm:w-fit"
+              disabled={pending}
+              onClick={() => {
+                void fetch(`/api/binders/${binderId}`)
+                  .then((response) => response.json())
+                  .then((body: { binder?: { layout: string }; slots?: { page: number; row: number; col: number }[]; pageIndexes?: number[] }) => {
+                    const layout = body.binder?.layout ?? "3x3";
+                    const cols = layout === "3x3" ? 3 : 4;
+                    const rows = layout === "4x4" ? 4 : 3;
+                    const used = new Set((body.slots ?? []).map((slot) => `${slot.page}:${slot.row}:${slot.col}`));
+                    const pages = body.pageIndexes?.length ? body.pageIndexes : [0];
+                    const empty = pages.flatMap((page) =>
+                      Array.from({ length: rows * cols }, (_, index) => ({ page, row: Math.floor(index / cols), col: index % cols })).filter(
+                        (slot) => !used.has(`${slot.page}:${slot.row}:${slot.col}`),
+                      ),
+                    );
+                    setHoles(empty);
+                  });
+              }}
+            >
+              {binder("pickSlot")}
+            </Button>
+          ) : null}
         </div>
         {holes.length > 0 ? (
           <div className="flex flex-wrap gap-2">
@@ -242,13 +228,15 @@ export function CardActions({ cardId }: { cardId: string }) {
                 type="button"
                 size="sm"
                 variant="outline"
+                className="min-h-11"
                 disabled={pending}
                 onClick={() => {
-                  if (useNew && !cleanQuantity(quantity)) {
+                  const copies = cleanQuantity(quantity);
+                  if (!copies) {
                     setError(t("errQuantity"));
                     return;
                   }
-                  void send(`/api/binders/${binderId}/place`, { ...(useNew ? fresh : { collectionItemId: itemId }), ...slot });
+                  void send(`/api/binders/${binderId}/place`, placeBody(slot));
                 }}
               >
                 {binder("slot", { page: slot.page + 1, row: slot.row + 1, col: slot.col + 1 })}
@@ -256,8 +244,22 @@ export function CardActions({ cardId }: { cardId: string }) {
             ))}
           </div>
         ) : null}
+        {error ? <p className="text-sm text-destructive">{error}</p> : null}
       </form>
-      {error ? <p className="text-sm text-destructive">{error}</p> : null}
+
+      {items.length > 0 ? (
+        <div className="grid gap-3 rounded-2xl border border-border bg-card p-4">
+          <h2 className="text-sm font-medium">{t("owned")}</h2>
+          {items.map((item) => (
+            <div key={`${item.id}:${item.quantity}:${item.slotted ?? 0}`} className="grid gap-2">
+              <p className="text-sm">
+                {item.condition === "raw" ? t("raw") : conditionLabel(item.condition, item.grade)} · ×{item.quantity}
+              </p>
+              <DropCopies id={item.id} owned={item.quantity} slotted={item.slotted ?? 0} onDone={() => void reload()} />
+            </div>
+          ))}
+        </div>
+      ) : null}
     </div>
   );
 }

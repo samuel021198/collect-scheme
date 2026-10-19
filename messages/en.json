@@ -245,7 +245,10 @@
     "name": "Name",
     "anyCondition": "Any condition",
     "anySet": "Any set",
-    "errCondition": "Pick a grade for that company."
+    "errCondition": "Pick a grade for that company.",
+    "collectionOnly": "Collection only",
+    "release": "Also take {count} out of the binder",
+    "releaseAll": "Removing the last copies also clears {count} binder slots"
   },
   "wish": {
     "title": "Wishlist",
@@ -273,7 +276,8 @@
     "full": "The binder filled up partway",
     "badCount": "Use 1–99 copies",
     "badBinderCount": "A binder can take up to 12 copies at a time",
-    "failed": "Could not add those. Try again."
+    "failed": "Could not add those. Try again.",
+    "legendHide": "Got it"
   },
   "binder": {
     "title": "Binders",
@@ -302,7 +306,9 @@
     "delete": "Delete binder",
     "deleteConfirm": "Delete this binder",
     "taken": "That slot is full.",
-    "errName": "Use 1–40 characters."
+    "errName": "Use 1–40 characters.",
+    "full": "The binder filled up partway",
+    "badCount": "A binder can take up to 12 copies at a time"
   },
   "notFound": {
     "title": "That page is not here",

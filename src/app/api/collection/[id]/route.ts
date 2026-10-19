@@ -8,13 +8,13 @@ export async function PATCH(request: Request, context: { params: Promise<{ id: s
   const user = await currentUser();
   if (!user) return NextResponse.json({ error: "auth" }, { status: 401 });
   const { id } = await context.params;
-  let body: { quantity?: unknown } = {};
+  let body: { quantity?: unknown; release?: unknown } = {};
   try {
-    body = (await request.json()) as { quantity?: unknown };
+    body = (await request.json()) as { quantity?: unknown; release?: unknown };
   } catch {
     return NextResponse.json({ error: "quantity" }, { status: 400 });
   }
-  const result = await dropCollection(user.id, id, body.quantity);
+  const result = await dropCollection(user.id, id, body.quantity, body.release === true);
   if (!result.ok) return NextResponse.json({ error: result.error }, { status: result.error === "missing" ? 404 : 400 });
   return NextResponse.json({ ok: true, quantity: result.quantity });
 }

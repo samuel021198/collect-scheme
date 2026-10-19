@@ -30,7 +30,7 @@ export function ConditionFields({
         <select
           id={`${idPrefix}-condition`}
           value={condition}
-          className="h-10 rounded-lg border border-border bg-background px-2"
+          className="h-12 rounded-lg border border-border bg-background px-2 text-base"
           onChange={(event) => onCondition(event.target.value as ConditionType)}
         >
           {CONDITIONS.map((item) => (
@@ -46,7 +46,7 @@ export function ConditionFields({
           id={`${idPrefix}-grade`}
           value={grades.includes(grade) ? grade : ""}
           disabled={grades.length === 0}
-          className="h-10 rounded-lg border border-border bg-background px-2 disabled:opacity-50"
+          className="h-12 rounded-lg border border-border bg-background px-2 text-base disabled:opacity-50"
           onChange={(event) => onGrade(event.target.value)}
         >
           {grades.length === 0 ? <option value="">—</option> : null}

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { BookOpen, Heart, Layers } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { CardTile } from "@/components/card-tile";
@@ -32,6 +32,7 @@ export function CardGrid({
 
   return (
     <div className="grid gap-3">
+      <IconLegend />
       <div className="flex flex-wrap items-center gap-2">
         <button
           type="button"
@@ -65,6 +66,38 @@ export function CardGrid({
           />
         ))}
       </div>
+    </div>
+  );
+}
+
+function IconLegend() {
+  const t = useTranslations("quick");
+  const [shown, setShown] = useState(false);
+
+  useEffect(() => {
+    const frame = window.requestAnimationFrame(() => {
+      setShown(window.localStorage.getItem("cs-quick-legend") !== "1");
+    });
+    return () => window.cancelAnimationFrame(frame);
+  }, []);
+
+  if (!shown) return null;
+
+  return (
+    <div className="flex flex-wrap items-center gap-x-3 gap-y-1 rounded-2xl border border-border bg-card px-3 py-2 text-sm">
+      <span className="inline-flex items-center gap-1"><Heart className="size-4 fill-rose-500 text-rose-500" />{t("wish")}</span>
+      <span className="inline-flex items-center gap-1"><Layers className="size-4" />{t("collection")}</span>
+      <span className="inline-flex items-center gap-1"><BookOpen className="size-4" />{t("binder")}</span>
+      <button
+        type="button"
+        className="ml-auto inline-flex min-h-11 items-center px-2 text-muted-foreground touch-manipulation"
+        onClick={() => {
+          window.localStorage.setItem("cs-quick-legend", "1");
+          setShown(false);
+        }}
+      >
+        {t("legendHide")}
+      </button>
     </div>
   );
 }
